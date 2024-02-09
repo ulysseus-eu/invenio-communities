@@ -24,6 +24,10 @@ export const CommunityCompactItemComputer = ({
 }) => {
   const { metadata, ui, links, access, id } = result;
   const communityType = ui?.type?.title_l10n;
+  let resultHref = links.self_html;
+  if (metadata.type?.id === "person"){
+    resultHref = links.person_html;
+  }
   return (
     <div
       key={id}
@@ -41,7 +45,7 @@ export const CommunityCompactItemComputer = ({
         <div>
           <div className="flex align-items-center rel-mb-1">
             <a
-              href={detailUrl || links.self_html}
+              href={detailUrl || resultHref}
               className="ui small header truncate-lines-2 m-0 mr-5"
               target="_blank"
               rel="noreferrer"

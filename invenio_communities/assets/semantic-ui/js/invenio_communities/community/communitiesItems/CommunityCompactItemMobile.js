@@ -24,6 +24,10 @@ export const CommunityCompactItemMobile = ({
 }) => {
   const communityType = result.ui?.type?.title_l10n;
   const { metadata, ui, links, access, id } = result;
+  let resultHref = links.self_html;
+  if (metadata.type?.id === "person"){
+    resultHref = links.person_html;
+  }
   return (
     <div key={id} className={`community-item mobile only ${itemClassName}`}>
       <div className="display-grid auto-column-grid no-wrap">
@@ -38,7 +42,7 @@ export const CommunityCompactItemMobile = ({
 
           <div className="flex align-items-center rel-mb-1">
             <a
-              href={detailUrl || links.self_html}
+              href={detailUrl || resultHref}
               className="ui small header truncate-lines-2 m-0 mr-5"
               target="_blank"
               rel="noreferrer"

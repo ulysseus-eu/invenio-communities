@@ -31,14 +31,14 @@ VISIBILITY_FIELDS = [
         "value": "public",
         "icon": "group",
         "helpText": _(
-            "Your community is publicly accessible" " and shows up in search results."
+            "Your community or person is publicly accessible" " and shows up in search results."
         ),
     },
     {
         "text": "Restricted",
         "value": "restricted",
         "icon": "lock",
-        "helpText": _("Your community is restricted to users" " with access."),
+        "helpText": _("Your community or person is restricted to users" " with access."),
     },
 ]
 
@@ -47,14 +47,14 @@ REVIEW_POLICY_FIELDS = [
         "text": "Review all submissions",
         "value": "closed",
         "icon": "lock",
-        "helpText": _("All submissions to the community must be reviewed."),
+        "helpText": _("All submissions to the community or person must be reviewed."),
     },
     {
         "text": "Allow curators, managers and owners to publish without review",
         "value": "open",
         "icon": "group",
         "helpText": _(
-            "Submissions to the community by default requires review, but curators, managers and owners can publish directly without review."
+            "Submissions to the community or person will by default require review, but curators, managers and owners can publish directly without review."
         ),
     },
 ]
@@ -122,11 +122,29 @@ def communities_frontpage():
     )
 
 
+def persons_frontpage():
+    """Persons index page."""
+    can_create = current_communities.service.check_permission(g.identity, "create")
+    return render_template(
+        "invenio_communities/frontpage_persons.html",
+        permissions=dict(can_create=can_create),
+    )
+
+
 def communities_search():
     """Communities search page."""
     can_create = current_communities.service.check_permission(g.identity, "create")
     return render_template(
         "invenio_communities/search.html",
+        permissions=dict(can_create=can_create),
+    )
+
+
+def persons_search():
+    """Persons search page."""
+    can_create = current_communities.service.check_permission(g.identity, "create")
+    return render_template(
+        "invenio_communities/search_persons.html",
         permissions=dict(can_create=can_create),
     )
 
@@ -173,7 +191,7 @@ def load_custom_fields(dump_only_required=False):
 
 
 @login_required
-def communities_new():
+def communities_new(i_person=False):
     """Communities creation page."""
     can_create = current_communities.service.check_permission(g.identity, "create")
     if not can_create:
@@ -188,12 +206,19 @@ def communities_new():
         form_config=dict(
             access=dict(visibility=VISIBILITY_FIELDS),
             SITE_UI_URL=current_app.config["SITE_UI_URL"],
+            person=i_person,
         ),
         custom_fields=load_custom_fields(
             dump_only_required=True,
         ),
         can_create_restricted=can_create_restricted,
     )
+
+
+@login_required
+def persons_new():
+    """Persons creation page."""
+    return communities_new(i_person=True)
 
 
 @pass_community(serialize=True)
@@ -250,6 +275,12 @@ def communities_settings(pid_value, community, community_ui):
 
 
 @pass_community(serialize=True)
+def persons_settings(pid_value, community, community_ui):
+    """Person settings/profile page."""
+    return communities_settings(pid_value=pid_value, community=community, community_ui=community_ui)
+
+
+@pass_community(serialize=True)
 def communities_requests(pid_value, community, community_ui):
     """Community requests page."""
     permissions = community.has_permissions_to(
@@ -264,6 +295,12 @@ def communities_requests(pid_value, community, community_ui):
         community=community_ui,
         permissions=permissions,
     )
+
+
+@pass_community(serialize=True)
+def persons_requests(pid_value, community, community_ui):
+    """Person request page."""
+    return communities_requests(pid_value=pid_value, community=community, community_ui=community_ui)
 
 
 @pass_community(serialize=True)
@@ -369,6 +406,12 @@ def members(pid_value, community, community_ui):
         roles_can_update=_get_roles_can_update(community.id),
         roles_can_invite=_get_roles_can_invite(community.id),
     )
+
+
+@pass_community(serialize=True)
+def persons_members(pid_value, community, community_ui):
+    """Persons members page."""
+    return members(pid_value=pid_value, community=community, community_ui=community_ui)
 
 
 @pass_community(serialize=True)

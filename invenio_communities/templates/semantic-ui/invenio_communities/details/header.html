@@ -45,10 +45,20 @@
               {% endif %}
             </div>
 
-            <div>
+            <div class="flex column">
               {% if community.access.visibility == 'restricted' %}
                 <div class="mobile only rel-mb-1">
                   {{ access_status_label() }}
+                </div>
+              {% endif %}
+
+              {% if community.metadata.firstname or community.metadata.lastname %}
+                <div class="flex column">
+                  <div class="flex row">
+                    <h3 class="ui small header creatibutors-header">Full name:
+                      <span style="text-transform: uppercase;"> {{ community.metadata.lastname }} </span>
+                      <span style="text-transform: capitalize;"> {{ community.metadata.firstname }} </span></h3>
+                  </div>
                 </div>
               {% endif %}
 
@@ -61,7 +71,7 @@
                 </div>
               {% endif %}
 
-              {% if community.metadata.type is defined %}
+              {% if (community.metadata.type is defined) and (community.metadata.type.id != "person") %}
                 <div class="inline-computer mt-5 rel-mr-1">
                   <i class="tag icon" aria-hidden="true"></i>
                   <span class="label label-keyword">
@@ -128,7 +138,12 @@
     <div
       class="ui container secondary pointing stackable menu page-subheader pl-0 pr-0 theme-primary">
       {% if community_menu_active %}
-      {% for item in current_menu.submenu('communities').children if (item.permissions == True or permissions[item.permissions]) and item.visible %}
+      {% if community.metadata.type is defined and community.metadata.type.id == "person" %}
+        {% set menu_name = "persons" %}
+      {% else %}
+        {% set menu_name = "communities" %}
+      {% endif %}
+      {% for item in current_menu.submenu(menu_name).children if (item.permissions == True or permissions[item.permissions]) and item.visible %}
         <a
           class="item {{ 'active' if active_community_header_menu_item == item.name }} {{ 'disabled' if not item.url }}"
           href="{{ item.url }}"

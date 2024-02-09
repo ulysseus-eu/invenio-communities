@@ -10,7 +10,6 @@
 
 """Invenio Communities Service API."""
 
-
 from flask import current_app
 from invenio_cache.decorators import cached_with_expiration
 from invenio_records_resources.proxies import current_service_registry
@@ -51,7 +50,7 @@ class CommunityService(RecordService):
     """community Service."""
 
     def __init__(
-        self, config, files_service=None, invitations_service=None, members_service=None
+            self, config, files_service=None, invitations_service=None, members_service=None
     ):
         """Constructor for CommunityService."""
         super().__init__(config)
@@ -105,7 +104,7 @@ class CommunityService(RecordService):
         ]
 
     def search_user_communities(
-        self, identity, params=None, search_preference=None, extra_filter=None, **kwargs
+            self, identity, params=None, search_preference=None, extra_filter=None, **kwargs
     ):
         """Search for records matching the querystring."""
         self.require_permission(identity, "search_user_communities")
@@ -117,8 +116,52 @@ class CommunityService(RecordService):
         undeleted_filter = dsl.Q(
             "term", **{"deletion_status": CommunityDeletionStatusEnum.PUBLISHED.value}
         )
+        not_a_person_filter = dsl.Q({"bool": {"must_not": {"term": {"metadata.type.id": "person"}}}})
 
-        search_filter = current_user_filter & undeleted_filter
+        search_filter = current_user_filter & undeleted_filter & not_a_person_filter
+
+        if extra_filter:
+            search_filter &= extra_filter
+
+        search_result = self._search(
+            "search",
+            identity,
+            params,
+            search_preference,
+            extra_filter=search_filter,
+            permission_action="read",
+            **kwargs,
+        ).execute()
+
+        return self.result_list(
+            self,
+            identity,
+            search_result,
+            params,
+            links_tpl=LinksTemplate(
+                self.config.links_user_search, context={"args": params}
+            ),
+            links_item_tpl=self.links_item_tpl,
+        )
+
+    def search_user_persons(
+            self, identity, params=None, search_preference=None, extra_filter=None, **kwargs
+    ):
+        """Search for records matching the querystring."""
+        self.require_permission(identity, "search_user_communities")
+
+        # Prepare and execute the search
+        params = params or {}
+
+        current_user_filter = CommunityMembers().query_filter(identity)
+        undeleted_filter = dsl.Q(
+            "term", **{"deletion_status": CommunityDeletionStatusEnum.PUBLISHED.value}
+        )
+        person_filter = dsl.Q(
+            "term", **{"metadata.type.id": "person"}
+        )
+
+        search_filter = current_user_filter & undeleted_filter & person_filter
 
         if extra_filter:
             search_filter &= extra_filter
@@ -145,13 +188,13 @@ class CommunityService(RecordService):
         )
 
     def search_community_requests(
-        self,
-        identity,
-        community_id,
-        params=None,
-        search_preference=None,
-        expand=False,
-        **kwargs,
+            self,
+            identity,
+            community_id,
+            params=None,
+            search_preference=None,
+            expand=False,
+            **kwargs,
     ):
         """Search for requests of a specific community."""
         self.require_permission(identity, "search_requests", community_id=community_id)
@@ -190,7 +233,7 @@ class CommunityService(RecordService):
 
     @unit_of_work()
     def rename(
-        self, identity, id_, data, revision_id=None, raise_errors=True, uow=None
+            self, identity, id_, data, revision_id=None, raise_errors=True, uow=None
     ):
         """Rename a community."""
         record = self.record_cls.pid.resolve(id_)
@@ -250,7 +293,7 @@ class CommunityService(RecordService):
         record = self.record_cls.pid.resolve(id_)
         self.require_permission(identity, "update", record=record)
 
-        logo_size_limit = 10**6
+        logo_size_limit = 10 ** 6
         max_size = current_app.config["COMMUNITIES_LOGO_MAX_FILE_SIZE"]
         if type(max_size) is int and max_size > 0:
             logo_size_limit = max_size
@@ -359,7 +402,7 @@ class CommunityService(RecordService):
 
     @unit_of_work()
     def featured_create(
-        self, identity, community_id, data, raise_errors=True, uow=None
+            self, identity, community_id, data, raise_errors=True, uow=None
     ):
         """Create a featured entry for a community."""
         record = self.record_cls.pid.resolve(community_id)
@@ -393,7 +436,7 @@ class CommunityService(RecordService):
 
     @unit_of_work()
     def featured_update(
-        self, identity, community_id, data, featured_id, raise_errors=True, uow=None
+            self, identity, community_id, data, featured_id, raise_errors=True, uow=None
     ):
         """Update a featured entry for a community."""
         record = self.record_cls.pid.resolve(community_id)
@@ -430,7 +473,7 @@ class CommunityService(RecordService):
 
     @unit_of_work()
     def featured_delete(
-        self, identity, community_id, featured_id, raise_errors=True, uow=None
+            self, identity, community_id, featured_id, raise_errors=True, uow=None
     ):
         """Delete a featured entry for a community."""
         record = self.record_cls.pid.resolve(community_id)
@@ -456,7 +499,7 @@ class CommunityService(RecordService):
     #
     @unit_of_work()
     def delete_community(
-        self, identity, id_, data=None, revision_id=None, expand=False, uow=None
+            self, identity, id_, data=None, revision_id=None, expand=False, uow=None
     ):
         """(Soft) delete a published community."""
         record = self.record_cls.pid.resolve(id_)
@@ -502,7 +545,7 @@ class CommunityService(RecordService):
 
     @unit_of_work()
     def delete(
-        self, identity, id_, data=None, expand=False, revision_id=None, uow=None
+            self, identity, id_, data=None, expand=False, revision_id=None, uow=None
     ):
         """Alias for ``delete_community()``."""
         return self.delete_community(
@@ -636,21 +679,54 @@ class CommunityService(RecordService):
     # Search functions
     #
     def search(
-        self,
-        identity,
-        params=None,
-        search_preference=None,
-        expand=False,
-        extra_filter=None,
-        **kwargs,
+            self,
+            identity,
+            params=None,
+            search_preference=None,
+            expand=False,
+            extra_filter=None,
+            **kwargs,
     ):
         """Search for published communities matching the querystring."""
+        not_a_person_filter = dsl.Q({"bool": {"must_not": {"term": {"metadata.type.id": "person"}}}})
+        if extra_filter:
+            not_a_person_filter &= extra_filter
         return super().search(
             identity,
             params,
             search_preference,
             expand,
-            extra_filter=extra_filter,
+            extra_filter=not_a_person_filter,
+            # injects deleted records when user is permitted to see them
+            permission_action="read_deleted",
+            **kwargs,
+        )
+
+    #
+    # Search functions
+    #
+    def search_persons(
+            self,
+            identity,
+            params=None,
+            search_preference=None,
+            expand=False,
+            extra_filter=None,
+            **kwargs,
+    ):
+        """Search for published persons matching the querystring."""
+        person_filter = dsl.Q(
+            "term", **{"metadata.type.id": "person"}
+        )
+
+        if extra_filter:
+            person_filter &= extra_filter
+        return super().search(
+            identity,
+            params,
+            search_preference,
+            expand,
+            extra_filter=person_filter,
             # injects deleted records when user is permitted to see them
             permission_action="read_deleted",
             **kwargs,
@@ -717,8 +793,8 @@ class CommunityService(RecordService):
 
 @cached_with_expiration
 def get_cached_community_slug(
-    community_id,
-    community_service_id="communities",
+        community_id,
+        community_service_id="communities",
 ):
     """Cache community's slug.
 

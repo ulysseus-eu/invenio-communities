@@ -15,6 +15,10 @@ import PropTypes from "prop-types";
 export const CommunityItemComputer = ({ result }) => {
   const communityType = result.ui?.type?.title_l10n;
   const canUpdate = result.ui?.permissions?.can_update;
+  let resultHref = result.links.self_html;
+  if (result.metadata.type?.id === "person"){
+    resultHref = result.links.person_html;
+  }
 
   return (
     <Grid className="computer tablet only item community-item">
@@ -38,7 +42,7 @@ export const CommunityItemComputer = ({ result }) => {
                 <RestrictedLabel access={result.access.visibility} />
               </div>
             )}
-            <a className="ui medium header mb-0" href={result.links.self_html}>
+            <a className="ui medium header mb-0" href={resultHref}>
               {result.metadata.title}
             </a>
             {result.metadata.description && (

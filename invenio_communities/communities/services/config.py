@@ -119,6 +119,16 @@ class CommunityServiceConfig(RecordServiceConfig, ConfiguratorMixin):
         "invitations": CommunityLink("{+api}/communities/{id}/invitations"),
         "requests": CommunityLink("{+api}/communities/{id}/requests"),
         "records": CommunityLink("{+api}/communities/{id}/records"),
+        "person": CommunityLink("{+api}/persons/{id}"),
+        "person_html": CommunityLink("{+ui}/persons/{slug}"),
+        "person_settings_html": CommunityLink("{+ui}/persons/{slug}/settings"),
+        "person_logo": CommunityLink("{+api}/persons/{id}/logo"),
+        "person_rename": CommunityLink("{+api}/persons/{id}/rename"),
+        "person_members": CommunityLink("{+api}/persons/{id}/members"),
+        "person_public_members": CommunityLink("{+api}/persons/{id}/members/public"),
+        "person_invitations": CommunityLink("{+api}/persons/{id}/invitations"),
+        "person_requests": CommunityLink("{+api}/persons/{id}/requests"),
+        "person_records": CommunityLink("{+api}/persons/{id}/records"),
     }
 
     action_link = CommunityLink(

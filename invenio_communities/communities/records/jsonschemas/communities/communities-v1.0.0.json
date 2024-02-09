@@ -62,6 +62,14 @@
           "description": "Community description.",
           "type": "string"
         },
+        "firstname": {
+          "description": "First name of a person.",
+          "type": "string"
+        },
+        "lastname": {
+          "description": "Last name of a person.",
+          "type": "string"
+        },
         "type": {
           "description": "Community type.",
           "type": "object",

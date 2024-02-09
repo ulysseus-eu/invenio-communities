@@ -17,6 +17,11 @@ import { Button, Grid, Header, Item } from "semantic-ui-react";
 class CarouselItem extends Component {
   render() {
     const { community, defaultLogo, className, showUploadBtn } = this.props;
+    let resultHref = community.links.self_html;
+    if (community.metadata.type?.id === "person"){
+      resultHref = community.links.person_html;
+    }
+
 
     return (
       <Overridable
@@ -33,14 +38,14 @@ class CarouselItem extends Component {
           <Item.Content>
             <Item.Header as={Grid} stackable className="rel-pb-1">
               <Grid.Column computer="10" tablet="16" className="pl-0 pb-0">
-                <Header as="a" size="medium" href={community.links.self_html}>
+                <Header as="a" size="medium" href={resultHref}>
                   {community.metadata.title}
                 </Header>
               </Grid.Column>
               <Grid.Column computer="6" tablet="16" className="buttons pl-0 pb-0">
                 <Button
                   size="mini"
-                  href={community.links.self_html}
+                  href={resultHref}
                   content={i18next.t("Browse")}
                 />
                 {showUploadBtn && (

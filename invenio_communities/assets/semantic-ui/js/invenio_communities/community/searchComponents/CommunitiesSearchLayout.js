@@ -26,7 +26,7 @@ export const CommunitiesSearchLayout = ({ config, appName }) => {
           </Grid.Column>
 
           <Grid.Column mobile={14} tablet={15} floated="right" className="mt-10">
-            <SearchBar placeholder={i18next.t("Search communities...")} />
+            <SearchBar placeholder={i18next.t("Search "+config.objectSearched+"...")} />
           </Grid.Column>
         </Grid.Row>
 
@@ -50,7 +50,7 @@ export const CommunitiesSearchLayout = ({ config, appName }) => {
         {/* Desktop search header */}
         <Grid.Row className="computer only">
           <Grid.Column width={8} floated="right">
-            <SearchBar placeholder={i18next.t("Search communities...")} />
+            <SearchBar placeholder={i18next.t("Search "+config.objectSearched+"...")} />
           </Grid.Column>
 
           <Grid.Column width={4} textAlign="right">

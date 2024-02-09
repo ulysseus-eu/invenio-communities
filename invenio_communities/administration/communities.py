@@ -128,3 +128,15 @@ class CommunityDetailView(AdminResourceDetailView):
         "ui.type.title_l10n": {"text": "Type", "order": 3},
         "created": {"text": "Created", "order": 5},
     }
+
+
+class PersonDetailView(CommunityDetailView):
+    """Admin person detail view"""
+
+    url = "/persons/<pid_value>"
+    api_endpoint = "/persons"
+    name = "person-details"
+    resource_config = "communities_resource"
+    title = "Person"
+
+    list_view_name = "communities"

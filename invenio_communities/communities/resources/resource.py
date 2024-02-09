@@ -10,7 +10,7 @@
 
 """Invenio Communities Resource API."""
 
-from flask import g
+from flask import g, current_app
 from flask_resources import (
     from_conf,
     request_parser,
@@ -26,8 +26,10 @@ from invenio_records_resources.resources.records.resource import (
     request_headers,
     request_search_args,
     request_view_args,
+    request_read_args,
 )
 from invenio_records_resources.resources.records.utils import search_preference
+from invenio_stats import current_stats
 
 from invenio_communities.proxies import current_communities
 
@@ -45,10 +47,13 @@ class CommunityResource(RecordResource):
         return [
             route("GET", routes["list"], self.search),
             route("POST", routes["list"], self.create),
+            route("GET", routes["list-persons"], self.search_persons),
             route("GET", routes["item"], self.read),
+            route("GET", routes["item-persons"], self.read_persons),
             route("PUT", routes["item"], self.update),
             route("DELETE", routes["item"], self.delete),
             route("GET", routes["user-communities"], self.search_user_communities),
+            route("GET", routes["user-persons"], self.search_user_persons),
             route("POST", routes["rename"], self.rename),
             route("GET", routes["logo"], self.read_logo),
             route("PUT", routes["logo"], self.update_logo),
@@ -62,6 +67,44 @@ class CommunityResource(RecordResource):
             route("POST", routes["restore-community"], self.restore_community),
         ]
 
+    #
+    # Primary Interface
+    #
+    @request_extra_args
+    @request_read_args
+    @request_view_args
+    @response_handler()
+    def read_persons(self):
+        """Read an item."""
+        item = self.service.read(
+            g.identity,
+            resource_requestctx.view_args["pid_value"],
+            expand=resource_requestctx.args.get("expand", False),
+        )
+
+        # we emit the record view stats event here rather than in the service because
+        # the service might be called from other places as well that we don't want
+        # to count, e.g. from some CLI commands
+        emitter = current_stats.get_event_emitter("record-view")
+        if item is not None and emitter is not None:
+            emitter(current_app, record=item._record, via_api=True)
+
+        return item.to_dict(), 200
+
+    @request_search_args
+    @response_handler(many=True)
+    def search_persons(self):
+        """Perform a search over persons.
+
+        GET /persons
+        """
+        hits = self.service.search_persons(
+            identity=g.identity,
+            params=resource_requestctx.args,
+            search_preference=search_preference(),
+        )
+        return hits.to_dict(), 200
+
     @request_search_args
     @response_handler(many=True)
     def search_user_communities(self):
@@ -70,6 +113,20 @@ class CommunityResource(RecordResource):
         GET /user/communities
         """
         hits = self.service.search_user_communities(
+            identity=g.identity,
+            params=resource_requestctx.args,
+            search_preference=search_preference(),
+        )
+        return hits.to_dict(), 200
+
+    @request_search_args
+    @response_handler(many=True)
+    def search_user_persons(self):
+        """Perform a search over the user's persons.
+
+        GET /user/persons
+        """
+        hits = self.service.search_user_persons(
             identity=g.identity,
             params=resource_requestctx.args,
             search_preference=search_preference(),

@@ -12,6 +12,10 @@ export default class FeaturedCommunity extends Component {
       widescreenColumnWidth,
       community,
     } = this.props;
+    let resultHref = community.links.self_html;
+    if (community.metadata.type?.id === "person"){
+      resultHref = community.links.person_html;
+    }
     return (
       <Grid.Column
         mobile={mobileColumnWidth}
@@ -21,7 +25,7 @@ export default class FeaturedCommunity extends Component {
         textAlign="center"
       >
         <Segment compact className="m-auto">
-          <a href={community.links.self_html}>
+          <a href={resultHref}>
             <div className="featured-community">
               <Image className="m-auto" src={community.links.logo} />
               <Header as="h3">{community.metadata.title}</Header>

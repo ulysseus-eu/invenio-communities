@@ -124,6 +124,12 @@
           "description": {
             "type": "text"
           },
+          "firstname": {
+            "type": "text"
+          },
+          "lastname": {
+            "type": "text"
+          },
           "type": {
             "type": "object",
             "properties": {

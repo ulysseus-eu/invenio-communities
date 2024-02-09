@@ -55,6 +55,14 @@ const COMMUNITY_VALIDATION_SCHEMA = Yup.object({
     type: Yup.object().shape({
       id: Yup.string(),
     }),
+    firstname: Yup.string().when('type',{
+      is: (val) => val["id"] === "person",
+      then: Yup.string().required('First name is required')
+    }),
+    lastname: Yup.string().when('type',{
+      is: (val) => val["id"] === "person",
+      then: Yup.string().required('Last name is required')
+    }),
   }),
 });
 
@@ -100,6 +108,8 @@ class CommunityProfileForm extends Component {
       metadata: {
         description: "",
         title: "",
+        firstname: "",
+        lastname: "",
         curation_policy: "",
         type: {},
         website: "",
@@ -331,13 +341,25 @@ class CommunityProfileForm extends Component {
       permissions,
     } = this.props;
     const { error } = this.state;
+    const includesPaths = [
+                      "metadata.title",
+                      "metadata.firstname",
+                      "metadata.lastname",
+                      "metadata.type.id",
+                      "metadata.website",
+                      "metadata.organizations",
+                      "metadata.description",
+                    ]
+    const isPerson = (community.metadata.type?.id === "person");
+    const isOrganization = (community.metadata.type?.id === "organization");
+    const shallDisplayType = !(isPerson || isOrganization);
     return (
       <Formik
         initialValues={this.getInitialValues(community)}
         validationSchema={COMMUNITY_VALIDATION_SCHEMA}
         onSubmit={this.onSubmit}
       >
-        {({ isSubmitting, isValid, handleSubmit }) => (
+        {({ isSubmitting, isValid, handleSubmit, values }) => (
           <Form onSubmit={handleSubmit} className="communities-profile">
             <Message hidden={error === ""} negative>
               <Grid container>
@@ -356,13 +378,7 @@ class CommunityProfileForm extends Component {
                   className="rel-pb-2"
                 >
                   <AccordionField
-                    includesPaths={[
-                      "metadata.title",
-                      "metadata.type.id",
-                      "metadata.website",
-                      "metadata.organizations",
-                      "metadata.description",
-                    ]}
+                    includesPaths={includesPaths}
                     label={i18next.t("Basic information")}
                     active
                   >
@@ -378,6 +394,29 @@ class CommunityProfileForm extends Component {
                           />
                         }
                       />
+                      {(values.metadata.type.id === "person") && <TextField
+                        fluid
+                        fieldPath="metadata.firstname"
+                        label={
+                          <FieldLabel
+                            htmlFor="metadata.firstname"
+                            icon="user"
+                            label={i18next.t("First name")}
+                          />
+                        }
+                      />}
+
+                      {(values.metadata.type.id === "person") && <TextField
+                        fluid
+                        fieldPath="metadata.lastname"
+                        label={
+                          <FieldLabel
+                            htmlFor="metadata.lastname"
+                            icon="user"
+                            label={i18next.t("Last name")}
+                          />
+                        }
+                      />}
 
                       <Overridable
                         id="InvenioCommunities.CommunityProfileForm.TextAreaField.MetadataDescription"
@@ -396,7 +435,7 @@ class CommunityProfileForm extends Component {
                         />
                       </Overridable>
 
-                      <Overridable
+                      {shallDisplayType && <Overridable
                         id="InvenioCommunities.CommunityProfileForm.SelectField.MetadataType"
                         community={community}
                       >
@@ -418,7 +457,7 @@ class CommunityProfileForm extends Component {
                             };
                           })}
                         />
-                      </Overridable>
+                      </Overridable>}
 
                       <Overridable
                         id="InvenioCommunities.CommunityProfileForm.TextField.MetadataWebsite"

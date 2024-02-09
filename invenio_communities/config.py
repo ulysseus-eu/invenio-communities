@@ -20,7 +20,6 @@ COMMUNITIES_ROUTES = {
     "frontpage": "/communities",
     "search": "/communities/search",
     "new": "/communities/new",
-    "details": "/communities/<pid_value>",
     "settings": "/communities/<pid_value>/settings",
     "requests": "/communities/<pid_value>/requests",
     "settings_privileges": "/communities/<pid_value>/settings/privileges",
@@ -30,6 +29,18 @@ COMMUNITIES_ROUTES = {
     "invitations": "/communities/<pid_value>/invitations",
     "about": "/communities/<pid_value>/about",
     "curation_policy": "/communities/<pid_value>/curation-policy",
+    "frontpage_persons": "/persons",
+    "search_persons": "/persons/search",
+    "new_persons": "/persons/new",
+    "settings_persons": "/persons/<pid_value>/settings",
+    "requests_persons": "/persons/<pid_value>/requests",
+    "settings_privileges_persons": "/persons/<pid_value>/settings/privileges",
+    "settings_curation_policy_persons": "/persons/<pid_value>/settings/curation-policy",
+    "settings_pages_persons": "/persons/<pid_value>/settings/pages",
+    "members_persons": "/persons/<pid_value>/members",
+    "invitations_persons": "/persons/<pid_value>/invitations",
+    "about_persons": "/persons/<pid_value>/about",
+    "curation_policy_persons": "/persons/<pid_value>/curation-policy",
 }
 
 """Communities ui endpoints."""

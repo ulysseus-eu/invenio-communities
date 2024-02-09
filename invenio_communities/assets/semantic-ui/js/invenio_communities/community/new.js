@@ -7,11 +7,11 @@
  * under the terms of the MIT License; see LICENSE file for more details.
  */
 
-import { i18next } from "@translations/invenio_communities/i18next";
-import { Formik, useFormikContext } from "formik";
+import {i18next} from "@translations/invenio_communities/i18next";
+import {Formik, useFormikContext} from "formik";
 import _isEmpty from "lodash/isEmpty";
 import _get from "lodash/get";
-import React, { Component } from "react";
+import React, {Component} from "react";
 import ReactDOM from "react-dom";
 import {
   CustomFields,
@@ -20,20 +20,25 @@ import {
   TextField,
   withCancel,
 } from "react-invenio-forms";
-import { Button, Divider, Form, Grid, Header, Icon, Message } from "semantic-ui-react";
-import { CommunityApi } from "../api";
-import { communityErrorSerializer } from "../api/serializers";
+import {Button, Divider, Form, Grid, Header, Icon, Message} from "semantic-ui-react";
+import {CommunityApi} from "../api";
+import {communityErrorSerializer} from "../api/serializers";
 import PropTypes from "prop-types";
 
-const IdentifierField = ({ formConfig }) => {
-  const { values } = useFormikContext();
+const IdentifierField = ({formConfig}) => {
+  const {values} = useFormikContext();
 
   const helpText = (
     <>
-      {i18next.t(
-        "This is your community's unique identifier. You will be able to access your community through the URL:"
-      )}
-      <br />
+      {formConfig.person ?
+        i18next.t(
+          "This is your person's unique identifier. You will be able to access your person profile through the URL:"
+        ) :
+        i18next.t(
+          "This is your community's unique identifier. You will be able to access your community through the URL:"
+        )
+      }
+      <br/>
       {`${formConfig.SITE_UI_URL}/communities/${values["slug"]}`}
     </>
   );
@@ -43,7 +48,7 @@ const IdentifierField = ({ formConfig }) => {
       required
       id="slug"
       label={
-        <FieldLabel htmlFor="slug" icon="barcode" label={i18next.t("Identifier")} />
+        <FieldLabel htmlFor="slug" icon="barcode" label={i18next.t("Identifier")}/>
       }
       fieldPath="slug"
       helpText={helpText}
@@ -71,10 +76,10 @@ class CommunityCreateForm extends Component {
   }
 
   setGlobalError = (errorMsg) => {
-    this.setState({ error: errorMsg });
+    this.setState({error: errorMsg});
   };
 
-  onSubmit = async (values, { setSubmitting, setFieldError }) => {
+  onSubmit = async (values, {setSubmitting, setFieldError}) => {
     setSubmitting(true);
     const client = new CommunityApi();
     const payload = {
@@ -90,33 +95,42 @@ class CommunityCreateForm extends Component {
     } catch (error) {
       if (error === "UNMOUNTED") return;
 
-      const { errors, message } = communityErrorSerializer(error);
+      const {errors, message} = communityErrorSerializer(error);
 
       if (message) {
         this.setGlobalError(message);
       }
 
       if (errors) {
-        errors.map(({ field, messages }) => setFieldError(field, messages[0]));
+        errors.map(({field, messages}) => setFieldError(field, messages[0]));
       }
     }
   };
 
   render() {
-    const { formConfig, canCreateRestricted } = this.props;
-    const { error } = this.state;
+    const {formConfig, canCreateRestricted} = this.props;
+    const {error} = this.state;
+
+    let initialValues = {
+      access: {
+        visibility: "public",
+      },
+      slug: "",
+    };
+    if (formConfig.person) {
+      initialValues["metadata"] = {
+        type: {
+          id: "person"
+        }
+      };
+    }
 
     return (
       <Formik
-        initialValues={{
-          access: {
-            visibility: "public",
-          },
-          slug: "",
-        }}
+        initialValues={initialValues}
         onSubmit={this.onSubmit}
       >
-        {({ values, isSubmitting, handleSubmit }) => (
+        {({values, isSubmitting, handleSubmit}) => (
           <Form onSubmit={handleSubmit} className="communities-creation">
             <Message hidden={error === ""} negative className="flashed">
               <Grid container centered>
@@ -129,9 +143,9 @@ class CommunityCreateForm extends Component {
               <Grid.Row>
                 <Grid.Column mobile={16} tablet={12} computer={8} textAlign="center">
                   <Header as="h1" className="rel-mt-2">
-                    {i18next.t("Setup your new community")}
+                    {formConfig.person ? i18next.t("Setup your new person") : i18next.t("Setup your new community")}
                   </Header>
-                  <Divider />
+                  <Divider/>
                 </Grid.Column>
               </Grid.Row>
               <Grid.Row textAlign="left">
@@ -149,11 +163,50 @@ class CommunityCreateForm extends Component {
                       <FieldLabel
                         htmlFor="metadata.title"
                         icon="book"
-                        label={i18next.t("Community name")}
+                        label={formConfig.person ?
+                          i18next.t("Person most frequent citation form (ex: LASTNAME, Firstname)") :
+                          i18next.t("Community name")
+                        }
                       />
                     }
                   />
-                  <IdentifierField formConfig={formConfig} />
+                  {formConfig.person && (
+                    <TextField
+                      required
+                      id="metadata.firstname"
+                      fluid
+                      fieldPath="metadata.firstname"
+                      // Prevent submitting before the value is updated:
+                      onKeyDown={(e) => {
+                        e.key === "Enter" && e.preventDefault();
+                      }}
+                      label={
+                        <FieldLabel
+                          htmlFor="metadata.firstname"
+                          icon="user"
+                          label={i18next.t("First name")}
+                        />
+                      }
+                    />)}
+                  {formConfig.person && (
+                    <TextField
+                      required
+                      id="metadata.lastname"
+                      fluid
+                      fieldPath="metadata.lastname"
+                      // Prevent submitting before the value is updated:
+                      onKeyDown={(e) => {
+                        e.key === "Enter" && e.preventDefault();
+                      }}
+                      label={
+                        <FieldLabel
+                          htmlFor="metadata.lastname"
+                          icon="user"
+                          label={i18next.t("Last name")}
+                        />
+                      }
+                    />)}
+                  <IdentifierField formConfig={formConfig}/>
                   {!_isEmpty(customFields.ui) && (
                     <CustomFields
                       config={customFields.ui}
@@ -166,7 +219,8 @@ class CommunityCreateForm extends Component {
                   )}
                   {canCreateRestricted && (
                     <>
-                      <Header as="h3">{i18next.t("Community visibility")}</Header>
+                      <Header
+                        as="h3">{formConfig.person ? i18next.t("Person visibility") : i18next.t("Community visibility")}</Header>
                       {formConfig.access.visibility.map((item) => (
                         <React.Fragment key={item.value}>
                           <RadioField
@@ -176,7 +230,7 @@ class CommunityCreateForm extends Component {
                             labelIcon={item.icon}
                             checked={_get(values, "access.visibility") === item.value}
                             value={item.value}
-                            onChange={({ event, data, formikProps }) => {
+                            onChange={({event, data, formikProps}) => {
                               formikProps.form.setFieldValue(
                                 "access.visibility",
                                 item.value
@@ -201,8 +255,8 @@ class CommunityCreateForm extends Component {
                     type="button"
                     onClick={(event) => handleSubmit(event)}
                   >
-                    <Icon name="plus" />
-                    {i18next.t("Create community")}
+                    <Icon name="plus"/>
+                    {formConfig.person ? i18next.t("Create person") : i18next.t("Create community")}
                   </Button>
                 </Grid.Column>
               </Grid.Row>

@@ -87,13 +87,16 @@ class CommunityResourceConfig(RecordResourceConfig, ConfiguratorMixin):
 
     routes = {
         "list": "/communities",
+        "list-persons": "/persons",
         "item": "/communities/<pid_value>",
+        "item-persons": "/persons/<pid_value>",
         "rename": "/communities/<pid_value>/rename",
         "logo": "/communities/<pid_value>/logo",
         "featured-search": "/communities/featured",
         "featured-list": "/communities/<pid_value>/featured",
         "featured-item": "/communities/<pid_value>/featured/<featured_id>",
         "user-communities": "/user/communities",
+        "user-persons": "/user/persons",
         "community-requests": "/communities/<pid_value>/requests",
         "restore-community": "/communities/<pid_value>/restore",
     }
