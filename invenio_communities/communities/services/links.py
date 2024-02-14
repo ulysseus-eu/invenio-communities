@@ -56,3 +56,8 @@ class CommunityLink(Link):
                 "slug": record.slug,
             }
         )
+        if hasattr(record, 'metadata') and record.metadata.get("type") and record.metadata.get("type")["id"] == "person":
+            vars.update({"type": "persons"})
+        else:
+            vars.update({"type": "communities"})
+

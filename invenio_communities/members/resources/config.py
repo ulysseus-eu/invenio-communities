@@ -29,6 +29,9 @@ class MemberResourceConfig(RecordResourceConfig):
         "members": "/communities/<pid_value>/members",
         "publicmembers": "/communities/<pid_value>/members/public",
         "invitations": "/communities/<pid_value>/invitations",
+        "members-persons": "/persons/<pid_value>/members",
+        "publicmembers-persons": "/persons/<pid_value>/members/public",
+        "invitations-persons": "/persons/<pid_value>/invitations",
     }
     request_view_args = {
         "pid_value": ma.fields.UUID(),

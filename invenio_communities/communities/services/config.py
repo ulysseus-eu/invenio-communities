@@ -109,30 +109,20 @@ class CommunityServiceConfig(RecordServiceConfig, ConfiguratorMixin):
     result_item_cls_featured = FeaturedCommunityItem
 
     links_item = {
-        "self": CommunityLink("{+api}/communities/{id}"),
-        "self_html": CommunityLink("{+ui}/communities/{slug}"),
-        "settings_html": CommunityLink("{+ui}/communities/{slug}/settings"),
-        "logo": CommunityLink("{+api}/communities/{id}/logo"),
-        "rename": CommunityLink("{+api}/communities/{id}/rename"),
-        "members": CommunityLink("{+api}/communities/{id}/members"),
-        "public_members": CommunityLink("{+api}/communities/{id}/members/public"),
-        "invitations": CommunityLink("{+api}/communities/{id}/invitations"),
-        "requests": CommunityLink("{+api}/communities/{id}/requests"),
-        "records": CommunityLink("{+api}/communities/{id}/records"),
-        "person": CommunityLink("{+api}/persons/{id}"),
-        "person_html": CommunityLink("{+ui}/persons/{slug}"),
-        "person_settings_html": CommunityLink("{+ui}/persons/{slug}/settings"),
-        "person_logo": CommunityLink("{+api}/persons/{id}/logo"),
-        "person_rename": CommunityLink("{+api}/persons/{id}/rename"),
-        "person_members": CommunityLink("{+api}/persons/{id}/members"),
-        "person_public_members": CommunityLink("{+api}/persons/{id}/members/public"),
-        "person_invitations": CommunityLink("{+api}/persons/{id}/invitations"),
-        "person_requests": CommunityLink("{+api}/persons/{id}/requests"),
-        "person_records": CommunityLink("{+api}/persons/{id}/records"),
+        "self": CommunityLink("{+api}/{type}/{id}"),
+        "self_html": CommunityLink("{+ui}/{type}/{slug}"),
+        "settings_html": CommunityLink("{+ui}/{type}/{slug}/settings"),
+        "logo": CommunityLink("{+api}/{type}/{id}/logo"),
+        "rename": CommunityLink("{+api}/{type}/{id}/rename"),
+        "members": CommunityLink("{+api}/{type}/{id}/members"),
+        "public_members": CommunityLink("{+api}/{type}/{id}/members/public"),
+        "invitations": CommunityLink("{+api}/{type}/{id}/invitations"),
+        "requests": CommunityLink("{+api}/{type}/{id}/requests"),
+        "records": CommunityLink("{+api}/{type}/{id}/records"),
     }
 
     action_link = CommunityLink(
-        "{+api}/communities/{id}/{action_name}", when=can_perform_action
+        "{+api}/{type}/{id}/{action_name}", when=can_perform_action
     )
 
     links_search = pagination_links("{+api}/communities{?args*}")

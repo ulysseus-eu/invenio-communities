@@ -16,9 +16,6 @@ export const CommunityItemMobile = ({ result, index }) => {
   const communityType = result.ui?.type?.title_l10n;
   const canUpdate = result.ui.permissions.can_update;
   let resultHref = result.links.self_html;
-  if (result.metadata.type?.id === "person"){
-    resultHref = result.links.person_html;
-  }
 
   return (
     <Grid className="mobile only item community-item">

@@ -64,8 +64,9 @@ EmptyMessage.propTypes = {
 class CommunityCard extends Component {
   render() {
     const { community, defaultLogo } = this.props;
+    let resultHref = community.links.self_html;
     return (
-      <Card fluid href={`/communities/${community.slug}`}>
+      <Card fluid href={resultHref}>
         <Image
           wrapped
           centered

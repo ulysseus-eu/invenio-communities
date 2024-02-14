@@ -25,9 +25,6 @@ export const CommunityCompactItemComputer = ({
   const { metadata, ui, links, access, id } = result;
   const communityType = ui?.type?.title_l10n;
   let resultHref = links.self_html;
-  if (metadata.type?.id === "person"){
-    resultHref = links.person_html;
-  }
   return (
     <div
       key={id}

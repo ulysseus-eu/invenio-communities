@@ -18,10 +18,6 @@ class CarouselItem extends Component {
   render() {
     const { community, defaultLogo, className, showUploadBtn } = this.props;
     let resultHref = community.links.self_html;
-    if (community.metadata.type?.id === "person"){
-      resultHref = community.links.person_html;
-    }
-
 
     return (
       <Overridable

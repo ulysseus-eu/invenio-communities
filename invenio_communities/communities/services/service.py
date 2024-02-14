@@ -345,7 +345,12 @@ class CommunityService(RecordService):
 
         return featured_entry, errors
 
-    def featured_search(self, identity, params=None, search_preference=None, **kwargs):
+    def featured_search(self,
+                        identity,
+                        params=None,
+                        search_preference=None,
+                        extra_filters=None,
+                        **kwargs):
         """Search featured communities."""
         self.require_permission(identity, "search")
 
@@ -353,18 +358,21 @@ class CommunityService(RecordService):
         params = params or {}
         params["sort"] = "featured"
 
-        search_results = self._search(
-            "search",
-            identity,
-            params,
-            search_preference,
-            extra_filter=dsl.query.Bool(
+        featured_filter = dsl.query.Bool(
                 "must",
                 must=[
                     dsl.Q("match", **{"access.visibility": "public"}),
                     dsl.Q("exists", **{"field": "featured.past"}),
                 ],
-            ),
+            )
+        search_filter = featured_filter & extra_filters
+
+        search_results = self._search(
+            "search",
+            identity,
+            params,
+            search_preference,
+            extra_filter=search_filter,
             permission_action="featured_search",
             **kwargs,
         ).execute()

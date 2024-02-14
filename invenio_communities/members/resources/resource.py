@@ -35,6 +35,14 @@ class MemberResource(RecordResource):
             route("GET", routes["publicmembers"], self.search_public),
             route("PUT", routes["invitations"], self.update_invitations),
             route("GET", routes["invitations"], self.search_invitations),
+            route("POST", routes["members-persons"], self.add_person),
+            route("DELETE", routes["members-persons"], self.delete_person),
+            route("PUT", routes["members-persons"], self.update_person),
+            route("GET", routes["members-persons"], self.search_persons),
+            route("POST", routes["invitations-persons"], self.invite_persons),
+            route("GET", routes["publicmembers-persons"], self.search_public_persons),
+            route("PUT", routes["invitations-persons"], self.update_invitations_persons),
+            route("GET", routes["invitations-persons"], self.search_invitations_persons),
         ]
 
     @request_view_args
@@ -125,6 +133,102 @@ class MemberResource(RecordResource):
     @request_view_args
     @request_data
     def delete(self):
+        """Delete members."""
+        self.service.delete(
+            g.identity,
+            resource_requestctx.view_args["pid_value"],
+            data=resource_requestctx.data,
+        )
+        return "", 204
+
+    @request_view_args
+    @request_search_args
+    @response_handler(many=True)
+    def search_persons(self):
+        """Perform a search over the items."""
+        hits = self.service.search(
+            g.identity,
+            resource_requestctx.view_args["pid_value"],
+            params=resource_requestctx.args,
+            search_preference=search_preference(),
+        )
+        return hits.to_dict(), 200
+
+    @request_view_args
+    @request_search_args
+    @response_handler(many=True)
+    def search_public_persons(self):
+        """Perform a search over the items."""
+        hits = self.service.search_public(
+            g.identity,
+            resource_requestctx.view_args["pid_value"],
+            params=resource_requestctx.args,
+            search_preference=search_preference(),
+        )
+        return hits.to_dict(), 200
+
+    @request_view_args
+    @request_search_args
+    @response_handler(many=True)
+    def search_invitations_persons(self):
+        """Perform a search over the invitations."""
+        hits = self.service.search_invitations(
+            g.identity,
+            resource_requestctx.view_args["pid_value"],
+            params=resource_requestctx.args,
+            search_preference=search_preference(),
+        )
+        return hits.to_dict(), 200
+
+    @request_view_args
+    @request_data
+    def add_person(self):
+        """Add members."""
+        self.service.add(
+            g.identity,
+            resource_requestctx.view_args["pid_value"],
+            resource_requestctx.data,
+        )
+        return "", 204
+
+    @request_view_args
+    @request_data
+    def invite_persons(self):
+        """Invite members."""
+        self.service.invite(
+            g.identity,
+            resource_requestctx.view_args["pid_value"],
+            resource_requestctx.data,
+        )
+        return "", 204
+
+    @request_view_args
+    @request_extra_args
+    @request_data
+    def update_person(self):
+        """Update member."""
+        self.service.update(
+            g.identity,
+            resource_requestctx.view_args["pid_value"],
+            data=resource_requestctx.data,
+            refresh=resource_requestctx.args.get("refresh", False),
+        )
+        return "", 204
+
+    @request_view_args
+    @request_data
+    def update_invitations_persons(self):
+        """Update invitations."""
+        self.service.update(
+            g.identity,
+            resource_requestctx.view_args["pid_value"],
+            data=resource_requestctx.data,
+        )
+        return "", 204
+
+    @request_view_args
+    @request_data
+    def delete_person(self):
         """Delete members."""
         self.service.delete(
             g.identity,
