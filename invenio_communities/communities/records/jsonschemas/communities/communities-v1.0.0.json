@@ -153,18 +153,31 @@
         }
       }
     },
-    "theme": {
+    "parent": {
       "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identifier of the parent community."
+        }
+      }
+    },
+    "theme": {
+      "type": ["object", "null"],
       "description": "Community theme settings.",
       "additionalProperties": false,
       "properties": {
-        "config": {
-          "description": "Theme config.",
+        "style": {
+          "description": "Theme style.",
           "type": "object"
         },
         "brand": {
           "description": "Theme brand name.",
           "type": "string"
+        },
+        "enabled": {
+          "description": "Theme brand enabled flag.",
+          "type": "boolean"
         }
       }
     },

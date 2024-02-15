@@ -20,6 +20,8 @@ COMMUNITIES_ROUTES = {
     "frontpage": "/communities",
     "search": "/communities/search",
     "new": "/communities/new",
+    "details": "/communities/<pid_value>",
+    "upload": "/communities/<pid_value>/upload",
     "settings": "/communities/<pid_value>/settings",
     "requests": "/communities/<pid_value>/requests",
     "settings_privileges": "/communities/<pid_value>/settings/privileges",

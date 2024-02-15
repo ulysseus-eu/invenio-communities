@@ -530,7 +530,7 @@ def test_theme_updates(
 
     theme_data = {
         "theme": {
-            "config": {
+            "style": {
                 "primaryColor": "#004494",
                 "tertiaryColor": "#e3eefd",
                 "secondaryColor": "#FFD617",
@@ -562,8 +562,15 @@ def test_theme_updates(
     community_data.pop("theme")
 
     community_service.update(system_identity, community.id, community_data)
-    community_item = community_service.read(system_identity, community.id)
-    assert community_item.data["theme"]["brand"] == "horizon"
+    # Refresh index
+    community_service.record_cls.index.refresh()
+
+    # owner, anon, and system should be able to read the theme and see in search
+    for idty in (owner.identity, anon_identity, system_identity):
+        community_item = community_service.read(idty, community.id)
+        assert community_item.data["theme"]["brand"] == "horizon"
+        community_search = community_service.search(idty)
+        assert next(community_search.hits)["theme"]["brand"] == "horizon"
 
     # Delete theme by setting to None
     community_data = deepcopy(community_item.data)
@@ -576,15 +583,12 @@ def test_theme_updates(
     # only system can delete the theme
     community_service.update(system_identity, community.id, community_data)
     community_item = community_service.read(system_identity, community.id)
-    assert "theme" not in community_item.data
+    assert community_item.data.get("theme") is None
 
     # Set {theme: None} to a community that doesn't have any stored theme should not
     # store None value
     community_data = deepcopy(community_item.data)
-    assert "theme" not in community_data
     community_data["theme"] = None
-
-    # only system can update the theme
     community_service.update(system_identity, community.id, community_data)
     community_item = community_service.read(system_identity, community.id)
-    assert "theme" not in community_item.data
+    assert community_item.data.get("theme") is None

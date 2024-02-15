@@ -9,6 +9,25 @@
 Changes
 =======
 
+Version 10.1.0 (released 2024-02-09)
+
+- parent_community: dereference parent community
+- parent: dereference in systemfield
+- theme: handle null values
+- parent_community: fix derefencing
+
+Version 10.0.0 (released 2024-02-09)
+
+- mappings: update to theme.style
+- systemfields: add parent community
+- community: add theme.enabled flag
+- community: rename theme.config to theme.style to facilitate indexing
+- records: expose theme field in search
+- mappings: add "parent" community and normalize funding
+- global: always serialize Community.theme
+- models: add index on bucket_id
+
+
 Version 9.0.0 (released 2024-01-31)
 
 - installation: bump dependencies

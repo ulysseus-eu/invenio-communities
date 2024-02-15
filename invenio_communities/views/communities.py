@@ -60,11 +60,12 @@ REVIEW_POLICY_FIELDS = [
 ]
 
 
-def render_community_theme_template(template_name_or_list, theme_brand=None, **context):
+def render_community_theme_template(template_name_or_list, theme=None, **context):
     """Render community theme."""
-    if theme_brand:
+    if theme and theme.get("enabled", False):
+        brand = theme.get("brand")
         if isinstance(template_name_or_list, str):
-            loader = CommunityThemeChoiceJinjaLoader(theme_brand)
+            loader = CommunityThemeChoiceJinjaLoader(brand)
 
             community_theme_view_env = current_app.jinja_env.overlay(loader=loader)
 
@@ -262,7 +263,7 @@ def communities_settings(pid_value, community, community_ui):
 
     return render_community_theme_template(
         "invenio_communities/details/settings/profile.html",
-        theme_brand=community_ui.get("theme", {}).get("brand"),
+        theme=community_ui.get("theme", {}),
         community=community,
         community_ui=community_ui,
         has_logo=True if logo else False,
@@ -291,7 +292,7 @@ def communities_requests(pid_value, community, community_ui):
 
     return render_community_theme_template(
         "invenio_communities/details/requests/index.html",
-        theme_brand=community_ui.get("theme", {}).get("brand"),
+        theme=community_ui.get("theme", {}),
         community=community_ui,
         permissions=permissions,
     )
@@ -322,7 +323,7 @@ def communities_settings_privileges(pid_value, community, community_ui):
 
     return render_community_theme_template(
         "invenio_communities/details/settings/privileges.html",
-        theme_brand=community_ui.get("theme", {}).get("brand"),
+        theme=community_ui.get("theme", {}),
         community=community_ui,
         form_config=dict(
             access=dict(visibility=VISIBILITY_FIELDS),
@@ -343,7 +344,7 @@ def communities_settings_curation_policy(pid_value, community, community_ui):
 
     return render_community_theme_template(
         "invenio_communities/details/settings/curation_policy.html",
-        theme_brand=community_ui.get("theme", {}).get("brand"),
+        theme=community_ui.get("theme", {}),
         community=community_ui,
         permissions=permissions,
         form_config=dict(
@@ -370,7 +371,7 @@ def communities_settings_pages(pid_value, community, community_ui):
 
     return render_community_theme_template(
         "invenio_communities/details/settings/pages.html",
-        theme_brand=community_ui.get("theme", {}).get("brand"),
+        theme=community_ui.get("theme", {}),
         community=community_ui,
         permissions=permissions,
         form_config=dict(
@@ -400,7 +401,7 @@ def members(pid_value, community, community_ui):
 
     return render_community_theme_template(
         "invenio_communities/details/members/members.html",
-        theme_brand=community_ui.get("theme", {}).get("brand"),
+        theme=community_ui.get("theme", {}),
         community=community_ui,
         permissions=permissions,
         roles_can_update=_get_roles_can_update(community.id),
@@ -431,7 +432,7 @@ def invitations(pid_value, community, community_ui):
         raise PermissionDeniedError()
     return render_community_theme_template(
         "invenio_communities/details/members/invitations.html",
-        theme_brand=community_ui.get("theme", {}).get("brand"),
+        theme=community_ui.get("theme", {}),
         community=community_ui,
         roles_can_invite=_get_roles_can_invite(community.id),
         permissions=permissions,
@@ -454,7 +455,7 @@ def communities_about(pid_value, community, community_ui):
 
     return render_community_theme_template(
         "invenio_communities/details/about/index.html",
-        theme_brand=community_ui.get("theme", {}).get("brand"),
+        theme=community_ui.get("theme", {}),
         community=community_ui,
         permissions=permissions,
         custom_fields_ui=load_custom_fields(dump_only_required=False)["ui"],
@@ -476,7 +477,7 @@ def communities_curation_policy(pid_value, community, community_ui):
         raise PermissionDeniedError()
     return render_community_theme_template(
         "invenio_communities/details/curation_policy/index.html",
-        theme_brand=community_ui.get("theme", {}).get("brand"),
+        theme=community_ui.get("theme", {}),
         community=community_ui,
         permissions=permissions,
     )
@@ -485,7 +486,7 @@ def communities_curation_policy(pid_value, community, community_ui):
 @pass_community(serialize=False)
 def community_theme_css_config(pid_value, revision, community):
     """Community brand theme view to serve css config."""
-    theme_config = community.data.get("theme", {}).get("config")
+    theme_config = community.data.get("theme", {}).get("style")
 
     if theme_config is None:
         template = ""

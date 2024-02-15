@@ -30,11 +30,11 @@ from invenio_communities.communities.records.systemfields.is_verified import (
     IsVerifiedField,
 )
 
-from ..dumpers.community_theme import CommunityThemeDumperExt
 from ..dumpers.featured import FeaturedDumperExt
 from . import models
 from .systemfields.access import CommunityAccessField
 from .systemfields.deletion_status import CommunityDeletionStatusField
+from .systemfields.parent_community import ParentCommunityField
 from .systemfields.pidslug import PIDSlugField
 from .systemfields.tombstone import TombstoneField
 
@@ -52,6 +52,7 @@ class Community(Record):
     id = ModelField()
     slug = ModelField()
     pid = PIDSlugField("id", "slug")
+    parent = ParentCommunityField()
 
     schema = ConstantField("$schema", "local://communities/communities-v1.0.0.json")
 
@@ -59,7 +60,6 @@ class Community(Record):
 
     dumper = SearchDumper(
         extensions=[
-            CommunityThemeDumperExt("theme"),
             FeaturedDumperExt("featured"),
             RelationDumperExt("relations"),
             CalculatedFieldDumperExt("is_verified"),
@@ -72,6 +72,7 @@ class Community(Record):
 
     #: Custom fields system field.
     custom_fields = DictField(clear_none=True, create_if_missing=True)
+    theme = DictField(clear_none=True)
 
     bucket_id = ModelField(dump=False)
     bucket = ModelField(dump=False)
@@ -86,7 +87,7 @@ class Community(Record):
         funding_award=PIDListRelation(
             "metadata.funding",
             relation_field="award",
-            keys=["number", "title"],
+            keys=["title", "number", "identifiers", "acronym", "program"],
             pid_field=Award.pid,
             cache_key="awards",
         ),
