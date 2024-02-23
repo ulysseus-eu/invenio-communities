@@ -26,16 +26,6 @@ def search_app_context():
             endpoint="/api/communities",
             overrides={"objectSearched": "communities"}
         ),
-        "search_app_persons_config": partial(
-            search_app_config,
-            config_name="COMMUNITIES_SEARCH",
-            available_facets=current_app.config["COMMUNITIES_FACETS"],
-            sort_options=current_app.config["COMMUNITIES_SORT_OPTIONS"],
-            headers={"Accept": "application/vnd.inveniordm.v1+json"},
-            pagination_options=(10, 20),
-            endpoint="/api/persons",
-            overrides={"objectSearched": "persons"}
-        ),
         "search_app_communities_requests_config": partial(
             search_app_config,
             config_name="COMMUNITIES_REQUESTS_SEARCH",

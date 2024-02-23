@@ -42,6 +42,12 @@ from .communities import (
     community_theme_css_config,
     invitations,
     members,
+    organizations_frontpage,
+    organizations_members,
+    organizations_new,
+    organizations_requests,
+    organizations_search,
+    organizations_settings,
     persons_frontpage,
     persons_new,
     persons_search,
@@ -144,14 +150,20 @@ def create_ui_blueprint(app):
 
     # Communities URL rules
     blueprint.add_url_rule(
+        routes["frontpage"],
+        view_func=communities_frontpage,
+        strict_slashes=False,
+    )
+
+    blueprint.add_url_rule(
         routes["frontpage_persons"],
         view_func=persons_frontpage,
         strict_slashes=False,
     )
 
     blueprint.add_url_rule(
-        routes["frontpage"],
-        view_func=communities_frontpage,
+        routes["frontpage_organizations"],
+        view_func=organizations_frontpage,
         strict_slashes=False,
     )
 
@@ -168,6 +180,12 @@ def create_ui_blueprint(app):
     )
 
     blueprint.add_url_rule(
+        routes["search_organizations"],
+        view_func=organizations_search,
+        strict_slashes=False,
+    )
+
+    blueprint.add_url_rule(
         routes["new"],
         view_func=communities_new,
     )
@@ -175,6 +193,11 @@ def create_ui_blueprint(app):
     blueprint.add_url_rule(
         routes["new_persons"],
         view_func=persons_new,
+    )
+
+    blueprint.add_url_rule(
+        routes["new_organizations"],
+        view_func=organizations_new,
     )
 
     blueprint.add_url_rule(
@@ -269,6 +292,52 @@ def create_ui_blueprint(app):
         view_func=community_theme_css_config,
     )
 
+    blueprint.add_url_rule(
+        routes["about_organizations"],
+        view_func=communities_about,
+    )
+
+    blueprint.add_url_rule(
+        routes["curation_policy_organizations"],
+        view_func=communities_curation_policy,
+    )
+
+    # Settings tab routes
+    blueprint.add_url_rule(
+        routes["settings_organizations"],
+        view_func=organizations_settings,
+    )
+
+    blueprint.add_url_rule(
+        routes["requests_organizations"],
+        view_func=organizations_requests,
+    )
+
+    blueprint.add_url_rule(
+        routes["settings_privileges_organizations"],
+        view_func=communities_settings_privileges,
+    )
+
+    blueprint.add_url_rule(
+        routes["settings_curation_policy_organizations"],
+        view_func=communities_settings_curation_policy,
+    )
+
+    blueprint.add_url_rule(
+        routes["settings_pages_organizations"],
+        view_func=communities_settings_pages,
+    )
+
+    blueprint.add_url_rule(routes["members_organizations"], view_func=organizations_members)
+
+    blueprint.add_url_rule(routes["invitations_organizations"], view_func=invitations)
+
+    # theme injection view
+    blueprint.add_url_rule(
+        "/organizations/<pid_value>/community-theme-<revision>.css",
+        view_func=community_theme_css_config,
+    )
+
     @blueprint.before_app_first_request
     def register_menus():
         """Register community menu items."""
@@ -326,12 +395,6 @@ def create_ui_blueprint(app):
         )
 
         """Register persons menu items."""
-        item_persons = current_menu.submenu("main.persons")
-        item_persons.register(
-            "invenio_communities.persons_frontpage",
-            _("Persons"),
-            order=1,
-        )
         current_menu.submenu("plus.person").register(
             "invenio_communities.persons_new",
             _("New person"),
@@ -372,6 +435,55 @@ def create_ui_blueprint(app):
             **dict(icon="balance scale", permissions="can_read"),
         )
         persons.submenu("about").register(
+            "invenio_communities.communities_about",
+            text=_("About"),
+            order=6,
+            visible_when=_has_about_page_content,
+            expected_args=["pid_value"],
+            **dict(icon="info", permissions="can_read"),
+        )
+
+        """Register organizations menu items."""
+        current_menu.submenu("plus.organization").register(
+            "invenio_communities.organizations_new",
+            _("New organization"),
+            order=3,
+            visible_when=_show_create_community_link,
+        )
+
+        organizations = current_menu.submenu("organizations")
+
+        organizations.submenu("requests").register(
+            "invenio_communities.organizations_requests",
+            text=_("Requests"),
+            order=2,
+            expected_args=["pid_value"],
+            **dict(icon="inbox", permissions="can_search_requests"),
+        )
+        organizations.submenu("members").register(
+            "invenio_communities.organizations_members",
+            text=_("Members"),
+            order=3,
+            expected_args=["pid_value"],
+            **dict(icon="users", permissions="can_read"),
+        )
+        organizations.submenu("settings").register(
+            "invenio_communities.organizations_settings",
+            text=_("Settings"),
+            order=4,
+            expected_args=["pid_value"],
+            **dict(icon="settings", permissions="can_update"),
+        )
+
+        organizations.submenu("curation_policy").register(
+            "invenio_communities.communities_curation_policy",
+            text=_("Curation policy"),
+            order=5,
+            visible_when=_has_curation_policy_page_content,
+            expected_args=["pid_value"],
+            **dict(icon="balance scale", permissions="can_read"),
+        )
+        organizations.submenu("about").register(
             "invenio_communities.communities_about",
             text=_("About"),
             order=6,

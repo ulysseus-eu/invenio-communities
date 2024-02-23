@@ -143,7 +143,7 @@ class CommunitiesCardGroup extends Component {
 
   render() {
     const { isLoading, data } = this.state;
-    const { emptyMessage } = this.props;
+    const { emptyMessage, itemsPerRow } = this.props;
     return (
       <PlaceholderLoader isLoading={isLoading}>
         {data.hits.length === 0 ? (
@@ -152,7 +152,7 @@ class CommunitiesCardGroup extends Component {
           <Card.Group
             doubling
             stackable
-            itemsPerRow={5}
+            itemsPerRow={itemsPerRow?itemsPerRow:5}
             className="community-frontpage-cards"
           >
             {this.renderCards()}
@@ -167,6 +167,7 @@ CommunitiesCardGroup.propTypes = {
   fetchDataUrl: PropTypes.string.isRequired,
   defaultLogo: PropTypes.string.isRequired,
   emptyMessage: PropTypes.string.isRequired,
+  itemsPerRow: PropTypes.number,
 };
 
 export default CommunitiesCardGroup;

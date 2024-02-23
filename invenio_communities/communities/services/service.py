@@ -116,52 +116,7 @@ class CommunityService(RecordService):
         undeleted_filter = dsl.Q(
             "term", **{"deletion_status": CommunityDeletionStatusEnum.PUBLISHED.value}
         )
-        not_a_person_filter = dsl.Q({"bool": {"must_not": {"term": {"metadata.type.id": "person"}}}})
-
-        search_filter = current_user_filter & undeleted_filter & not_a_person_filter
-
-        if extra_filter:
-            search_filter &= extra_filter
-
-        search_result = self._search(
-            "search",
-            identity,
-            params,
-            search_preference,
-            extra_filter=search_filter,
-            permission_action="read",
-            **kwargs,
-        ).execute()
-
-        return self.result_list(
-            self,
-            identity,
-            search_result,
-            params,
-            links_tpl=LinksTemplate(
-                self.config.links_user_search, context={"args": params}
-            ),
-            links_item_tpl=self.links_item_tpl,
-        )
-
-    def search_user_persons(
-            self, identity, params=None, search_preference=None, extra_filter=None, **kwargs
-    ):
-        """Search for records matching the querystring."""
-        self.require_permission(identity, "search_user_communities")
-
-        # Prepare and execute the search
-        params = params or {}
-
-        current_user_filter = CommunityMembers().query_filter(identity)
-        undeleted_filter = dsl.Q(
-            "term", **{"deletion_status": CommunityDeletionStatusEnum.PUBLISHED.value}
-        )
-        person_filter = dsl.Q(
-            "term", **{"metadata.type.id": "person"}
-        )
-
-        search_filter = current_user_filter & undeleted_filter & person_filter
+        search_filter = current_user_filter & undeleted_filter
 
         if extra_filter:
             search_filter &= extra_filter
@@ -365,7 +320,9 @@ class CommunityService(RecordService):
                     dsl.Q("exists", **{"field": "featured.past"}),
                 ],
             )
-        search_filter = featured_filter & extra_filters
+        search_filter = featured_filter
+        if extra_filters is not None:
+            search_filter &= extra_filters
 
         search_results = self._search(
             "search",
@@ -696,45 +653,12 @@ class CommunityService(RecordService):
             **kwargs,
     ):
         """Search for published communities matching the querystring."""
-        not_a_person_filter = dsl.Q({"bool": {"must_not": {"term": {"metadata.type.id": "person"}}}})
-        if extra_filter:
-            not_a_person_filter &= extra_filter
         return super().search(
             identity,
             params,
             search_preference,
             expand,
-            extra_filter=not_a_person_filter,
-            # injects deleted records when user is permitted to see them
-            permission_action="read_deleted",
-            **kwargs,
-        )
-
-    #
-    # Search functions
-    #
-    def search_persons(
-            self,
-            identity,
-            params=None,
-            search_preference=None,
-            expand=False,
-            extra_filter=None,
-            **kwargs,
-    ):
-        """Search for published persons matching the querystring."""
-        person_filter = dsl.Q(
-            "term", **{"metadata.type.id": "person"}
-        )
-
-        if extra_filter:
-            person_filter &= extra_filter
-        return super().search(
-            identity,
-            params,
-            search_preference,
-            expand,
-            extra_filter=person_filter,
+            extra_filter=extra_filter,
             # injects deleted records when user is permitted to see them
             permission_action="read_deleted",
             **kwargs,

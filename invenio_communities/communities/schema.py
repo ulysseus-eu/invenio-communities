@@ -120,6 +120,7 @@ class CommunityMetadataSchema(Schema):
     description = SanitizedUnicode(validate=_not_blank(max=250))
     firstname = SanitizedUnicode(validate=_not_blank(max=250))
     lastname = SanitizedUnicode(validate=_not_blank(max=250))
+    gridcode = SanitizedUnicode(validate=_not_blank(max=250))
 
     curation_policy = SanitizedHTML(validate=no_longer_than(max=50000))
     page = SanitizedHTML(validate=no_longer_than(max=50000))

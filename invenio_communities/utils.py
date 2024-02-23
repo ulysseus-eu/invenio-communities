@@ -144,3 +144,40 @@ def filter_dict_keys(src, keys):
                 result[key] = filter_dict_keys(src[key], subkeys)
 
     return result
+
+
+# Class to handle community types
+class CommunityType:
+    person = "person"
+    community = "community"
+    organization = "organization"
+    singulars = {
+            person: person,
+            community: community,
+            organization: organization,
+        }
+    plurals = {
+            person: "persons",
+            community: "communities",
+            organization: "organizations",
+        }
+    def __init__(self, i_type=community):
+        self.community_type = i_type
+
+    def get_singular(self):
+        return self.singulars.get(self.community_type, self.singulars[self.community])
+
+    def get_plural(self):
+        return self.plurals.get(self.community_type, self.plurals[self.community])
+
+    def get_singular_capitalized(self):
+        return self.get_singular().capitalize()
+
+    def get_plural_capitalized(self):
+        return self.get_plural().capitalize()
+
+    def get_singular_with_prefix_or_empty(self,prefix=''):
+        return prefix+self.get_singular() if self.community_type != self.community else ""
+
+    def get_plural_with_prefix_or_empty(self,prefix=''):
+        return prefix+self.get_plural() if self.community_type != self.community else ""

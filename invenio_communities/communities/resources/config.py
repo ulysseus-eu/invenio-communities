@@ -106,6 +106,16 @@ class CommunityResourceConfig(RecordResourceConfig, ConfiguratorMixin):
         "user-persons": "/user/persons",
         "community-requests-persons": "/persons/<pid_value>/requests",
         "restore-person": "/persons/<pid_value>/restore",
+        "list-organizations": "/organizations",
+        "item-organizations": "/organizations/<pid_value>",
+        "rename-organizations": "/organizations/<pid_value>/rename",
+        "logo-organizations": "/organizations/<pid_value>/logo",
+        "featured-search-organizations": "/organizations/featured",
+        "featured-list-organizations": "/organizations/<pid_value>/featured",
+        "featured-item-organizations": "/organizations/<pid_value>/featured/<featured_id>",
+        "user-organizations": "/user/organizations",
+        "community-requests-organizations": "/organizations/<pid_value>/requests",
+        "restore-organization": "/organizations/<pid_value>/restore",
     }
 
     request_search_args = CommunitiesSearchRequestArgsSchema

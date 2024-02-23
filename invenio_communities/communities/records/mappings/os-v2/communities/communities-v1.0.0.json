@@ -130,6 +130,9 @@
           "lastname": {
             "type": "text"
           },
+          "gridcode": {
+            "type": "text"
+          },
           "type": {
             "type": "object",
             "properties": {

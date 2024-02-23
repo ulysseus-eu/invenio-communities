@@ -132,11 +132,16 @@ class CommunityDetailView(AdminResourceDetailView):
 
 class PersonDetailView(CommunityDetailView):
     """Admin person detail view"""
-
     url = "/persons/<pid_value>"
     api_endpoint = "/persons"
     name = "person-details"
     resource_config = "communities_resource"
     title = "Person"
+    list_view_name = "communities"
 
+
+class OrganizationDetailView(CommunityDetailView):
+    """Admin organization detail view"""
+    name = "organization-details"
+    title = "Organization"
     list_view_name = "communities"

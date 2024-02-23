@@ -24,22 +24,19 @@ import {Button, Divider, Form, Grid, Header, Icon, Message} from "semantic-ui-re
 import {CommunityApi} from "../api";
 import {communityErrorSerializer} from "../api/serializers";
 import PropTypes from "prop-types";
+import {CommunityType} from "./utils";
 
 const IdentifierField = ({formConfig}) => {
   const {values} = useFormikContext();
+  const communityType = new CommunityType(formConfig.community_type);
 
   const helpText = (
     <>
-      {formConfig.person ?
-        i18next.t(
-          "This is your person's unique identifier. You will be able to access your person profile through the URL:"
-        ) :
-        i18next.t(
-          "This is your community's unique identifier. You will be able to access your community through the URL:"
-        )
-      }
+      {i18next.t(
+          `This is your ${communityType.getSingular()}'s unique identifier. You will be able to access your ${communityType.getSingular()} through the URL:`
+      )}
       <br/>
-      {`${formConfig.SITE_UI_URL}/communities/${values["slug"]}`}
+      {`${formConfig.SITE_UI_URL}/${communityType.getPlural()}/${values["slug"]}`}
     </>
   );
 
@@ -117,10 +114,11 @@ class CommunityCreateForm extends Component {
       },
       slug: "",
     };
-    if (formConfig.person) {
+    const communityType = new CommunityType(formConfig.community_type);
+    if (communityType.communityType !== communityType.community) {
       initialValues["metadata"] = {
         type: {
-          id: "person"
+          id: communityType.communityType
         }
       };
     }
@@ -143,7 +141,7 @@ class CommunityCreateForm extends Component {
               <Grid.Row>
                 <Grid.Column mobile={16} tablet={12} computer={8} textAlign="center">
                   <Header as="h1" className="rel-mt-2">
-                    {formConfig.person ? i18next.t("Setup your new person") : i18next.t("Setup your new community")}
+                    {i18next.t("Setup your new "+communityType.getSingular())}
                   </Header>
                   <Divider/>
                 </Grid.Column>
@@ -163,14 +161,11 @@ class CommunityCreateForm extends Component {
                       <FieldLabel
                         htmlFor="metadata.title"
                         icon="book"
-                        label={formConfig.person ?
-                          i18next.t("Person most frequent citation form (ex: LASTNAME, Firstname)") :
-                          i18next.t("Community name")
-                        }
+                        label={i18next.t(communityType.getSingularCapitalized()+" name")}
                       />
                     }
                   />
-                  {formConfig.person && (
+                  {(communityType.communityType === communityType.person) && (
                     <TextField
                       required
                       id="metadata.firstname"
@@ -188,7 +183,7 @@ class CommunityCreateForm extends Component {
                         />
                       }
                     />)}
-                  {formConfig.person && (
+                  {(communityType.communityType === communityType.person) && (
                     <TextField
                       required
                       id="metadata.lastname"
@@ -206,6 +201,24 @@ class CommunityCreateForm extends Component {
                         />
                       }
                     />)}
+                  {(communityType.communityType === communityType.organization) && (
+                    <TextField
+                      required
+                      id="metadata.gridcode"
+                      fluid
+                      fieldPath="metadata.gridcode"
+                      // Prevent submitting before the value is updated:
+                      onKeyDown={(e) => {
+                        e.key === "Enter" && e.preventDefault();
+                      }}
+                      label={
+                        <FieldLabel
+                          htmlFor="metadata.gridcode"
+                          icon="user"
+                          label={i18next.t("Grid code")}
+                        />
+                      }
+                    />)}
                   <IdentifierField formConfig={formConfig}/>
                   {!_isEmpty(customFields.ui) && (
                     <CustomFields
@@ -220,7 +233,7 @@ class CommunityCreateForm extends Component {
                   {canCreateRestricted && (
                     <>
                       <Header
-                        as="h3">{formConfig.person ? i18next.t("Person visibility") : i18next.t("Community visibility")}</Header>
+                        as="h3">{i18next.t(communityType.getSingularCapitalized()+" visibility")}</Header>
                       {formConfig.access.visibility.map((item) => (
                         <React.Fragment key={item.value}>
                           <RadioField
@@ -256,7 +269,7 @@ class CommunityCreateForm extends Component {
                     onClick={(event) => handleSubmit(event)}
                   >
                     <Icon name="plus"/>
-                    {formConfig.person ? i18next.t("Create person") : i18next.t("Create community")}
+                    {i18next.t("Create "+communityType.getSingular())}
                   </Button>
                 </Grid.Column>
               </Grid.Row>

@@ -63,6 +63,10 @@ const COMMUNITY_VALIDATION_SCHEMA = Yup.object({
       is: (val) => val["id"] === "person",
       then: Yup.string().required('Last name is required')
     }),
+    gridcode: Yup.string().when('type',{
+      is: (val) => val["id"] === "organization",
+      then: Yup.string().required('Grid code is required')
+    }),
   }),
 });
 
@@ -110,6 +114,7 @@ class CommunityProfileForm extends Component {
         title: "",
         firstname: "",
         lastname: "",
+        gridcode: "",
         curation_policy: "",
         type: {},
         website: "",
@@ -345,6 +350,7 @@ class CommunityProfileForm extends Component {
                       "metadata.title",
                       "metadata.firstname",
                       "metadata.lastname",
+                      "metadata.gridcode",
                       "metadata.type.id",
                       "metadata.website",
                       "metadata.organizations",
@@ -414,6 +420,18 @@ class CommunityProfileForm extends Component {
                             htmlFor="metadata.lastname"
                             icon="user"
                             label={i18next.t("Last name")}
+                          />
+                        }
+                      />}
+
+                      {(values.metadata.type.id === "organization") && <TextField
+                        fluid
+                        fieldPath="metadata.gridcode"
+                        label={
+                          <FieldLabel
+                            htmlFor="metadata.gridcode"
+                            icon="user"
+                            label={i18next.t("Grid code")}
                           />
                         }
                       />}

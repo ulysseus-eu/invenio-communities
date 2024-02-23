@@ -43,6 +43,18 @@ COMMUNITIES_ROUTES = {
     "invitations_persons": "/persons/<pid_value>/invitations",
     "about_persons": "/persons/<pid_value>/about",
     "curation_policy_persons": "/persons/<pid_value>/curation-policy",
+    "frontpage_organizations": "/organizations",
+    "search_organizations": "/organizations/search",
+    "new_organizations": "/organizations/new",
+    "settings_organizations": "/organizations/<pid_value>/settings",
+    "requests_organizations": "/organizations/<pid_value>/requests",
+    "settings_privileges_organizations": "/organizations/<pid_value>/settings/privileges",
+    "settings_curation_policy_organizations": "/organizations/<pid_value>/settings/curation-policy",
+    "settings_pages_organizations": "/organizations/<pid_value>/settings/pages",
+    "members_organizations": "/organizations/<pid_value>/members",
+    "invitations_organizations": "/organizations/<pid_value>/invitations",
+    "about_organizations": "/organizations/<pid_value>/about",
+    "curation_policy_organizations": "/organizations/<pid_value>/curation-policy",
 }
 
 """Communities ui endpoints."""
@@ -329,3 +341,5 @@ COMMUNITIES_OAI_SETS_PREFIX = "community-"
 
 COMMUNITIES_ALWAYS_SHOW_CREATE_LINK = False
 """Controls visibility of 'New Community' btn based on user's permission when set to True."""
+COMMUNITIES_SHOW_TYPES_LINK = False
+"""Controls visibility of community types in menu when set to True."""

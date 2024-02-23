@@ -80,11 +80,116 @@ class CommunityResource(RecordResource):
             route("DELETE", routes["featured-item-persons"], self.featured_delete_persons),
             route("GET", routes["community-requests-persons"], self.search_person_requests),
             route("POST", routes["restore-person"], self.restore_person),
+            route("GET", routes["list-organizations"], self.search_organizations),
+            route("POST", routes["list-organizations"], self.create_organization),
+            route("GET", routes["item-organizations"], self.read_organization),
+            route("PUT", routes["item-organizations"], self.update_organization),
+            route("DELETE", routes["item-organizations"], self.delete_organization),
+            route("GET", routes["user-organizations"], self.search_user_organizations),
+            route("POST", routes["rename-organizations"], self.rename_organizations),
+            route("GET", routes["logo-organizations"], self.read_logo_organizations),
+            route("PUT", routes["logo-organizations"], self.update_logo_organizations),
+            route("DELETE", routes["logo-organizations"], self.delete_logo_organizations),
+            route("GET", routes["featured-search-organizations"], self.featured_organizations_search),
+            route("GET", routes["featured-list-organizations"], self.featured_list_organizations),
+            route("POST", routes["featured-list-organizations"], self.featured_create_organizations),
+            route("PUT", routes["featured-item-organizations"], self.featured_update_organizations),
+            route("DELETE", routes["featured-item-organizations"], self.featured_delete_organizations),
+            route("GET", routes["community-requests-organizations"], self.search_organization_requests),
+            route("POST", routes["restore-organization"], self.restore_organization),
         ]
 
     #
     # Primary Interface
     #
+    @request_search_args
+    @response_handler(many=True)
+    def search(self):
+        """Perform a search over persons.
+
+        GET /persons
+        """
+        extra_filter = dsl.Q(
+            {
+                "bool": {
+                    "must_not": [
+                        {
+                            "term": {
+                                "metadata.type.id": "person"
+                            }
+                        },
+                        {
+                            "term": {
+                                "metadata.type.id": "organization"
+                            }
+                        }
+                    ]
+                }
+            })
+        hits = self.service.search(
+            identity=g.identity,
+            params=resource_requestctx.args,
+            search_preference=search_preference(),
+            extra_filter=extra_filter,
+        )
+        return hits.to_dict(), 200
+
+    @request_search_args
+    @response_handler(many=True)
+    def search_persons(self):
+        """Perform a search over persons.
+
+        GET /persons
+        """
+        extra_filter = dsl.Q("term", **{"metadata.type.id": "person"})
+        hits = self.service.search(
+            identity=g.identity,
+            params=resource_requestctx.args,
+            search_preference=search_preference(),
+            extra_filter=extra_filter,
+        )
+        return hits.to_dict(), 200
+
+    @request_search_args
+    @response_handler(many=True)
+    def search_organizations(self):
+        """Perform a search over organizations.
+
+        GET /organizations
+        """
+        extra_filter = dsl.Q("term", **{"metadata.type.id": "organization"})
+        hits = self.service.search(
+            identity=g.identity,
+            params=resource_requestctx.args,
+            search_preference=search_preference(),
+            extra_filter=extra_filter,
+        )
+        return hits.to_dict(), 200
+
+    @request_extra_args
+    @request_data
+    @response_handler()
+    def create_person(self):
+        """Create an item."""
+        item = self.service.create(
+            g.identity,
+            resource_requestctx.data or {},
+            expand=resource_requestctx.args.get("expand", False),
+        )
+        return item.to_dict(), 201
+
+    @request_extra_args
+    @request_data
+    @response_handler()
+    def create_organization(self):
+        """Create an item."""
+        item = self.service.create(
+            g.identity,
+            resource_requestctx.data or {},
+            expand=resource_requestctx.args.get("expand", False),
+        )
+        return item.to_dict(), 201
+
     @request_extra_args
     @request_read_args
     @request_view_args
@@ -107,16 +212,25 @@ class CommunityResource(RecordResource):
         return item.to_dict(), 200
 
     @request_extra_args
-    @request_data
+    @request_read_args
+    @request_view_args
     @response_handler()
-    def create_person(self):
-        """Create an item."""
-        item = self.service.create(
+    def read_organization(self):
+        """Read an item."""
+        item = self.service.read(
             g.identity,
-            resource_requestctx.data or {},
+            resource_requestctx.view_args["pid_value"],
             expand=resource_requestctx.args.get("expand", False),
         )
-        return item.to_dict(), 201
+
+        # we emit the record view stats event here rather than in the service because
+        # the service might be called from other places as well that we don't want
+        # to count, e.g. from some CLI commands
+        emitter = current_stats.get_event_emitter("record-view")
+        if item is not None and emitter is not None:
+            emitter(current_app, record=item._record, via_api=True)
+
+        return item.to_dict(), 200
 
     @request_extra_args
     @request_headers
@@ -134,19 +248,21 @@ class CommunityResource(RecordResource):
         )
         return item.to_dict(), 200
 
-    @request_search_args
-    @response_handler(many=True)
-    def search_persons(self):
-        """Perform a search over persons.
-
-        GET /persons
-        """
-        hits = self.service.search_persons(
-            identity=g.identity,
-            params=resource_requestctx.args,
-            search_preference=search_preference(),
+    @request_extra_args
+    @request_headers
+    @request_view_args
+    @request_data
+    @response_handler()
+    def update_organization(self):
+        """Update an item."""
+        item = self.service.update(
+            g.identity,
+            resource_requestctx.view_args["pid_value"],
+            resource_requestctx.data,
+            revision_id=resource_requestctx.headers.get("if_match"),
+            expand=resource_requestctx.args.get("expand", False),
         )
-        return hits.to_dict(), 200
+        return item.to_dict(), 200
 
     @request_search_args
     @response_handler(many=True)
@@ -155,10 +271,28 @@ class CommunityResource(RecordResource):
 
         GET /user/communities
         """
+        extra_filter = dsl.Q(
+            {
+                "bool": {
+                    "must_not": [
+                        {
+                            "term": {
+                                "metadata.type.id": "person"
+                            }
+                        },
+                        {
+                            "term": {
+                                "metadata.type.id": "organization"
+                            }
+                        }
+                    ]
+                }
+            })
         hits = self.service.search_user_communities(
             identity=g.identity,
             params=resource_requestctx.args,
             search_preference=search_preference(),
+            extra_filter=extra_filter,
         )
         return hits.to_dict(), 200
 
@@ -169,10 +303,28 @@ class CommunityResource(RecordResource):
 
         GET /user/persons
         """
-        hits = self.service.search_user_persons(
+        extra_filter = dsl.Q("term", **{"metadata.type.id": "person"})
+        hits = self.service.search_user_communities(
             identity=g.identity,
             params=resource_requestctx.args,
             search_preference=search_preference(),
+            extra_filter=extra_filter
+        )
+        return hits.to_dict(), 200
+
+    @request_search_args
+    @response_handler(many=True)
+    def search_user_organizations(self):
+        """Perform a search over the user's organizations.
+
+        GET /user/organizations
+        """
+        extra_filter = dsl.Q("term", **{"metadata.type.id": "organization"})
+        hits = self.service.search_user_communities(
+            identity=g.identity,
+            params=resource_requestctx.args,
+            search_preference=search_preference(),
+            extra_filter=extra_filter
         )
         return hits.to_dict(), 200
 
@@ -199,6 +351,24 @@ class CommunityResource(RecordResource):
     @request_community_requests_search_args
     @response_handler(many=True)
     def search_person_requests(self):
+        """Perform a search over the community's requests.
+
+        GET /communities/<pid_value>/requests
+        """
+        hits = self.service.search_community_requests(
+            identity=g.identity,
+            community_id=resource_requestctx.view_args["pid_value"],
+            params=resource_requestctx.args,
+            search_preference=search_preference(),
+            expand=resource_requestctx.args.get("expand", False),
+        )
+        return hits.to_dict(), 200
+
+    @request_extra_args
+    @request_view_args
+    @request_community_requests_search_args
+    @response_handler(many=True)
+    def search_organization_requests(self):
         """Perform a search over the community's requests.
 
         GET /communities/<pid_value>/requests
@@ -240,6 +410,20 @@ class CommunityResource(RecordResource):
         )
         return item.to_dict(), 200
 
+    @request_headers
+    @request_view_args
+    @request_data
+    @response_handler()
+    def rename_organizations(self):
+        """Rename a community."""
+        item = self.service.rename(
+            g.identity,
+            resource_requestctx.view_args["pid_value"],
+            resource_requestctx.data,
+            revision_id=resource_requestctx.headers.get("if_match"),
+        )
+        return item.to_dict(), 200
+
     @request_view_args
     def read_logo(self):
         """Read logo's content."""
@@ -262,6 +446,11 @@ class CommunityResource(RecordResource):
         return self.read_logo()
 
     @request_view_args
+    def read_logo_organizations(self):
+        """Read logo's content."""
+        return self.read_logo()
+
+    @request_view_args
     @request_stream
     @response_handler()
     def update_logo(self):
@@ -278,6 +467,19 @@ class CommunityResource(RecordResource):
     @request_stream
     @response_handler()
     def update_logo_persons(self):
+        """Upload logo content."""
+        item = self.service.update_logo(
+            g.identity,
+            resource_requestctx.view_args["pid_value"],
+            resource_requestctx.data["request_stream"],
+            content_length=resource_requestctx.data["request_content_length"],
+        )
+        return item.to_dict(), 200
+
+    @request_view_args
+    @request_stream
+    @response_handler()
+    def update_logo_organizations(self):
         """Upload logo content."""
         item = self.service.update_logo(
             g.identity,
@@ -321,6 +523,20 @@ class CommunityResource(RecordResource):
     @request_headers
     @request_view_args
     @request_data
+    def delete_organization(self):
+        """Read the related review request."""
+        self.service.delete_community(
+            g.identity,
+            resource_requestctx.view_args["pid_value"],
+            resource_requestctx.data,
+            revision_id=resource_requestctx.headers.get("if_match"),
+        )
+
+        return "", 204
+
+    @request_headers
+    @request_view_args
+    @request_data
     def restore_community(self):
         """Read the related review request."""
         item = self.service.restore_community(
@@ -345,6 +561,17 @@ class CommunityResource(RecordResource):
         return item.to_dict(), 200
 
     @request_view_args
+    def restore_organization(self):
+        """Read the related review request."""
+        item = self.service.restore_community(
+            g.identity,
+            resource_requestctx.view_args["pid_value"],
+            resource_requestctx.data,
+        )
+
+        return item.to_dict(), 200
+
+    @request_view_args
     def delete_logo(self):
         """Delete logo."""
         self.service.delete_logo(
@@ -355,6 +582,15 @@ class CommunityResource(RecordResource):
 
     @request_view_args
     def delete_logo_persons(self):
+        """Delete logo."""
+        self.service.delete_logo(
+            g.identity,
+            resource_requestctx.view_args["pid_value"],
+        )
+        return "", 204
+
+    @request_view_args
+    def delete_logo_organizations(self):
         """Delete logo."""
         self.service.delete_logo(
             g.identity,
@@ -388,6 +624,21 @@ class CommunityResource(RecordResource):
         )
         return hits.to_dict(), 200
 
+    @request_search_args
+    @response_handler(many=True)
+    def featured_organizations_search(self):
+        """Features organizations search."""
+        organization_filter = dsl.Q(
+            "term", **{"metadata.type.id": "organization"}
+        )
+        hits = self.service.featured_search(
+            identity=g.identity,
+            params=resource_requestctx.args,
+            search_preference=search_preference(),
+            extra_filters=organization_filter
+        )
+        return hits.to_dict(), 200
+
     @request_headers
     @request_view_args
     @response_handler()
@@ -403,6 +654,17 @@ class CommunityResource(RecordResource):
     @request_view_args
     @response_handler()
     def featured_list_persons(self):
+        """List featured entries for a community."""
+        items = self.service.featured_list(
+            g.identity,
+            resource_requestctx.view_args["pid_value"],
+        )
+        return items.to_dict(), 200
+
+    @request_headers
+    @request_view_args
+    @response_handler()
+    def featured_list_organizations(self):
         """List featured entries for a community."""
         items = self.service.featured_list(
             g.identity,
@@ -440,6 +702,19 @@ class CommunityResource(RecordResource):
     @request_view_args
     @request_data
     @response_handler()
+    def featured_create_organizations(self):
+        """Create a featured community entry."""
+        item = self.service.featured_create(
+            g.identity,
+            resource_requestctx.view_args["pid_value"],
+            resource_requestctx.data,
+        )
+        return item.to_dict(), 201
+
+    @request_headers
+    @request_view_args
+    @request_data
+    @response_handler()
     def featured_update(self):
         """Update a featured community entry."""
         item = self.service.featured_update(
@@ -464,6 +739,20 @@ class CommunityResource(RecordResource):
         )
         return item.to_dict(), 200
 
+    @request_headers
+    @request_view_args
+    @request_data
+    @response_handler()
+    def featured_update_organizations(self):
+        """Update a featured community entry."""
+        item = self.service.featured_update(
+            g.identity,
+            resource_requestctx.view_args["pid_value"],
+            resource_requestctx.data,
+            featured_id=resource_requestctx.view_args["featured_id"],
+        )
+        return item.to_dict(), 200
+
     @request_view_args
     def featured_delete(self):
         """Delete a featured community entry."""
@@ -476,6 +765,16 @@ class CommunityResource(RecordResource):
 
     @request_view_args
     def featured_delete_persons(self):
+        """Delete a featured community entry."""
+        self.service.featured_delete(
+            g.identity,
+            resource_requestctx.view_args["pid_value"],
+            featured_id=resource_requestctx.view_args["featured_id"],
+        )
+        return "", 204
+
+    @request_view_args
+    def featured_delete_organizations(self):
         """Delete a featured community entry."""
         self.service.featured_delete(
             g.identity,

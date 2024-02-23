@@ -5,3 +5,4 @@ export { default as FeaturedCommunity } from "./featuredCommunities/FeaturedComm
 export { CommunityItem } from "./communitiesItems/CommunityItem";
 export { CommunityCompactItem } from "./communitiesItems/CommunityCompactItem";
 export * from "./searchComponents";
+export * from "./utils";

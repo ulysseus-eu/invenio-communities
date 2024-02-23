@@ -70,6 +70,10 @@
           "description": "Last name of a person.",
           "type": "string"
         },
+        "gridcode": {
+          "description": "Grid code of an organization.",
+          "type": "string"
+        },
         "type": {
           "description": "Community type.",
           "type": "object",

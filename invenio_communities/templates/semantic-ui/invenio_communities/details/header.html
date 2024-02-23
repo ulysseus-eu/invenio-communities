@@ -62,6 +62,15 @@
                 </div>
               {% endif %}
 
+              {% if community.metadata.gridcode %}
+                <div class="flex column">
+                  <div class="flex row">
+                    <h3 class="ui small header creatibutors-header">Grid code:
+                      <span style="text-transform: uppercase;"> {{ community.metadata.gridcode }} </span></h3>
+                  </div>
+                </div>
+              {% endif %}
+
               {% if community.metadata.website %}
                 <div class="inline-computer mt-5 rel-mr-1">
                   <i class="linkify icon" aria-hidden="true"></i>
@@ -71,7 +80,7 @@
                 </div>
               {% endif %}
 
-              {% if (community.metadata.type is defined) and (community.metadata.type.id != "person") %}
+              {% if (community.metadata.type is defined) and (community.metadata.type.id != "person") and (community.metadata.type.id != "organization") %}
                 <div class="inline-computer mt-5 rel-mr-1">
                   <i class="tag icon" aria-hidden="true"></i>
                   <span class="label label-keyword">
@@ -139,8 +148,16 @@
     <div
       class="ui container secondary pointing stackable menu page-subheader pl-0 pr-0 theme-primary">
       {% if community_menu_active %}
-        {% if community.metadata.type is defined and community.metadata.type.id == "person" %}
-          {% set menu_name = "persons" %}
+        {% if community.metadata.type is defined %}
+          {% if community.metadata.type.id == "person" %}
+            {% set menu_name = "persons" %}
+          {% else %}
+            {% if community.metadata.type.id == "organization" %}
+              {% set menu_name = "organizations" %}
+            {% else %}
+              {% set menu_name = "communities" %}
+            {% endif %}
+          {% endif %}
         {% else %}
           {% set menu_name = "communities" %}
         {% endif %}
