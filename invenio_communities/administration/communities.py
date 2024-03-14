@@ -142,6 +142,8 @@ class PersonDetailView(CommunityDetailView):
 
 class OrganizationDetailView(CommunityDetailView):
     """Admin organization detail view"""
+    url = "/organizations/<pid_value>"
+    api_endpoint = "/organizations"
     name = "organization-details"
     title = "Organization"
     list_view_name = "communities"

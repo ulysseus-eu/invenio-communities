@@ -407,21 +407,21 @@ def create_ui_blueprint(app):
         persons.submenu("requests").register(
             "invenio_communities.persons_requests",
             text=_("Requests"),
-            order=2,
+            order=3,
             expected_args=["pid_value"],
             **dict(icon="inbox", permissions="can_search_requests"),
         )
         persons.submenu("members").register(
             "invenio_communities.persons_members",
             text=_("Members"),
-            order=3,
+            order=4,
             expected_args=["pid_value"],
             **dict(icon="users", permissions="can_read"),
         )
         persons.submenu("settings").register(
             "invenio_communities.persons_settings",
             text=_("Settings"),
-            order=4,
+            order=5,
             expected_args=["pid_value"],
             **dict(icon="settings", permissions="can_update"),
         )
@@ -429,7 +429,7 @@ def create_ui_blueprint(app):
         persons.submenu("curation_policy").register(
             "invenio_communities.communities_curation_policy",
             text=_("Curation policy"),
-            order=5,
+            order=6,
             visible_when=_has_curation_policy_page_content,
             expected_args=["pid_value"],
             **dict(icon="balance scale", permissions="can_read"),
@@ -437,7 +437,7 @@ def create_ui_blueprint(app):
         persons.submenu("about").register(
             "invenio_communities.communities_about",
             text=_("About"),
-            order=6,
+            order=7,
             visible_when=_has_about_page_content,
             expected_args=["pid_value"],
             **dict(icon="info", permissions="can_read"),
@@ -456,21 +456,21 @@ def create_ui_blueprint(app):
         organizations.submenu("requests").register(
             "invenio_communities.organizations_requests",
             text=_("Requests"),
-            order=2,
+            order=3,
             expected_args=["pid_value"],
             **dict(icon="inbox", permissions="can_search_requests"),
         )
         organizations.submenu("members").register(
             "invenio_communities.organizations_members",
             text=_("Members"),
-            order=3,
+            order=4,
             expected_args=["pid_value"],
             **dict(icon="users", permissions="can_read"),
         )
         organizations.submenu("settings").register(
             "invenio_communities.organizations_settings",
             text=_("Settings"),
-            order=4,
+            order=5,
             expected_args=["pid_value"],
             **dict(icon="settings", permissions="can_update"),
         )
@@ -478,7 +478,7 @@ def create_ui_blueprint(app):
         organizations.submenu("curation_policy").register(
             "invenio_communities.communities_curation_policy",
             text=_("Curation policy"),
-            order=5,
+            order=6,
             visible_when=_has_curation_policy_page_content,
             expected_args=["pid_value"],
             **dict(icon="balance scale", permissions="can_read"),
@@ -486,7 +486,7 @@ def create_ui_blueprint(app):
         organizations.submenu("about").register(
             "invenio_communities.communities_about",
             text=_("About"),
-            order=6,
+            order=7,
             visible_when=_has_about_page_content,
             expected_args=["pid_value"],
             **dict(icon="info", permissions="can_read"),

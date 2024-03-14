@@ -32,6 +32,9 @@ class MemberResourceConfig(RecordResourceConfig):
         "members-persons": "/persons/<pid_value>/members",
         "publicmembers-persons": "/persons/<pid_value>/members/public",
         "invitations-persons": "/persons/<pid_value>/invitations",
+        "members-organizations": "/organizations/<pid_value>/members",
+        "publicmembers-organizations": "/organizations/<pid_value>/members/public",
+        "invitations-organizations": "/organizations/<pid_value>/invitations",
     }
     request_view_args = {
         "pid_value": ma.fields.UUID(),

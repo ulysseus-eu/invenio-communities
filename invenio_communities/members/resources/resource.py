@@ -43,6 +43,14 @@ class MemberResource(RecordResource):
             route("GET", routes["publicmembers-persons"], self.search_public_persons),
             route("PUT", routes["invitations-persons"], self.update_invitations_persons),
             route("GET", routes["invitations-persons"], self.search_invitations_persons),
+            route("POST", routes["members-organizations"], self.add_organization),
+            route("DELETE", routes["members-organizations"], self.delete_organization),
+            route("PUT", routes["members-organizations"], self.update_organization),
+            route("GET", routes["members-organizations"], self.search_organizations),
+            route("POST", routes["invitations-organizations"], self.invite_organizations),
+            route("GET", routes["publicmembers-organizations"], self.search_public_organizations),
+            route("PUT", routes["invitations-organizations"], self.update_invitations_organizations),
+            route("GET", routes["invitations-organizations"], self.search_invitations_organizations),
         ]
 
     @request_view_args
@@ -229,6 +237,102 @@ class MemberResource(RecordResource):
     @request_view_args
     @request_data
     def delete_person(self):
+        """Delete members."""
+        self.service.delete(
+            g.identity,
+            resource_requestctx.view_args["pid_value"],
+            data=resource_requestctx.data,
+        )
+        return "", 204
+
+    @request_view_args
+    @request_search_args
+    @response_handler(many=True)
+    def search_organizations(self):
+        """Perform a search over the items."""
+        hits = self.service.search(
+            g.identity,
+            resource_requestctx.view_args["pid_value"],
+            params=resource_requestctx.args,
+            search_preference=search_preference(),
+        )
+        return hits.to_dict(), 200
+
+    @request_view_args
+    @request_search_args
+    @response_handler(many=True)
+    def search_public_organizations(self):
+        """Perform a search over the items."""
+        hits = self.service.search_public(
+            g.identity,
+            resource_requestctx.view_args["pid_value"],
+            params=resource_requestctx.args,
+            search_preference=search_preference(),
+        )
+        return hits.to_dict(), 200
+
+    @request_view_args
+    @request_search_args
+    @response_handler(many=True)
+    def search_invitations_organizations(self):
+        """Perform a search over the invitations."""
+        hits = self.service.search_invitations(
+            g.identity,
+            resource_requestctx.view_args["pid_value"],
+            params=resource_requestctx.args,
+            search_preference=search_preference(),
+        )
+        return hits.to_dict(), 200
+
+    @request_view_args
+    @request_data
+    def add_organization(self):
+        """Add members."""
+        self.service.add(
+            g.identity,
+            resource_requestctx.view_args["pid_value"],
+            resource_requestctx.data,
+        )
+        return "", 204
+
+    @request_view_args
+    @request_data
+    def invite_organizations(self):
+        """Invite members."""
+        self.service.invite(
+            g.identity,
+            resource_requestctx.view_args["pid_value"],
+            resource_requestctx.data,
+        )
+        return "", 204
+
+    @request_view_args
+    @request_extra_args
+    @request_data
+    def update_organization(self):
+        """Update member."""
+        self.service.update(
+            g.identity,
+            resource_requestctx.view_args["pid_value"],
+            data=resource_requestctx.data,
+            refresh=resource_requestctx.args.get("refresh", False),
+        )
+        return "", 204
+
+    @request_view_args
+    @request_data
+    def update_invitations_organizations(self):
+        """Update invitations."""
+        self.service.update(
+            g.identity,
+            resource_requestctx.view_args["pid_value"],
+            data=resource_requestctx.data,
+        )
+        return "", 204
+
+    @request_view_args
+    @request_data
+    def delete_organization(self):
         """Delete members."""
         self.service.delete(
             g.identity,
