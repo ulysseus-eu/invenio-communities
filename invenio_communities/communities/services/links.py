@@ -58,6 +58,8 @@ class CommunityLink(Link):
         )
         if hasattr(record, 'metadata') and record.metadata.get("type") and record.metadata.get("type")["id"] == "person":
             vars.update({"type": "persons"})
+        elif hasattr(record, 'metadata') and record.metadata.get("type") and record.metadata.get("type")["id"] == "organization":
+            vars.update({"type": "organizations"})
         else:
             vars.update({"type": "communities"})
 

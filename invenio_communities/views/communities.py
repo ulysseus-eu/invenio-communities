@@ -156,7 +156,7 @@ def persons_search():
 
 
 def organizations_search():
-    """Persons search page."""
+    """Organizations search page."""
     can_create = current_communities.service.check_permission(g.identity, "create")
     return render_template(
         "invenio_communities/search.html",
