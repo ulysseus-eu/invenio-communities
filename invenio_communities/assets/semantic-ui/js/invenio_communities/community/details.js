@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, Grid, GridColumn, GridRow, Header, 
 const rootContainer = document.getElementById("details-container");
 const community = rootContainer.dataset.community;
 const dataCommunity = JSON.parse(community);
-const fullName = `${dataCommunity.firstname ? dataCommunity.firstname + (dataCommunity.lastname ? ' ' + dataCommunity.lastname.toUpperCase() : '') : (dataCommunity.title ?? '')}`;
+const fullName = `${dataCommunity.firstname ? capitalizeFirstLetter(dataCommunity.firstname) + (dataCommunity.lastname ? ' ' + dataCommunity.lastname.toUpperCase() : '') : (capitalizeFirstLetter(dataCommunity.title) ?? '')}`;
 
 function capitalizeFirstLetter(str) {
     if (str.length > 0) {
