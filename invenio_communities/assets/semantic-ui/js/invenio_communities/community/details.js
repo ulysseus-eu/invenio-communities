@@ -6,13 +6,16 @@ import { Card, CardContent, CardDescription, Grid, GridColumn, GridRow, Header, 
 const rootContainer = document.getElementById("details-container");
 const community = rootContainer.dataset.community;
 const dataCommunity = JSON.parse(community);
-const fullName = `${dataCommunity.firstname ? dataCommunity.firstname + (dataCommunity.lastname ? ' ' + dataCommunity.lastname : '') : (dataCommunity.title ?? '')}`;
+const fullName = `${dataCommunity.firstname ? dataCommunity.firstname + (dataCommunity.lastname ? ' ' + dataCommunity.lastname.toUpperCase() : '') : (dataCommunity.title ?? '')}`;
+
+function capitalizeFirstLetter(str) {
+    if (str.length > 0) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+}
 
 ReactDOM.render(
     <>
-        <Header as='h2' icon textAlign='center'>
-            <HeaderContent>{fullName}</HeaderContent>
-        </Header>
         <Card style={{ width: '100%' }}>
             <CardContent>
                 <Grid columns={2}>
@@ -24,23 +27,34 @@ ReactDOM.render(
                             <CardDescription>
                             {dataCommunity && 
                                 <List>
+                                    <ListItem>
+                                        <Header as='h3'>
+                                            <HeaderContent>{fullName}</HeaderContent>
+                                        </Header>
+                                    </ListItem>
                                     {dataCommunity.firstname && <ListItem>
                                         <Label horizontal>
                                             Firstname
                                         </Label>
-                                        {dataCommunity.firstname}
+                                        {capitalizeFirstLetter(dataCommunity.firstname)}
                                     </ListItem>}
                                     {dataCommunity.lastname && <ListItem>
                                         <Label horizontal>
                                             Lastname
                                         </Label>
-                                        {dataCommunity.lastname}
+                                        {dataCommunity.lastname.toUpperCase()}
                                     </ListItem>}
                                     {dataCommunity.description && <ListItem>
                                         <Label horizontal>
                                             Description
                                         </Label>
                                         {dataCommunity.description}
+                                    </ListItem>}
+                                    {dataCommunity.gridcode && <ListItem>
+                                        <Label horizontal>
+                                            Gridocde
+                                        </Label>
+                                        {dataCommunity.gridcode}
                                     </ListItem>}
                                 </List>}
                             </CardDescription>

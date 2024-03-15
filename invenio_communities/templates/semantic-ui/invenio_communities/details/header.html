@@ -52,6 +52,7 @@ under the terms of the MIT License; see LICENSE file for more details.
                             </div>
                             {% endif %}
 
+                            {% if community.metadata.type is not defined %}
                             {% if community.metadata.gridcode %}
                             <div class="flex column">
                                 <div class="flex row">
@@ -60,6 +61,7 @@ under the terms of the MIT License; see LICENSE file for more details.
                                     </h3>
                                 </div>
                             </div>
+                            {% endif %}
                             {% endif %}
                             {% if community.metadata.website %}
                             <div class="inline-computer mt-5 rel-mr-1">
