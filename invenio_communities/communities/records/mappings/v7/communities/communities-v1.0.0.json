@@ -62,7 +62,7 @@
               },
               "title": {
                 "type": "object",
-                "dynamic": true
+                "dynamic": "true"
               }
             }
           },
@@ -93,6 +93,9 @@
             "type": "keyword"
           },
           "member_policy": {
+            "type": "keyword"
+          },
+          "members_visibility": {
             "type": "keyword"
           },
           "record_policy": {
@@ -135,7 +138,7 @@
               },
               "title": {
                 "type": "object",
-                "dynamic": true,
+                "dynamic": "true",
                 "properties": {
                   "en": {
                     "type": "text"
@@ -204,7 +207,7 @@
                   },
                   "title": {
                     "type": "object",
-                    "dynamic": true
+                    "dynamic": "true"
                   },
                   "number": {
                     "type": "text",
@@ -289,11 +292,32 @@
           }
         }
       },
+      "children": {
+        "type": "object",
+        "properties": {
+          "allow": {
+            "type": "boolean"
+          }
+        }
+      },
       "parent": {
         "type": "object",
         "properties": {
           "@v": {
             "type": "keyword"
+          },
+          "uuid": {
+            "type": "keyword",
+            "index": false
+          },
+          "created": {
+            "type": "date"
+          },
+          "updated": {
+            "type": "date"
+          },
+          "version_id": {
+            "type": "long"
           },
           "id": {
             "type": "keyword"
@@ -318,7 +342,7 @@
                   },
                   "title": {
                     "type": "object",
-                    "dynamic": true,
+                    "dynamic": "true",
                     "properties": {
                       "en": {
                         "type": "text"
@@ -357,7 +381,7 @@
                       },
                       "title": {
                         "type": "object",
-                        "dynamic": true
+                        "dynamic": "true"
                       },
                       "number": {
                         "type": "text",
@@ -422,9 +446,17 @@
               "brand": {
                 "type": "keyword"
               },
-              "config": {
+              "style": {
                 "type": "object",
                 "enabled": false
+              }
+            }
+          },
+          "children": {
+            "type": "object",
+            "properties": {
+              "allow": {
+                "type": "boolean"
               }
             }
           }

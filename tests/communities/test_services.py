@@ -592,3 +592,173 @@ def test_theme_updates(
     community_service.update(system_identity, community.id, community_data)
     community_item = community_service.read(system_identity, community.id)
     assert community_item.data.get("theme") is None
+    assert "theme" not in community_item.data
+
+
+def test_children_updates(
+    app,
+    db,
+    search_clear,
+    location,
+    community_service,
+    community,
+    members,
+):
+    current_cache.clear()
+    owner = members["owner"]
+
+    # Update children
+    community_data = deepcopy(community.data)
+    community_data.update(dict(children=dict(allow=True)))
+
+    # check if owner can update the children
+    with pytest.raises(PermissionDeniedError):
+        community_service.update(owner.identity, community.id, community_data)
+
+    # only system can update the children
+    community_service.update(system_identity, community.id, community_data)
+    community_item = community_service.read(system_identity, community.id)
+    assert community_item.data["children"]["allow"] == True
+
+    # Update community data without passing children should keep the stored values
+    community_data = deepcopy(community_item.data)
+    community_data.pop("children")
+
+    # Owner should be able to perfrom this operation since is not changing the children
+    community_service.update(owner.identity, community.id, community_data)
+    # Refresh index
+    community_service.record_cls.index.refresh()
+
+
+def test_parent_create(community_service, comm):
+    parent = comm
+    community_service.update(
+        identity=system_identity,
+        id_=str(parent.id),
+        data={**parent.data, "children": {"allow": True}},
+    )
+    child = community_service.create(
+        identity=system_identity,
+        data={**comm.data, "slug": "child", "parent": {"id": str(parent.id)}},
+    )
+    assert str(child._obj.parent.id) == parent.id
+
+
+def test_parent_update(community_service, comm):
+    parent = comm
+    community_service.update(
+        identity=system_identity,
+        id_=str(parent.id),
+        data={**parent.data, "children": {"allow": True}},
+    )
+    child = community_service.create(
+        identity=system_identity, data={**comm.data, "slug": "child1"}
+    )
+
+    child = community_service.update(
+        identity=system_identity,
+        id_=str(child.id),
+        data={**child.data, "parent": {"id": str(parent.id)}},
+    )
+    assert str(child._obj.parent.id) == parent.id
+
+
+def test_parent_remove(community_service, comm):
+    parent = comm
+    community_service.update(
+        identity=system_identity,
+        id_=str(parent.id),
+        data={**parent.data, "children": {"allow": True}},
+    )
+    child = community_service.create(
+        identity=system_identity,
+        data={**comm.data, "slug": "child2", "parent": {"id": str(parent.id)}},
+    )
+
+    child = community_service.update(
+        identity=system_identity, id_=str(child.id), data={**child.data, "parent": None}
+    )
+    assert child._obj.parent == None
+
+
+def test_update_parent_community_not_exists(community_service, comm):
+    child = comm
+
+    with pytest.raises(ValidationError) as e:
+        community_service.update(
+            identity=system_identity,
+            id_=str(child.id),
+            data={**child.data, "parent": {"id": str(uuid.uuid4())}},
+        )
+
+
+def test_parent_update_parent_children_not_allowed(community_service, comm):
+    parent = comm
+
+    child = community_service.create(
+        identity=system_identity, data={**comm.data, "slug": "child4"}
+    )
+
+    with pytest.raises(ValidationError) as e:
+        community_service.update(
+            identity=system_identity,
+            id_=str(child.id),
+            data={**child.data, "parent": {"id": str(parent.id)}},
+        )
+
+
+def test_parent_update_child_children_are_allowed(community_service, comm):
+    parent = comm
+
+    child = community_service.create(
+        identity=system_identity, data={**comm.data, "slug": "child5"}
+    )
+    community_service.update(
+        identity=system_identity,
+        id_=str(parent.id),
+        data={**parent.data, "children": {"allow": True}},
+    )
+    child = community_service.update(
+        identity=system_identity,
+        id_=str(child.id),
+        data={**child.data, "children": {"allow": True}},
+    )
+
+    with pytest.raises(ValidationError) as e:
+        community_service.update(
+            identity=system_identity,
+            id_=str(child.id),
+            data={**child.data, "parent": {"id": str(parent.id)}},
+        )
+
+
+def test_bulk_update_parent(
+    community_service, parent_community, comm, restricted_community
+):
+    """Test bulk add parent to children."""
+    children = [comm.id, restricted_community.id]
+    parent_community.children.allow = True
+    parent_community.commit()
+    community_service.bulk_update_parent(system_identity, children, parent_community.id)
+    for c_id in children:
+        c_comm = community_service.record_cls.pid.resolve(c_id)
+        assert str(c_comm.parent.id) == str(parent_community.id)
+
+
+def test_bulk_update_parent_overwrite(
+    community_service, parent_community, comm, restricted_community
+):
+    """Test bulk update parent of communities that are already parented."""
+    children = [comm.id]
+    parent_community.children.allow = True
+    parent_community.commit()
+    community_service.bulk_update_parent(system_identity, children, parent_community.id)
+    for c_id in children:
+        c_comm = community_service.record_cls.pid.resolve(c_id)
+        assert str(c_comm.parent.id) == str(parent_community.id)
+
+    children = [comm.id, restricted_community.id]
+    community_service.bulk_update_parent(system_identity, children, parent_community.id)
+    for c_id in children:
+        c_comm = community_service.record_cls.pid.resolve(c_id)
+        assert str(c_comm.parent.id) == str(parent_community.id)

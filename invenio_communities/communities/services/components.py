@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2016-2022 CERN.
+# Copyright (C) 2016-2024 CERN.
 # Copyright (C) 2022 Northwestern University.
 # Copyright (C) 2022-2023 Graz University of Technology.
 #
@@ -14,7 +14,6 @@ from flask import current_app
 from invenio_access.permissions import system_identity, system_process
 from invenio_db import db
 from invenio_i18n import lazy_gettext as _
-from invenio_i18n.proxies import current_i18n
 from invenio_oaiserver.models import OAISet
 from invenio_pidstore.errors import PIDDeletedError, PIDDoesNotExistError
 from invenio_records_resources.services.records.components import (
@@ -300,6 +299,68 @@ class CommunityThemeComponent(ServiceComponent):
                 record["theme"] = data["theme"]
 
 
+class CommunityParentComponent(ServiceComponent):
+    """Service Component for Community parent."""
+
+    def _validate_and_get_parent(self, parent_data, child):
+        """Validate and return parent community."""
+        if not parent_data:
+            return None
+        try:
+            parent = self.service.record_cls.pid.resolve(parent_data["id"])
+            if not parent.children.allow:
+                raise ValidationError("Assigned parent is not allowed to be a parent.")
+            elif child.children.allow:
+                raise ValidationError(
+                    "Community allowed to be a parent can't be a child."
+                )
+            elif parent.parent:
+                raise ValidationError(
+                    "Assigned parent community cannot also have a parent."
+                )
+            elif child.id == parent.id:
+                raise ValidationError(
+                    "Assigned parent community cannot be the same as child."
+                )
+        except PIDDoesNotExistError:
+            raise ValidationError("Assigned parent community does not exist.")
+        return parent
+
+    def create(self, identity, data=None, record=None, **kwargs):
+        """Inject parsed theme to the record."""
+        if "parent" in data:
+            self.service.require_permission(identity, "manage_parent", record=record)
+            parent = self._validate_and_get_parent(data["parent"], record)
+            record.parent = parent
+
+    def update(self, identity, data=None, record=None, **kwargs):
+        """Update parent community of a community."""
+        if "parent" in data:
+            self.service.require_permission(identity, "manage_parent", record=record)
+            parent = self._validate_and_get_parent(data["parent"], record)
+            record.parent = parent
+
+
+class ChildrenComponent(ServiceComponent):
+    """Service component for children integration."""
+
+    def _populate_and_validate(self, identity, data, record, **kwargs):
+        """Populate and validate the community's children field."""
+        # We check if data is passed and is different to the stored or default value
+        existing_value = record.children.dump()
+        if "children" in data and data["children"] != existing_value:
+            self.service.require_permission(identity, "manage_children", record=record)
+            record.children = record.children.from_dict(data["children"])
+
+    def create(self, identity, data=None, record=None, **kwargs):
+        """Create handler."""
+        self._populate_and_validate(identity, data, record, **kwargs)
+
+    def update(self, identity, data=None, record=None, **kwargs):
+        """Update handler."""
+        self._populate_and_validate(identity, data, record, **kwargs)
+
+
 DefaultCommunityComponents = [
     MetadataComponent,
     CommunityThemeComponent,
@@ -311,4 +372,6 @@ DefaultCommunityComponents = [
     FeaturedCommunityComponent,
     OAISetComponent,
     CommunityDeletionComponent,
+    ChildrenComponent,
+    CommunityParentComponent,
 ]

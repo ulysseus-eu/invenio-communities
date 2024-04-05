@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2016-2022 CERN.
+# Copyright (C) 2016-2024 CERN.
 # Copyright (C) 2021 Graz University of Technology.
 # Copyright (C) 2021 TU Wien.
 # Copyright (C) 2022 Northwestern University.
@@ -127,7 +127,17 @@ class CommunityPermissionPolicy(BasePermissionPolicy):
     ]
 
     can_members_search_public = [
-        IfRestricted("visibility", then_=[CommunityMembers()], else_=[AnyUser()]),
+        IfRestricted(
+            "visibility",
+            then_=[CommunityMembers()],
+            else_=[
+                IfRestricted(
+                    "members_visibility",
+                    then_=[CommunityMembers()],
+                    else_=[AnyUser()],
+                ),
+            ],
+        ),
         SystemProcess(),
     ]
 
@@ -165,6 +175,12 @@ class CommunityPermissionPolicy(BasePermissionPolicy):
     # Permissions to crud community theming
     can_set_theme = [SystemProcess()]
     can_delete_theme = can_set_theme
+
+    # Permissions to set if communities can have children
+    can_manage_children = [SystemProcess()]
+
+    # Permission for assinging a parent community
+    can_manage_parent = [Administration(), SystemProcess()]
 
 
 def can_perform_action(community, context):

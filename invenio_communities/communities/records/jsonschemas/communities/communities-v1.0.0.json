@@ -21,6 +21,13 @@
             "restricted"
           ]
         },
+        "members_visibility": {
+          "description": "Community members visibility.",
+          "enum": [
+            "public",
+            "restricted"
+          ]
+        },
         "member_policy": {
           "description": "Community member policy.",
           "enum": [
@@ -151,6 +158,16 @@
         "enabled": {
           "type": "boolean",
           "description": "Set to false for metadata only records."
+        }
+      }
+    },
+    "children":{
+      "type": "object",
+      "description": "Children communities.",
+      "properties": {
+        "allow": {
+          "type": "boolean",
+          "description": "Whether or not the community allows children."
         }
       }
     },

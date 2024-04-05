@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2022 CERN.
+# Copyright (C) 2022-2024 CERN.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -9,10 +9,9 @@
 """Community PID slug field."""
 from uuid import UUID
 
+from invenio_records.dictutils import filter_dict_keys
 from invenio_records.systemfields import SystemField
 from sqlalchemy.orm.exc import NoResultFound
-
-from ....utils import filter_dict_keys
 
 
 def is_valid_uuid(value):
@@ -51,6 +50,7 @@ class ParentCommunityField(SystemField):
         # Check if obj is None and remove 'parent' key from record
         if obj is None:
             record.pop("parent", None)
+            self._set_cache(record, None)
             return
 
         if isinstance(obj, type(record)):
@@ -82,8 +82,8 @@ class ParentCommunityField(SystemField):
         """Set the records access object."""
         self.set_obj(record, obj)
 
-    def pre_dump(self, record, data, dumper=None):
-        """Before dumping, dereference the parent community."""
+    def post_dump(self, record, data, dumper=None):
+        """After dumping, dereference the parent community."""
         parent_community = getattr(record, self.attr_name)
         if parent_community:
             dump = parent_community.dumps()
@@ -97,6 +97,7 @@ class ParentCommunityField(SystemField):
                     "slug",
                     "theme",
                     "version_id",
+                    "children.allow",
                     "metadata.title",
                     "metadata.type",
                     "metadata.website",
@@ -104,3 +105,8 @@ class ParentCommunityField(SystemField):
                     "metadata.funding",
                 ],
             )
+
+    def post_load(self, record, data, loader=None):
+        """Laod the parent community using the OS data (preventing a DB query)."""
+        if data.get("parent"):
+            record.parent = record.loads(data["parent"])
