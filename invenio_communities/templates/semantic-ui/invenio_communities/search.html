@@ -33,7 +33,7 @@
     data-invenio-search-config='{{
     search_app_communities_config(app_id="InvenioCommunities.Search",
      endpoint="/api/"+community_type.get_plural(),
-     overrides={"objectSearched": community_type.get_plural()}) | tojson }}'
+     overrides={"communityType": community_type.get_singular()}) | tojson }}'
     data-permissions='{{ permissions | tojson }}'
     >
 </div>

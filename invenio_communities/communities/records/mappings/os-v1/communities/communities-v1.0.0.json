@@ -124,15 +124,6 @@
           "description": {
             "type": "text"
           },
-          "firstname": {
-            "type": "text"
-          },
-          "lastname": {
-            "type": "text"
-          },
-          "gridcode": {
-            "type": "text"
-          },
           "type": {
             "type": "object",
             "properties": {
@@ -169,6 +160,33 @@
                 "type": "keyword"
               },
               "name": {
+                "type": "text"
+              }
+            }
+          },
+          "organization": {
+            "type": "object",
+            "properties": {
+              "gridcode": {
+                "type": "text"
+              },
+              "ror": {
+                "type": "text"
+              }
+            }
+          },
+          "person": {
+            "properties": {
+              "given_name": {
+                "type": "text"
+              },
+              "middle_name": {
+                "type": "text"
+              },
+              "family_name": {
+                "type": "text"
+              },
+              "email": {
                 "type": "text"
               }
             }

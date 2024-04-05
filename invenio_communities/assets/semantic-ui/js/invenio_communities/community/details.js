@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, Grid, GridColumn, GridRow, Header, 
 const rootContainer = document.getElementById("details-container");
 const community = rootContainer.dataset.community;
 const dataCommunity = JSON.parse(community);
-const fullName = `${dataCommunity.firstname ? capitalizeFirstLetter(dataCommunity.firstname) + (dataCommunity.lastname ? ' ' + dataCommunity.lastname.toUpperCase() : '') : (capitalizeFirstLetter(dataCommunity.title) ?? '')}`;
+const fullName = `${dataCommunity.person?.givenName ? capitalizeFirstLetter(dataCommunity.person.givenName) + (dataCommunity.person?.familyName ? ' ' + dataCommunity.person.familyName.toUpperCase() : '') : (capitalizeFirstLetter(dataCommunity.title) ?? '')}`;
 
 function capitalizeFirstLetter(str) {
     if (str.length > 0) {
@@ -25,24 +25,24 @@ ReactDOM.render(
                         </GridColumn>
                         <GridColumn width={9}>
                             <CardDescription>
-                            {dataCommunity && 
+                            {dataCommunity &&
                                 <List>
                                     <ListItem>
                                         <Header as='h3'>
                                             <HeaderContent>{fullName}</HeaderContent>
                                         </Header>
                                     </ListItem>
-                                    {dataCommunity.firstname && <ListItem>
+                                    {dataCommunity.person?.given_name && <ListItem>
                                         <Label horizontal>
                                             Firstname
                                         </Label>
-                                        {capitalizeFirstLetter(dataCommunity.firstname)}
+                                        {capitalizeFirstLetter(dataCommunity.person.given_name)}
                                     </ListItem>}
-                                    {dataCommunity.lastname && <ListItem>
+                                    {dataCommunity.person?.family_name && <ListItem>
                                         <Label horizontal>
                                             Lastname
                                         </Label>
-                                        {dataCommunity.lastname.toUpperCase()}
+                                        {dataCommunity.person.family_name.toUpperCase()}
                                     </ListItem>}
                                     {dataCommunity.description && <ListItem>
                                         <Label horizontal>
@@ -50,11 +50,11 @@ ReactDOM.render(
                                         </Label>
                                         {dataCommunity.description}
                                     </ListItem>}
-                                    {dataCommunity.gridcode && <ListItem>
+                                    {dataCommunity.identifiers[0].identifier && <ListItem>
                                         <Label horizontal>
-                                            Gridocde
+                                            Gridcode
                                         </Label>
-                                        {dataCommunity.gridcode}
+                                        {dataCommunity.identifiers[0].identifier}
                                     </ListItem>}
                                 </List>}
                             </CardDescription>

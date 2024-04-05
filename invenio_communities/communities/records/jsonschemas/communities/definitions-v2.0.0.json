@@ -414,6 +414,59 @@
       }
     }
   },
+  "person": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "given_name": {
+        "type": "string"
+      },
+      "middle_name": {
+        "type": "string"
+      },
+      "family_name": {
+        "type": "string"
+      },
+      "email": {
+        "description": "Email of a person.",
+        "type": "string"
+      },
+      "identifiers": {
+        "type": "array",
+        "items": {
+          "$ref": "local://definitions-v1.0.0.json#/identifiers_with_scheme"
+        },
+        "uniqueItems": true
+      },
+      "alternative_persons": {
+        "type": "array",
+        "items": {
+          "given_name": {
+            "type": "string"
+          },
+          "family_name": {
+            "type": "string"
+          },
+          "middle_name": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "organization": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "identifiers": {
+        "type": "array",
+        "items": {
+          "$ref": "local://definitions-v1.0.0.json#/identifiers_with_scheme"
+        },
+        "uniqueItems": true
+      }
+    }
+  },
   "relation_type": {
     "type": "object",
     "additionalProperties": false,

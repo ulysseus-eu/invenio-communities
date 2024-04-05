@@ -37,25 +37,25 @@
         <form action="{{ url_for('invenio_communities.'+community_type.get_plural()+'_search') }}" class="ui form">
           <div class="ui fluid action input">
             <input
-              type="text"
-              name="q"
-              class="form-control"
-              placeholder="{{ _('Search '+community_type.get_plural()) }}"
               aria-label="{{ _('Search '+community_type.get_plural()) }}"
+              class="form-control"
+              name="q"
+              placeholder="{{ _('Search '+community_type.get_plural()) }}"
+              type="text"
             >
             <button
-              type="submit"
-              class="ui icon search button"
               aria-label="{{ _('Search') }}"
+              class="ui icon search button"
+              type="submit"
             >
-              <i class="search icon" aria-hidden="true"></i>
+              <i aria-hidden="true" class="search icon"></i>
             </button>
           </div>
         </form>
       </div>
       {% if permissions.can_create %}
         <div class="three wide mobile five wide tablet three wide computer stretched column">
-          <a href="{{ config.COMMUNITIES_ROUTES['new'+community_type.get_plural_with_prefix_or_empty(prefix='_')] }}" class="ui icon left labeled positive button" role="button">
+          <a class="ui icon left labeled positive button" href="{{ config.COMMUNITIES_ROUTES['new'+community_type.get_plural_with_prefix_or_empty(prefix='_')] }}" role="button">
             <i class="icon plus"></i>
             {{_('New '+community_type.get_singular())}}
           </a>
@@ -77,11 +77,12 @@
         </div>
         <div class="ui divider hidden"></div>
         <div
-          id="user-communities"
           class="rel-mb-2"
           data-community-type='{{ "community" | tojson }}'
+          id="user-communities"
         ></div>
       </div>
+      {% if config.COMMUNITIES_SHOW_SPECIFIC_TYPES %}
       <div class="flex column" style="width:33%">
         <div class="flex">
           <h3 class="ui header mb-0 align-self-center">{{_('My organizations')}}</h3>
@@ -91,9 +92,9 @@
         </div>
         <div class="ui divider hidden"></div>
         <div
-          id="user-organizations"
           class="rel-mb-2"
           data-community-type='{{ "organization" | tojson }}'
+          id="user-organizations"
         ></div>
       </div>
       <div class="flex column" style="width:33%">
@@ -105,11 +106,12 @@
         </div>
         <div class="ui divider hidden"></div>
         <div
-          id="user-persons"
           class="rel-mb-2"
           data-community-type='{{ "person" | tojson }}'
+          id="user-persons"
         ></div>
       </div>
+      {% endif %}
     </div>
     <div class="ui divider"></div>
   {% endif %}
@@ -123,10 +125,11 @@
       </div>
       <div class="ui divider hidden"></div>
       <div
-        id="new-communities"
-          data-community-type='{{ "community" | tojson }}'
+        data-community-type='{{ "community" | tojson }}'
+          id="new-communities"
       ></div>
     </div>
+      {% if config.COMMUNITIES_SHOW_SPECIFIC_TYPES %}
     <div class="flex column" style="width:33%">
       <div class="flex row">
         <h3 class="ui header mb-0 align-self-center">{{ _('New organizations') }}</h3>
@@ -136,8 +139,8 @@
       </div>
       <div class="ui divider hidden"></div>
       <div
-        id="new-organizations"
         data-community-type='{{ "organization" | tojson }}'
+        id="new-organizations"
       ></div>
     </div>
     <div class="flex column" style="width:33%">
@@ -149,10 +152,11 @@
       </div>
       <div class="ui divider hidden"></div>
       <div
-        id="new-persons"
         data-community-type='{{ "person" | tojson }}'
+        id="new-persons"
       ></div>
     </div>
+    {% endif %}
   </div>
 </div>
 {%- endblock page_body %}

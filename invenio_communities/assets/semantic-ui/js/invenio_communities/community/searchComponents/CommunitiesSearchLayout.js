@@ -8,9 +8,11 @@ import React from "react";
 import { GridResponsiveSidebarColumn } from "react-invenio-forms";
 import { SearchBar, Sort } from "react-searchkit";
 import { Button, Container, Grid } from "semantic-ui-react";
+import {CommunityType} from "../utils";
 
 export const CommunitiesSearchLayout = ({ config, appName }) => {
   const [sidebarVisible, setSidebarVisible] = React.useState(false);
+  const communityType = new CommunityType(config.communityType);
   return (
     <Container>
       <Grid>
@@ -26,7 +28,7 @@ export const CommunitiesSearchLayout = ({ config, appName }) => {
           </Grid.Column>
 
           <Grid.Column mobile={14} tablet={15} floated="right" className="mt-10">
-            <SearchBar placeholder={i18next.t("Search "+config.objectSearched+"...")} />
+            <SearchBar placeholder={i18next.t("Search "+communityType.getPlural()+"...")} />
           </Grid.Column>
         </Grid.Row>
 
@@ -50,7 +52,7 @@ export const CommunitiesSearchLayout = ({ config, appName }) => {
         {/* Desktop search header */}
         <Grid.Row className="computer only">
           <Grid.Column width={8} floated="right">
-            <SearchBar placeholder={i18next.t("Search "+config.objectSearched+"...")} />
+            <SearchBar placeholder={i18next.t("Search "+communityType.getPlural()+"...")} />
           </Grid.Column>
 
           <Grid.Column width={4} textAlign="right">

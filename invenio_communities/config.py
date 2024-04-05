@@ -321,7 +321,7 @@ For example:
 """
 
 # Preview: Feature flag for invenio-app-rdm v11
-COMMUNITIES_ADMINISTRATION_DISABLED = True
+COMMUNITIES_ADMINISTRATION_DISABLED = False
 
 COMMUNITIES_ALLOW_RESTRICTED = True
 
@@ -343,3 +343,4 @@ COMMUNITIES_ALWAYS_SHOW_CREATE_LINK = False
 """Controls visibility of 'New Community' btn based on user's permission when set to True."""
 COMMUNITIES_SHOW_TYPES_LINK = False
 """Controls visibility of community types in menu when set to True."""
+COMMUNITIES_SHOW_SPECIFIC_TYPES = True

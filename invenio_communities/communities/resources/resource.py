@@ -105,27 +105,30 @@ class CommunityResource(RecordResource):
     @request_search_args
     @response_handler(many=True)
     def search(self):
-        """Perform a search over persons.
+        """Perform a search over communities.
 
-        GET /persons
+        GET /communities
         """
-        extra_filter = dsl.Q(
-            {
-                "bool": {
-                    "must_not": [
-                        {
-                            "term": {
-                                "metadata.type.id": "person"
+        show_specific_communities = current_app.config.get("COMMUNITIES_SHOW_SPECIFIC_TYPES", False)
+        extra_filter = None
+        if show_specific_communities:
+            extra_filter = dsl.Q(
+                {
+                    "bool": {
+                        "must_not": [
+                            {
+                                "term": {
+                                    "metadata.type.id": "person"
+                                }
+                            },
+                            {
+                                "term": {
+                                    "metadata.type.id": "organization"
+                                }
                             }
-                        },
-                        {
-                            "term": {
-                                "metadata.type.id": "organization"
-                            }
-                        }
-                    ]
-                }
-            })
+                        ]
+                    }
+                })
         hits = self.service.search(
             identity=g.identity,
             params=resource_requestctx.args,
@@ -271,23 +274,26 @@ class CommunityResource(RecordResource):
 
         GET /user/communities
         """
-        extra_filter = dsl.Q(
-            {
-                "bool": {
-                    "must_not": [
-                        {
-                            "term": {
-                                "metadata.type.id": "person"
+        show_specific_communities = current_app.config.get("COMMUNITIES_SHOW_SPECIFIC_TYPES", False)
+        extra_filter = None
+        if show_specific_communities:
+            extra_filter = dsl.Q(
+                {
+                    "bool": {
+                        "must_not": [
+                            {
+                                "term": {
+                                    "metadata.type.id": "person"
+                                }
+                            },
+                            {
+                                "term": {
+                                    "metadata.type.id": "organization"
+                                }
                             }
-                        },
-                        {
-                            "term": {
-                                "metadata.type.id": "organization"
-                            }
-                        }
-                    ]
-                }
-            })
+                        ]
+                    }
+                })
         hits = self.service.search_user_communities(
             identity=g.identity,
             params=resource_requestctx.args,

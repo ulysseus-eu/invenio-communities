@@ -113,14 +113,27 @@ class CommunityAccessSchema(Schema):
     )
 
 
+class PersonSchema(Schema):
+    """Person schema."""
+    given_name = SanitizedUnicode(required=False, validate=_not_blank(max=250))
+    middle_name = SanitizedUnicode(required=False, validate=_not_blank(max=250))
+    family_name = SanitizedUnicode(required=True, validate=_not_blank(max=250))
+
+
+
+class OrganizationSchema(Schema):
+    """Person schema."""
+    gridcode = SanitizedUnicode(required=False, validate=_not_blank(max=250))
+    ror = SanitizedUnicode(required=False, validate=_not_blank(max=250))
+
+
 class CommunityMetadataSchema(Schema):
     """Community metadata schema."""
 
     title = SanitizedUnicode(required=True, validate=_not_blank(max=250))
     description = SanitizedUnicode(validate=_not_blank(max=250))
-    firstname = SanitizedUnicode(validate=_not_blank(max=250))
-    lastname = SanitizedUnicode(validate=_not_blank(max=250))
-    gridcode = SanitizedUnicode(validate=_not_blank(max=250))
+    person = fields.Nested(PersonSchema, required=False)
+    organization = fields.Nested(OrganizationSchema, required=False)
 
     curation_policy = SanitizedHTML(validate=no_longer_than(max=50000))
     page = SanitizedHTML(validate=no_longer_than(max=50000))

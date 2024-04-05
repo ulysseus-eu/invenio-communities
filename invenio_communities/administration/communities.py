@@ -13,6 +13,7 @@ from flask import current_app
 from invenio_administration.views.base import (
     AdminResourceDetailView,
     AdminResourceListView,
+    AdminView,
 )
 from invenio_search_ui.searchconfig import search_app_config
 
@@ -147,3 +148,10 @@ class OrganizationDetailView(CommunityDetailView):
     name = "organization-details"
     title = "Organization"
     list_view_name = "communities"
+
+class ShowSpecificTypesView(AdminView):
+    name = "Show specific communities"
+    category = "Communities"
+    menu_label = "Specific communities"
+    icon = "target"
+    template = "invenio_communities/administration/community_specific_types.html"

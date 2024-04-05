@@ -24,7 +24,7 @@ def search_app_context():
             headers={"Accept": "application/vnd.inveniordm.v1+json"},
             pagination_options=(10, 20),
             endpoint="/api/communities",
-            overrides={"objectSearched": "communities"}
+            overrides={"communityType": "community"}
         ),
         "search_app_communities_requests_config": partial(
             search_app_config,

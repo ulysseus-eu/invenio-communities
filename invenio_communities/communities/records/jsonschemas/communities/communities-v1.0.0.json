@@ -62,17 +62,14 @@
           "description": "Community description.",
           "type": "string"
         },
-        "firstname": {
-          "description": "First name of a person.",
-          "type": "string"
+        "person": {
+          "$ref": "local://communities/definitions-v2.0.0.json#/person"
         },
-        "lastname": {
-          "description": "Last name of a person.",
-          "type": "string"
+        "organization": {
+          "$ref": "local://communities/definitions-v2.0.0.json#/organization"
         },
-        "gridcode": {
-          "description": "Grid code of an organization.",
-          "type": "string"
+        "subjects": {
+          "$ref": "local://records/definitions-v2.0.0.json#/subjects"
         },
         "type": {
           "description": "Community type.",

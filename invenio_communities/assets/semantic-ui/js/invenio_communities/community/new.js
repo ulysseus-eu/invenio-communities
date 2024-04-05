@@ -168,16 +168,16 @@ class CommunityCreateForm extends Component {
                   {(communityType.communityType === communityType.person) && (
                     <TextField
                       required
-                      id="metadata.firstname"
+                      id="metadata.person.given_name"
                       fluid
-                      fieldPath="metadata.firstname"
+                      fieldPath="metadata.person.given_name"
                       // Prevent submitting before the value is updated:
                       onKeyDown={(e) => {
                         e.key === "Enter" && e.preventDefault();
                       }}
                       label={
                         <FieldLabel
-                          htmlFor="metadata.firstname"
+                          htmlFor="metadata.person.given_name"
                           icon="user"
                           label={i18next.t("First name")}
                         />
@@ -186,16 +186,16 @@ class CommunityCreateForm extends Component {
                   {(communityType.communityType === communityType.person) && (
                     <TextField
                       required
-                      id="metadata.lastname"
+                      id="metadata.person.family_name"
                       fluid
-                      fieldPath="metadata.lastname"
+                      fieldPath="metadata.person.family_name"
                       // Prevent submitting before the value is updated:
                       onKeyDown={(e) => {
                         e.key === "Enter" && e.preventDefault();
                       }}
                       label={
                         <FieldLabel
-                          htmlFor="metadata.lastname"
+                          htmlFor="metadata.person.family_name"
                           icon="user"
                           label={i18next.t("Last name")}
                         />
@@ -204,18 +204,36 @@ class CommunityCreateForm extends Component {
                   {(communityType.communityType === communityType.organization) && (
                     <TextField
                       required
-                      id="metadata.gridcode"
+                      id="metadata.organization.gridcode"
                       fluid
-                      fieldPath="metadata.gridcode"
+                      fieldPath="metadata.organization.gridcode"
                       // Prevent submitting before the value is updated:
                       onKeyDown={(e) => {
                         e.key === "Enter" && e.preventDefault();
                       }}
                       label={
                         <FieldLabel
-                          htmlFor="metadata.gridcode"
+                          htmlFor="metadata.organization.gridcode"
                           icon="user"
                           label={i18next.t("Grid code")}
+                        />
+                      }
+                    />)}
+                  {(communityType.communityType === communityType.organization) && (
+                    <TextField
+                      required
+                      id="metadata.organization.ror"
+                      fluid
+                      fieldPath="metadata.organization.ror"
+                      // Prevent submitting before the value is updated:
+                      onKeyDown={(e) => {
+                        e.key === "Enter" && e.preventDefault();
+                      }}
+                      label={
+                        <FieldLabel
+                          htmlFor="metadata.organization.ror"
+                          icon="user"
+                          label={i18next.t("ROR")}
                         />
                       }
                     />)}
