@@ -2,13 +2,13 @@
  * Class to handle community types
  */
 export class CommunityType {
-    community = "community";
-    person = "person";
-    organization = "organization";
+    static community = "community";
+    static person = "person";
+    static organization = "organization";
     singulars = {
-        person: this.person,
-        community: this.community,
-        organization: this.organization,
+        person: CommunityType.person,
+        community: CommunityType.community,
+        organization: CommunityType.organization,
     };
     plurals = {
         person: "persons",
@@ -16,7 +16,7 @@ export class CommunityType {
         organization: "organizations",
     };
 
-    constructor(iType = this.community) {
+    constructor(iType = CommunityType.community) {
         this.communityType = iType;
     }
 
@@ -24,7 +24,7 @@ export class CommunityType {
         if (Object.prototype.hasOwnProperty.call(this.singulars, this.communityType)) {
             return this.singulars[this.communityType];
         } else {
-            return this.singulars[this.community];
+            return this.singulars[CommunityType.community];
         }
     }
 
@@ -32,7 +32,7 @@ export class CommunityType {
         if (Object.prototype.hasOwnProperty.call(this.plurals, this.communityType)) {
             return this.plurals[this.communityType];
         } else {
-            return this.plurals[this.community];
+            return this.plurals[CommunityType.community];
         }
     }
 

@@ -10,7 +10,7 @@
 
 """Invenio communities extension."""
 
-from flask import g
+from flask import current_app
 from flask_menu import current_menu
 from flask_principal import identity_loaded
 from invenio_accounts.signals import datastore_post_commit
@@ -123,6 +123,7 @@ def finalize_app(app):
 
 
 def register_menus(app):
+    show_specific_types = current_app.config.get("COMMUNITIES_SHOW_SPECIFIC_TYPES", False)
     """Register community menu items."""
     current_menu.submenu("main.communities").register(
         endpoint="invenio_communities.communities_frontpage",
@@ -174,6 +175,99 @@ def register_menus(app):
         expected_args=["pid_value"],
         **{"icon": "info", "permissions": "can_read"}
     )
+    if show_specific_types:
+        """Register persons menu items."""
+        current_menu.submenu("plus.person").register(
+            endpoint="invenio_communities.persons_new",
+            text=_("New person"),
+            order=5,
+            visible_when=_can_create_community,
+        )
+
+        persons = current_menu.submenu("persons")
+
+        persons.submenu("requests").register(
+            endpoint="invenio_communities.persons_requests",
+            text=_("Requests"),
+            order=2,
+            expected_args=["pid_value"],
+            **{"icon": "comments", "permissions": "can_search_requests"}
+        )
+        persons.submenu("members").register(
+            endpoint="invenio_communities.persons_members",
+            text=_("Members"),
+            order=3,
+            expected_args=["pid_value"],
+            **{"icon": "users", "permissions": "can_read"}
+        )
+        persons.submenu("settings").register(
+            endpoint="invenio_communities.persons_settings",
+            text=_("Settings"),
+            order=4,
+            expected_args=["pid_value"],
+            **{"icon": "settings", "permissions": "can_update"}
+        )
+        persons.submenu("curation_policy").register(
+            endpoint="invenio_communities.communities_curation_policy",
+            text=_("Curation policy"),
+            order=5,
+            expected_args=["pid_value"],
+            **{"icon": "balance scale", "permissions": "can_read"}
+        )
+        persons.submenu("about").register(
+            endpoint="invenio_communities.communities_about",
+            text=_("About"),
+            order=6,
+            expected_args=["pid_value"],
+            **{"icon": "info", "permissions": "can_read"}
+        )
+
+        """Register organizations menu items."""
+        current_menu.submenu("plus.organization").register(
+            endpoint="invenio_communities.organizations_new",
+            text=_("New organization"),
+            order=4,
+            visible_when=_can_create_community,
+        )
+
+        organizations = current_menu.submenu("organizations")
+
+        organizations.submenu("requests").register(
+            endpoint="invenio_communities.organizations_requests",
+            text=_("Requests"),
+            order=2,
+            expected_args=["pid_value"],
+            **{"icon": "comments", "permissions": "can_search_requests"}
+        )
+        organizations.submenu("members").register(
+            endpoint="invenio_communities.organizations_members",
+            text=_("Members"),
+            order=3,
+            expected_args=["pid_value"],
+            **{"icon": "users", "permissions": "can_read"}
+        )
+        organizations.submenu("settings").register(
+            endpoint="invenio_communities.organizations_settings",
+            text=_("Settings"),
+            order=4,
+            expected_args=["pid_value"],
+            **{"icon": "settings", "permissions": "can_update"}
+        )
+
+        organizations.submenu("curation_policy").register(
+            endpoint="invenio_communities.communities_curation_policy",
+            text=_("Curation policy"),
+            order=5,
+            expected_args=["pid_value"],
+            **{"icon": "balance scale", "permissions": "can_read"}
+        )
+        organizations.submenu("about").register(
+            endpoint="invenio_communities.communities_about",
+            text=_("About"),
+            order=6,
+            expected_args=["pid_value"],
+            **{"icon": "info", "permissions": "can_read"}
+        )
 
 
 def init(app):

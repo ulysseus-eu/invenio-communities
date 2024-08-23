@@ -50,12 +50,6 @@ ReactDOM.render(
                                         </Label>
                                         {dataCommunity.description}
                                     </ListItem>}
-                                    {dataCommunity.identifiers[0].identifier && <ListItem>
-                                        <Label horizontal>
-                                            Gridcode
-                                        </Label>
-                                        {dataCommunity.identifiers[0].identifier}
-                                    </ListItem>}
                                 </List>}
                             </CardDescription>
                         </GridColumn>

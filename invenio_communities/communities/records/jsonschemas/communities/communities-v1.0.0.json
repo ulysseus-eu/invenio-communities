@@ -72,9 +72,6 @@
         "person": {
           "$ref": "local://communities/definitions-v2.0.0.json#/person"
         },
-        "organization": {
-          "$ref": "local://communities/definitions-v2.0.0.json#/organization"
-        },
         "subjects": {
           "$ref": "local://records/definitions-v2.0.0.json#/subjects"
         },

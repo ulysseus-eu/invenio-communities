@@ -454,19 +454,6 @@
       }
     }
   },
-  "organization": {
-    "type": "object",
-    "additionalProperties": false,
-    "properties": {
-      "identifiers": {
-        "type": "array",
-        "items": {
-          "$ref": "local://definitions-v1.0.0.json#/identifiers_with_scheme"
-        },
-        "uniqueItems": true
-      }
-    }
-  },
   "relation_type": {
     "type": "object",
     "additionalProperties": false,

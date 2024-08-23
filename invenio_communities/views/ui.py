@@ -15,8 +15,6 @@ from datetime import datetime
 from babel.dates import format_datetime
 from flask import Blueprint, current_app, g, render_template, request, url_for
 from flask_login import current_user
-from flask_menu import current_menu
-from invenio_i18n import lazy_gettext as _
 from invenio_pidstore.errors import PIDDeletedError, PIDDoesNotExistError
 from invenio_records_resources.proxies import current_service_registry
 from invenio_records_resources.services.errors import PermissionDeniedError
@@ -39,7 +37,6 @@ from .communities import (
     communities_settings_curation_policy,
     communities_settings_pages,
     communities_settings_privileges,
-    community_theme_css_config,
     invitations,
     members,
     organizations_frontpage,
@@ -240,12 +237,6 @@ def create_ui_blueprint(app):
 
     blueprint.add_url_rule(routes["invitations"], view_func=invitations)
 
-    # theme injection view
-    blueprint.add_url_rule(
-        "/communities/<pid_value>/community-theme-<revision>.css",
-        view_func=community_theme_css_config,
-    )
-
     blueprint.add_url_rule(
         routes["about_persons"],
         view_func=communities_about,
@@ -285,12 +276,6 @@ def create_ui_blueprint(app):
     blueprint.add_url_rule(routes["members_persons"], view_func=persons_members)
 
     blueprint.add_url_rule(routes["invitations_persons"], view_func=invitations)
-
-    # theme injection view
-    blueprint.add_url_rule(
-        "/persons/<pid_value>/community-theme-<revision>.css",
-        view_func=community_theme_css_config,
-    )
 
     blueprint.add_url_rule(
         routes["about_organizations"],
@@ -332,166 +317,6 @@ def create_ui_blueprint(app):
 
     blueprint.add_url_rule(routes["invitations_organizations"], view_func=invitations)
 
-    # theme injection view
-    blueprint.add_url_rule(
-        "/organizations/<pid_value>/community-theme-<revision>.css",
-        view_func=community_theme_css_config,
-    )
-
-    @blueprint.before_app_first_request
-    def register_menus():
-        """Register community menu items."""
-        show_specific_types = current_app.config.get("COMMUNITIES_SHOW_SPECIFIC_TYPES", False)
-        item = current_menu.submenu("main.communities")
-        item.register(
-            "invenio_communities.communities_frontpage",
-            _("Communities"),
-            order=1,
-        )
-        current_menu.submenu("plus.community").register(
-            "invenio_communities.communities_new",
-            _("New community"),
-            order=2,
-            visible_when=_show_create_community_link,
-        )
-
-        communities = current_menu.submenu("communities")
-
-        communities.submenu("requests").register(
-            "invenio_communities.communities_requests",
-            text=_("Requests"),
-            order=3,
-            expected_args=["pid_value"],
-            **dict(icon="inbox", permissions="can_search_requests"),
-        )
-        communities.submenu("members").register(
-            "invenio_communities.members",
-            text=_("Members"),
-            order=4,
-            expected_args=["pid_value"],
-            **dict(icon="users", permissions="can_read"),
-        )
-        communities.submenu("settings").register(
-            "invenio_communities.communities_settings",
-            text=_("Settings"),
-            order=5,
-            expected_args=["pid_value"],
-            **dict(icon="settings", permissions="can_update"),
-        )
-        communities.submenu("curation_policy").register(
-            "invenio_communities.communities_curation_policy",
-            text=_("Curation policy"),
-            order=6,
-            visible_when=_has_curation_policy_page_content,
-            expected_args=["pid_value"],
-            **dict(icon="balance scale", permissions="can_read"),
-        )
-        communities.submenu("about").register(
-            "invenio_communities.communities_about",
-            text=_("About"),
-            order=7,
-            visible_when=_has_about_page_content,
-            expected_args=["pid_value"],
-            **dict(icon="info", permissions="can_read"),
-        )
-        if show_specific_types:
-            """Register persons menu items."""
-            current_menu.submenu("plus.person").register(
-                "invenio_communities.persons_new",
-                _("New person"),
-                order=4,
-                visible_when=_show_create_community_link,
-            )
-
-            persons = current_menu.submenu("persons")
-
-            persons.submenu("requests").register(
-                "invenio_communities.persons_requests",
-                text=_("Requests"),
-                order=3,
-                expected_args=["pid_value"],
-                **dict(icon="inbox", permissions="can_search_requests"),
-            )
-            persons.submenu("members").register(
-                "invenio_communities.persons_members",
-                text=_("Members"),
-                order=4,
-                expected_args=["pid_value"],
-                **dict(icon="users", permissions="can_read"),
-            )
-            persons.submenu("settings").register(
-                "invenio_communities.persons_settings",
-                text=_("Settings"),
-                order=5,
-                expected_args=["pid_value"],
-                **dict(icon="settings", permissions="can_update"),
-            )
-
-            persons.submenu("curation_policy").register(
-                "invenio_communities.communities_curation_policy",
-                text=_("Curation policy"),
-                order=6,
-                visible_when=_has_curation_policy_page_content,
-                expected_args=["pid_value"],
-                **dict(icon="balance scale", permissions="can_read"),
-            )
-            persons.submenu("about").register(
-                "invenio_communities.communities_about",
-                text=_("About"),
-                order=7,
-                visible_when=_has_about_page_content,
-                expected_args=["pid_value"],
-                **dict(icon="info", permissions="can_read"),
-            )
-
-            """Register organizations menu items."""
-            current_menu.submenu("plus.organization").register(
-                "invenio_communities.organizations_new",
-                _("New organization"),
-                order=3,
-                visible_when=_show_create_community_link,
-            )
-
-            organizations = current_menu.submenu("organizations")
-
-            organizations.submenu("requests").register(
-                "invenio_communities.organizations_requests",
-                text=_("Requests"),
-                order=3,
-                expected_args=["pid_value"],
-                **dict(icon="inbox", permissions="can_search_requests"),
-            )
-            organizations.submenu("members").register(
-                "invenio_communities.organizations_members",
-                text=_("Members"),
-                order=4,
-                expected_args=["pid_value"],
-                **dict(icon="users", permissions="can_read"),
-            )
-            organizations.submenu("settings").register(
-                "invenio_communities.organizations_settings",
-                text=_("Settings"),
-                order=5,
-                expected_args=["pid_value"],
-                **dict(icon="settings", permissions="can_update"),
-            )
-
-            organizations.submenu("curation_policy").register(
-                "invenio_communities.communities_curation_policy",
-                text=_("Curation policy"),
-                order=6,
-                visible_when=_has_curation_policy_page_content,
-                expected_args=["pid_value"],
-                **dict(icon="balance scale", permissions="can_read"),
-            )
-            organizations.submenu("about").register(
-                "invenio_communities.communities_about",
-                text=_("About"),
-                order=7,
-                visible_when=_has_about_page_content,
-                expected_args=["pid_value"],
-                **dict(icon="info", permissions="can_read"),
-            )
     # Register error handlers
     blueprint.register_error_handler(
         PermissionDeniedError, record_permission_denied_error

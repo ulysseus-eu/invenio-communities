@@ -9,7 +9,7 @@
 
 {% extends "invenio_communities/base.html" %}
 
-{%- set title = _("New community") -%}
+{%- set title = _("New "+form_config.community_type) -%}
 
 {%- block javascript %}
 {{ super() }}

@@ -43,10 +43,18 @@ import PropTypes from "prop-types";
 import { default as DangerZone } from "./DangerZone";
 import { default as LogoUploader } from "./LogoUploader";
 import Overridable from "react-overridable";
+import {CommunityType} from "../../community";
 
-const COMMUNITY_VALIDATION_SCHEMA = Yup.object({
+export const COMMUNITY_VALIDATION_SCHEMA = Yup.object({
     metadata: Yup.object({
-        title: Yup.string().max(250, i18next.t("Maximum number of characters is 2000")),
+        title: Yup.string().when(
+            'type',
+            {
+                is: (val) => val && val["id"] === CommunityType.person,
+                then: Yup.string(),
+                otherwise: Yup.string().required("Community shall have a name").max(250, i18next.t("Maximum number of characters is 250")),
+            },
+        ),
         description: Yup.string().max(
             250,
             i18next.t("Maximum number of characters is 250")
@@ -55,31 +63,22 @@ const COMMUNITY_VALIDATION_SCHEMA = Yup.object({
         type: Yup.object().shape({
             id: Yup.string(),
         }),
-        person: Yup.object().shape({
-            given_name: Yup.string().when('type', {
-                is: (val) => val["id"] === "person",
-                then: Yup.string().required('First name is required')
-            }),
-            family_name: Yup.string().when('type', {
-                is: (val) => val["id"] === "person",
-                then: Yup.string().required('Last name is required')
-            }),
-            middle_name: Yup.string().when('type', {
-                is: (val) => val["id"] === "person",
-                then: Yup.string('Middle name is required')
+        person: Yup.object().when('type', {
+            is: (val) => val && val["id"] === CommunityType.person,
+            then: Yup.object().shape({
+                given_name: Yup.string().required('First name is required'),
+                family_name: Yup.string().required('Last name is required'),
+                middle_name: Yup.string(),
             }),
         }),
-        organization: Yup.object().shape({
-            gridcode: Yup.string().when('type', {
-                is: (val) => val["id"] === "organization",
-                then: Yup.string().required('Grid code is required')
-            }),
-            ror: Yup.string().when('type', {
-                is: (val) => val["id"] === "organization",
-                then: Yup.string().required('ROR ID is required')
-            }),
+        organizations: Yup.array().when('type', {
+            is: (val) => val && val["id"] === CommunityType.organization,
+            then: Yup.array().min(
+                1,
+                i18next.t("Minimum number of organizations is 1"))
         }),
     }),
+    slug: Yup.string().required("Slug is required for any community"),
 });
 
 /**
@@ -89,7 +88,7 @@ const COMMUNITY_VALIDATION_SCHEMA = Yup.object({
  * @param {object} obj - potentially empty object
  * @returns {object} community - without empty fields
  */
-const removeEmptyValues = (obj) => {
+export const removeEmptyValues = (obj) => {
   if (_isArray(obj)) {
     let mappedValues = obj.map((value) => removeEmptyValues(value));
     return mappedValues.filter((value) => {
@@ -323,6 +322,10 @@ class CommunityProfileForm extends Component {
       ...submittedCommunity,
       metadata: { ...values.metadata, organizations, funding },
     };
+    if (submittedCommunity.metadata.type?.id === CommunityType.person) {
+      submittedCommunity.metadata["title"] =
+        submittedCommunity.metadata.person.family_name + ", " + submittedCommunity.metadata.person.given_name;
+    }
 
     // Clean values
     submittedCommunity = removeEmptyValues(submittedCommunity);
@@ -349,7 +352,6 @@ class CommunityProfileForm extends Component {
 
       const { message, errors } = communityErrorSerializer(error);
 
-      setSubmitting(false);
 
       if (message) {
         this.setGlobalError(error);
@@ -358,6 +360,7 @@ class CommunityProfileForm extends Component {
         errors.map(({ field, messages }) => setFieldError(field, messages[0]));
       }
     }
+    setSubmitting(false);
   };
 
     render() {
@@ -375,15 +378,13 @@ class CommunityProfileForm extends Component {
             "metadata.title",
             "metadata.person.given_name",
             "metadata.person.family_name",
-            "metadata.organization.gridcode",
-            "metadata.organization.ror",
             "metadata.type.id",
             "metadata.website",
             "metadata.organizations",
             "metadata.description",
         ]
-        const isPerson = (community.metadata.type?.id === "person");
-        const isOrganization = (community.metadata.type?.id === "organization");
+        const isPerson = (community.metadata.type?.id === CommunityType.person);
+        const isOrganization = (community.metadata.type?.id === CommunityType.organization);
         const shallDisplayType = !(isPerson || isOrganization);
         return (
             <Formik
@@ -415,6 +416,7 @@ class CommunityProfileForm extends Component {
                                         active
                                     >
                                         <div className="rel-ml-1 rel-mr-1">
+                                            {(values.metadata.type.id !== CommunityType.person) && (
                                             <TextField
                                                 fluid
                                                 fieldPath="metadata.title"
@@ -425,8 +427,8 @@ class CommunityProfileForm extends Component {
                                                         label={i18next.t("Name")}
                                                     />
                                                 }
-                                            />
-                                            {(values.metadata.type.id === "person") && <TextField
+                                            />)}
+                                            {(values.metadata.type.id === CommunityType.person) && <TextField
                                                 fluid
                                                 fieldPath="metadata.person.given_name"
                                                 label={
@@ -438,7 +440,7 @@ class CommunityProfileForm extends Component {
                                                 }
                                             />}
 
-                                            {(values.metadata.type.id === "person") && <TextField
+                                            {(values.metadata.type.id === CommunityType.person) && <TextField
                                                 fluid
                                                 fieldPath="metadata.person.family_name"
                                                 label={
@@ -446,30 +448,6 @@ class CommunityProfileForm extends Component {
                                                         htmlFor="metadata.person.family_name"
                                                         icon="user"
                                                         label={i18next.t("Last name")}
-                                                    />
-                                                }
-                                            />}
-
-                                            {(values.metadata.type.id === "organization") && <TextField
-                                                fluid
-                                                fieldPath="metadata.organization.gridcode"
-                                                label={
-                                                    <FieldLabel
-                                                        htmlFor="metadata.organization.gridcode"
-                                                        icon="user"
-                                                        label={i18next.t("Grid code")}
-                                                    />
-                                                }
-                                            />}
-
-                                            {(values.metadata.type.id === "organization") && <TextField
-                                                fluid
-                                                fieldPath="metadata.organization.ror"
-                                                label={
-                                                    <FieldLabel
-                                                        htmlFor="metadata.organization.ror"
-                                                        icon="user"
-                                                        label={i18next.t("ROR")}
                                                     />
                                                 }
                                             />}
