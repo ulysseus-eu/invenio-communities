@@ -31,12 +31,14 @@ from .communities import (
     communities_curation_policy,
     communities_frontpage,
     communities_new,
+    communities_new_subcommunity,
     communities_requests,
     communities_search,
     communities_settings,
-    communities_settings_curation_policy,
     communities_settings_pages,
     communities_settings_privileges,
+    communities_settings_submission_policy,
+    community_theme_css_config,
     invitations,
     members,
     organizations_frontpage,
@@ -207,6 +209,11 @@ def create_ui_blueprint(app):
         view_func=communities_curation_policy,
     )
 
+    blueprint.add_url_rule(
+        routes["new_subcommunity"],
+        view_func=communities_new_subcommunity,
+    )
+
     # Settings tab routes
     blueprint.add_url_rule(
         routes["settings"],
@@ -224,8 +231,8 @@ def create_ui_blueprint(app):
     )
 
     blueprint.add_url_rule(
-        routes["settings_curation_policy"],
-        view_func=communities_settings_curation_policy,
+        routes["settings_submission_policy"],
+        view_func=communities_settings_submission_policy,
     )
 
     blueprint.add_url_rule(
@@ -236,6 +243,12 @@ def create_ui_blueprint(app):
     blueprint.add_url_rule(routes["members"], view_func=members)
 
     blueprint.add_url_rule(routes["invitations"], view_func=invitations)
+
+    # theme injection view
+    blueprint.add_url_rule(
+        "/communities/<pid_value>/community-theme-<revision>.css",
+        view_func=community_theme_css_config,
+    )
 
     blueprint.add_url_rule(
         routes["about_persons"],
@@ -264,8 +277,8 @@ def create_ui_blueprint(app):
     )
 
     blueprint.add_url_rule(
-        routes["settings_curation_policy_persons"],
-        view_func=communities_settings_curation_policy,
+        routes["settings_submission_policy_persons"],
+        view_func=communities_settings_submission_policy,
     )
 
     blueprint.add_url_rule(
@@ -304,8 +317,8 @@ def create_ui_blueprint(app):
     )
 
     blueprint.add_url_rule(
-        routes["settings_curation_policy_organizations"],
-        view_func=communities_settings_curation_policy,
+        routes["settings_submission_policy_organizations"],
+        view_func=communities_settings_submission_policy,
     )
 
     blueprint.add_url_rule(

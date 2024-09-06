@@ -16,10 +16,10 @@ from collections import namedtuple
 from functools import partial, reduce
 from itertools import chain
 
-from flask import current_app
 from flask_principal import UserNeed
-from invenio_access.permissions import any_user, system_process
-from invenio_records_permissions.generators import ConditionalGenerator, Generator
+from invenio_access.permissions import any_user, authenticated_user, system_process
+from invenio_records.dictutils import dict_lookup
+from invenio_records_permissions.generators import Generator
 from invenio_search.engine import dsl
 
 from .communities.records.systemfields.deletion_status import (
@@ -117,7 +117,11 @@ class IfRestricted(IfRestrictedBase):
     def __init__(self, field, then_, else_):
         """Initialize."""
         super().__init__(
-            lambda r: getattr(r.access, field, None),
+            lambda r: (
+                getattr(r.access, field, None)
+                if hasattr(r, "access")
+                else r.get("access", {}).get(field)
+            ),  # needed for running permission check at serialization time and avoid db query
             f"access.{field}",
             "restricted",
             "public",
@@ -126,22 +130,79 @@ class IfRestricted(IfRestrictedBase):
         )
 
 
-class IfPolicyClosed(IfRestrictedBase):
+class ReviewPolicy(Generator):
     """If policy is closed."""
 
-    def __init__(self, field, then_, else_):
+    def __init__(self, closed_, open_, members_):
+        """Constructor."""
+        self.closed_ = closed_
+        self.open_ = open_
+        self.members_ = members_
+
+    def _generators(self, record, **kwargs):
+        """Get the generators."""
+        review_policy = dict_lookup(record, "access.review_policy")
+
+        if review_policy == "closed":
+            return self.closed_
+        elif review_policy == "open":
+            return self.open_
+        elif review_policy == "members":
+            return self.members_
+
+    def needs(self, record=None, **kwargs):
+        """Set of Needs granting permission."""
+        needs = [
+            g.needs(record=record, **kwargs) for g in self._generators(record, **kwargs)
+        ]
+        return set(chain.from_iterable(needs))
+
+    def excludes(self, record=None, **kwargs):
+        """Set of Needs denying permission."""
+        needs = [
+            g.excludes(record=record, **kwargs)
+            for g in self._generators(record, **kwargs)
+        ]
+        return set(chain.from_iterable(needs))
+
+
+class IfRecordSubmissionPolicyClosed(IfRestrictedBase):
+    """If record submission policy is closed."""
+
+    def __init__(self, then_, else_):
         """Initialize."""
+        field = "record_submission_policy"
         super().__init__(
-            lambda r: (
+            field_getter=lambda r: (
                 getattr(r.access, field, None)
                 if hasattr(r, "access")
                 else r.get("access", {}).get(field)
             ),  # needed for running permission check at serialization time and avoid db query
-            f"access.{field}",
-            "closed",
-            "open",
-            then_,
-            else_,
+            field_name=f"access.{field}",
+            then_value="closed",
+            else_value="open",
+            then_=then_,
+            else_=else_,
+        )
+
+
+class IfMemberPolicyClosed(IfRestrictedBase):
+    """If member policy is closed."""
+
+    def __init__(self, then_, else_):
+        """Initialize."""
+        field = "member_policy"
+        super().__init__(
+            field_getter=lambda r: (
+                getattr(r.access, field, None)
+                if hasattr(r, "access")
+                else r.get("access", {}).get(field)
+            ),  # needed for running permission check at serialization time and avoid db query
+            field_name=f"access.{field}",
+            then_value="closed",
+            else_value="open",
+            then_=then_,
+            else_=else_,
         )
 
 
@@ -200,6 +261,28 @@ class IfCommunityDeleted(Generator):
 #
 # Community membership generators
 #
+
+
+class AuthenticatedButNotCommunityMembers(Generator):
+    """Authenticated user not part of community."""
+
+    def needs(self, record=None, **kwargs):
+        """Required needs."""
+        return [authenticated_user]
+
+    def excludes(self, record=None, **kwargs):
+        """Exluding needs.
+
+        Excludes identities with a role in the community. This assumes all roles at
+        this point mean valid memberships. This is the same assumption as
+        `CommunityMembers` below.
+        """
+        if not record:
+            return []
+        community_id = str(record.id)
+        return [CommunityRoleNeed(community_id, r.name) for r in current_roles]
+
+
 class CommunityRoles(Generator):
     """Base class for community roles generators."""
 
@@ -339,30 +422,5 @@ class AllowedMemberTypes(Generator):
         if member_types:
             for m in member_types:
                 if m not in self.allowed_member_types:
-                    return [any_user]
-        return []
-
-
-class GroupsEnabled(Generator):
-    """Generator to restrict if the groups are not enabled.
-
-    If the groups are not enabled, exclude any user for adding members of the
-    param member type.
-
-    A system process is allowed to do anything.
-    """
-
-    def __init__(self, *need_groups_enabled_types):
-        """Types that need the groups enabled."""
-        self.need_groups_enabled_types = need_groups_enabled_types
-
-    def excludes(self, member_types=None, **kwargs):
-        """Preventing needs."""
-        if member_types:
-            for m in member_types:
-                if (
-                    m in self.need_groups_enabled_types
-                    and not current_app.config["COMMUNITIES_GROUPS_ENABLED"]
-                ):
                     return [any_user]
         return []

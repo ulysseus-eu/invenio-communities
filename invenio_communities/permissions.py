@@ -20,20 +20,23 @@ from invenio_records_permissions.generators import (
     SystemProcess,
 )
 from invenio_records_permissions.policies import BasePermissionPolicy
+from invenio_users_resources.services.generators import GroupsEnabled
 from invenio_users_resources.services.permissions import UserManager
 
 from .generators import (
     AllowedMemberTypes,
+    AuthenticatedButNotCommunityMembers,
     CommunityCurators,
     CommunityManagers,
     CommunityManagersForRole,
     CommunityMembers,
     CommunityOwners,
     CommunitySelfMember,
-    GroupsEnabled,
     IfCommunityDeleted,
-    IfPolicyClosed,
+    IfMemberPolicyClosed,
+    IfRecordSubmissionPolicyClosed,
     IfRestricted,
+    ReviewPolicy,
 )
 
 
@@ -81,8 +84,7 @@ class CommunityPermissionPolicy(BasePermissionPolicy):
     can_rename = [CommunityOwners(), SystemProcess()]
 
     can_submit_record = [
-        IfPolicyClosed(
-            "record_policy",
+        IfRecordSubmissionPolicyClosed(
             then_=[CommunityMembers(), SystemProcess()],
             else_=[
                 IfRestricted(
@@ -96,11 +98,11 @@ class CommunityPermissionPolicy(BasePermissionPolicy):
 
     # who can include a record directly, without a review
     can_include_directly = [
-        IfPolicyClosed(
-            "review_policy",
-            then_=[Disable()],
-            else_=[CommunityCurators()],
-        ),
+        ReviewPolicy(
+            closed_=[Disable()],
+            open_=[CommunityCurators()],
+            members_=[CommunityMembers()],
+        )
     ]
 
     can_members_add = [
@@ -179,8 +181,24 @@ class CommunityPermissionPolicy(BasePermissionPolicy):
     # Permissions to set if communities can have children
     can_manage_children = [SystemProcess()]
 
-    # Permission for assinging a parent community
+    # Permission for assigning a parent community
     can_manage_parent = [Administration(), SystemProcess()]
+
+    # request_membership permission is based on configuration, community settings and
+    # identity. Other factors (e.g., previous membership requests) are not under
+    # its purview and are dealt with elsewhere.
+    can_request_membership = [
+        IfConfig(
+            "COMMUNITIES_ALLOW_MEMBERSHIP_REQUESTS",
+            then_=[
+                IfMemberPolicyClosed(
+                    then_=[Disable()],
+                    else_=[AuthenticatedButNotCommunityMembers()],
+                ),
+            ],
+            else_=[Disable()],
+        ),
+    ]
 
 
 def can_perform_action(community, context):

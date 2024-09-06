@@ -11,7 +11,7 @@
 
 from copy import deepcopy
 
-from flask import current_app, g, render_template
+from flask import abort, current_app, g, render_template
 from flask.templating import _render
 from flask_login import login_required
 from invenio_i18n import lazy_gettext as _
@@ -22,6 +22,7 @@ from jinja2 import TemplateError
 from invenio_communities.proxies import current_communities
 
 from ..communities.resources.ui_schema import TypesSchema
+from ..members.records.api import Member
 from .decorators import pass_community
 from .template_loader import CommunityThemeChoiceJinjaLoader
 from ..utils import CommunityType
@@ -64,6 +65,24 @@ MEMBERS_VISIBILITY_FIELDS = [
     },
 ]
 
+RECORDS_SUBMISSION_POLICY_FIELDS = [
+    {
+        "text": "Open",
+        "value": "open",
+        "icon": "lock open",
+        "helpText": _(
+            "All authenticated users can submit records to the community. "
+            "If the community is restricted, then only members can submit records to it."
+        ),
+    },
+    {
+        "text": "Closed",
+        "value": "closed",
+        "icon": "lock",
+        "helpText": _("Only members can submit records to the community."),
+    },
+]
+
 
 REVIEW_POLICY_FIELDS = [
     {
@@ -80,6 +99,32 @@ REVIEW_POLICY_FIELDS = [
             "Submissions to the community or person will by default require review, but curators, managers and owners can publish directly without review."
         ),
     },
+    {
+        "text": "Allow all members to publish without review",
+        "value": "members",
+        "icon": "lock open",
+        "helpText": _(
+            "Submissions to the community or person by default requires review, but all community members can publish directly without review."
+        ),
+    },
+]
+
+
+MEMBER_POLICY_FIELDS = [
+    {
+        "text": "Open",
+        "value": "open",
+        "icon": "user plus",
+        "helpText": _("Users can request to join your community."),
+    },
+    {
+        "text": "Closed",
+        "value": "closed",
+        "icon": "user times",
+        "helpText": _(
+            "Users cannot request to join your community. Only invited users can become members of your community."
+        ),
+    },
 ]
 
 
@@ -89,6 +134,8 @@ HEADER_PERMISSIONS = {
     "search_requests",
     "members_search_public",
     "moderate",
+    "request_membership",
+    "submit_record",
 }
 
 PRIVATE_PERMISSIONS = HEADER_PERMISSIONS | {
@@ -289,6 +336,40 @@ def organizations_new():
     return communities_new(community_type=CommunityType(CommunityType.organization))
 
 
+@login_required
+@pass_community(serialize=True)
+def communities_new_subcommunity(pid_value, community, community_ui):
+    """Subcommunities creation page."""
+    permissions = community.has_permissions_to(PRIVATE_PERMISSIONS)
+
+    if not community["children"]["allow"]:
+        abort(404)
+
+    can_create = current_communities.service.check_permission(g.identity, "create")
+    if not can_create:
+        raise PermissionDeniedError()
+
+    can_create_restricted = current_communities.service.check_permission(
+        g.identity, "create_restricted"
+    )
+
+    return render_community_theme_template(
+        "invenio_communities/details/new_subcommunity.html",
+        theme=community_ui.get("theme", {}),
+        community=community,
+        community_ui=community_ui,
+        permissions=permissions,  # hide/show UI components
+        form_config=dict(
+            access=dict(visibility=VISIBILITY_FIELDS),
+            SITE_UI_URL=current_app.config["SITE_UI_URL"],
+        ),
+        custom_fields=load_custom_fields(
+            dump_only_required=True,
+        ),
+        can_create_restricted=can_create_restricted,
+    )
+
+
 @pass_community(serialize=True)
 def communities_settings(pid_value, community, community_ui):
     """Community settings/profile page."""
@@ -353,6 +434,12 @@ def communities_settings_privileges(pid_value, community, community_ui):
     if not permissions["can_manage_access"]:
         raise PermissionDeniedError()
 
+    member_policy = (
+        MEMBER_POLICY_FIELDS
+        if current_app.config["COMMUNITIES_ALLOW_MEMBERSHIP_REQUESTS"]
+        else {}
+    )
+
     return render_community_theme_template(
         "invenio_communities/details/settings/privileges.html",
         theme=community_ui.get("theme", {}),
@@ -361,6 +448,7 @@ def communities_settings_privileges(pid_value, community, community_ui):
             access=dict(
                 visibility=VISIBILITY_FIELDS,
                 members_visibility=MEMBERS_VISIBILITY_FIELDS,
+                member_policy=member_policy,
             ),
         ),
         permissions=permissions,
@@ -368,19 +456,22 @@ def communities_settings_privileges(pid_value, community, community_ui):
 
 
 @pass_community(serialize=True)
-def communities_settings_curation_policy(pid_value, community, community_ui):
-    """Community settings/curation-policy page."""
+def communities_settings_submission_policy(pid_value, community, community_ui):
+    """Community settings/submission-policy page."""
     permissions = community.has_permissions_to(PRIVATE_PERMISSIONS)
     if not permissions["can_update"]:
         raise PermissionDeniedError()
 
     return render_community_theme_template(
-        "invenio_communities/details/settings/curation_policy.html",
+        "invenio_communities/details/settings/submission_policy.html",
         theme=community_ui.get("theme", {}),
         community=community_ui,
         permissions=permissions,
         form_config=dict(
-            access=dict(review_policy=REVIEW_POLICY_FIELDS),
+            access=dict(
+                review_policy=REVIEW_POLICY_FIELDS,
+                record_submission_policy=RECORDS_SUBMISSION_POLICY_FIELDS,
+            ),
         ),
     )
 
@@ -397,9 +488,6 @@ def communities_settings_pages(pid_value, community, community_ui):
         theme=community_ui.get("theme", {}),
         community=community_ui,
         permissions=permissions,
-        form_config=dict(
-            access=dict(review_policy=REVIEW_POLICY_FIELDS),
-        ),
     )
 
 

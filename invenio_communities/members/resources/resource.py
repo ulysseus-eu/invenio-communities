@@ -31,10 +31,11 @@ class MemberResource(RecordResource):
             route("DELETE", routes["members"], self.delete),
             route("PUT", routes["members"], self.update),
             route("GET", routes["members"], self.search),
-            route("POST", routes["invitations"], self.invite),
             route("GET", routes["publicmembers"], self.search_public),
+            route("POST", routes["invitations"], self.invite),
             route("PUT", routes["invitations"], self.update_invitations),
             route("GET", routes["invitations"], self.search_invitations),
+            route("POST", routes["membership_requests"], self.request_membership),
             route("POST", routes["members-persons"], self.add_person),
             route("DELETE", routes["members-persons"], self.delete_person),
             route("PUT", routes["members-persons"], self.update_person),
@@ -43,6 +44,7 @@ class MemberResource(RecordResource):
             route("GET", routes["publicmembers-persons"], self.search_public_persons),
             route("PUT", routes["invitations-persons"], self.update_invitations_persons),
             route("GET", routes["invitations-persons"], self.search_invitations_persons),
+            route("POST", routes["membership_requests-persons"], self.request_membership_persons),
             route("POST", routes["members-organizations"], self.add_organization),
             route("DELETE", routes["members-organizations"], self.delete_organization),
             route("PUT", routes["members-organizations"], self.update_organization),
@@ -51,6 +53,7 @@ class MemberResource(RecordResource):
             route("GET", routes["publicmembers-organizations"], self.search_public_organizations),
             route("PUT", routes["invitations-organizations"], self.update_invitations_organizations),
             route("GET", routes["invitations-organizations"], self.search_invitations_organizations),
+            route("POST", routes["membership_requests-organizations"], self.request_membership_organizations),
         ]
 
     @request_view_args
@@ -113,6 +116,17 @@ class MemberResource(RecordResource):
             resource_requestctx.data,
         )
         return "", 204
+
+    @request_view_args
+    @request_data
+    def request_membership(self):
+        """Request membership."""
+        request = self.service.request_membership(
+            g.identity,
+            resource_requestctx.view_args["pid_value"],
+            resource_requestctx.data,
+        )
+        return request.to_dict(), 201
 
     @request_view_args
     @request_extra_args
@@ -211,6 +225,17 @@ class MemberResource(RecordResource):
         return "", 204
 
     @request_view_args
+    @request_data
+    def request_membership_persons(self):
+        """Request membership."""
+        request = self.service.request_membership(
+            g.identity,
+            resource_requestctx.view_args["pid_value"],
+            resource_requestctx.data,
+        )
+        return request.to_dict(), 201
+
+    @request_view_args
     @request_extra_args
     @request_data
     def update_person(self):
@@ -305,6 +330,17 @@ class MemberResource(RecordResource):
             resource_requestctx.data,
         )
         return "", 204
+
+    @request_view_args
+    @request_data
+    def request_membership_organizations(self):
+        """Request membership of organizations."""
+        request = self.service.request_membership(
+            g.identity,
+            resource_requestctx.view_args["pid_value"],
+            resource_requestctx.data,
+        )
+        return request.to_dict(), 201
 
     @request_view_args
     @request_extra_args

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2022 CERN.
+# Copyright (C) 2022-2024 CERN.
 # Copyright (C) 2023 TU Wien.
 #
 # Invenio is free software; you can redistribute it and/or modify it
@@ -28,9 +28,18 @@ from invenio_communities.proxies import current_communities
 
 def _community_permission_check(action, community, identity):
     """Check community permission for identity."""
+    try:
+        community_id = getattr(community, "id", community["id"])
+    except KeyError:
+        community_id = getattr(
+            community["processed"][0],
+            "community_id",
+            community["processed"][0]["community_id"],
+        )
+
     return current_communities.service.config.permission_policy_cls(
         action,
-        community_id=getattr(community, "id", community["id"]),
+        community_id=community_id,
         record=community,
     ).allows(identity)
 
@@ -103,19 +112,29 @@ class UICommunitySchema(BaseObjectSchema):
 
     def get_permissions(self, obj):
         """Get permission."""
+        if obj == {}:
+            return {}
+
         can_include_directly = _community_permission_check(
             "include_directly", community=obj, identity=g.identity
         )
         can_update = _community_permission_check(
             "update", community=obj, identity=g.identity
         )
-        return {"can_include_directly": can_include_directly, "can_update": can_update}
+        can_submit_record = _community_permission_check(
+            "submit_record", community=obj, identity=g.identity
+        )
+        return {
+            "can_include_directly": can_include_directly,
+            "can_update": can_update,
+            "can_submit_record": can_submit_record,
+        }
 
-    @post_dump
-    def post_dump(self, data, many, **kwargs):
+    @post_dump(pass_original=True)
+    def post_dump(self, data, original, many, **kwargs):
         """Pop tombstone field if not deleted/visible."""
-        is_deleted = (data.get("deletion_status") or {}).get("is_deleted", False)
-        tombstone_visible = (data.get("tombstone") or {}).get("is_visible", True)
+        is_deleted = (original.get("deletion_status") or {}).get("is_deleted", False)
+        tombstone_visible = (original.get("tombstone") or {}).get("is_visible", True)
 
         if not is_deleted or not tombstone_visible:
             data.pop("tombstone", None)

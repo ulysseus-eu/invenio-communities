@@ -23,6 +23,7 @@ from invenio_records_resources.services.records.components import (
 )
 from marshmallow.exceptions import ValidationError
 
+from ...generators import CommunityRoleNeed
 from ...proxies import current_roles
 from ...utils import on_user_membership_change
 from ..records.systemfields.access import VisibilityEnum
@@ -128,6 +129,11 @@ class OwnershipComponent(ServiceComponent):
         )
 
         # Invalidate the membership cache
+        # The identity is updated so it can be used immediately after the creation of the community
+        # Otherwise, the identity only gets updated in the next request
+        identity.provides.add(
+            CommunityRoleNeed(str(record.id), current_roles.owner_role.name)
+        )
         on_user_membership_change(identity=identity)
 
 
@@ -335,7 +341,11 @@ class CommunityParentComponent(ServiceComponent):
 
     def update(self, identity, data=None, record=None, **kwargs):
         """Update parent community of a community."""
-        if "parent" in data:
+        if not data:
+            return
+        existing_parent_id = record.parent and str(record.parent.id)
+        new_parent_id = (data.get("parent") or {}).get("id")
+        if "parent" in data and new_parent_id != existing_parent_id:
             self.service.require_permission(identity, "manage_parent", record=record)
             parent = self._validate_and_get_parent(data["parent"], record)
             record.parent = parent

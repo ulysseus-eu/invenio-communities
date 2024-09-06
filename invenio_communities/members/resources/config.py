@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2022 KTH Royal Institute of Technology
-# Copyright (C) 2022 Northwestern University.
+# Copyright (C) 2022-2024 Northwestern University.
 # Copyright (C) 2022 CERN.
 # Copyright (C) 2023 TU Wien.
 #
@@ -29,12 +29,15 @@ class MemberResourceConfig(RecordResourceConfig):
         "members": "/communities/<pid_value>/members",
         "publicmembers": "/communities/<pid_value>/members/public",
         "invitations": "/communities/<pid_value>/invitations",
+        "membership_requests": "/communities/<pid_value>/membership-requests",
         "members-persons": "/persons/<pid_value>/members",
         "publicmembers-persons": "/persons/<pid_value>/members/public",
         "invitations-persons": "/persons/<pid_value>/invitations",
+        "membership_requests-persons": "/persons/<pid_value>/membership-requests",
         "members-organizations": "/organizations/<pid_value>/members",
         "publicmembers-organizations": "/organizations/<pid_value>/members/public",
         "invitations-organizations": "/organizations/<pid_value>/invitations",
+        "membership_requests-organizations": "/organizations/<pid_value>/membership-requests",
     }
     request_view_args = {
         "pid_value": ma.fields.UUID(),
@@ -61,4 +64,11 @@ class MemberResourceConfig(RecordResourceConfig):
                 )
             )
         ),
+    }
+
+    response_handlers = {
+        "application/vnd.inveniordm.v1+json": RecordResourceConfig.response_handlers[
+            "application/json"
+        ],
+        **RecordResourceConfig.response_handlers,
     }

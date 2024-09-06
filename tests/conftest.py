@@ -143,6 +143,8 @@ def app_config(app_config):
     # When testing unverified users, there is a "unverified_user" fixture for that purpose.
     app_config["ACCOUNTS_DEFAULT_USERS_VERIFIED"] = True
 
+    app_config["COMMUNITIES_ALLOW_MEMBERSHIP_REQUESTS"] = True
+
     return app_config
 
 
@@ -255,7 +257,7 @@ def owner(users):
 def any_user(UserFixture, app, database):
     """A user without privileges or memberships."""
     u = UserFixture(
-        email=f"anyuser@anyuser.org",
+        email="anyuser@anyuser.org",
         password="anyuser",
     )
     u.create(app, database)
@@ -361,6 +363,46 @@ def new_user(UserFixture, app, database):
     return u
 
 
+@pytest.fixture(scope="function")
+def create_user(UserFixture, app, db):
+    """Create user factory fixture.
+
+    It's function scope is key here as it guarantees a user devoid of any prior which
+    is essential for many tests.
+    """
+
+    def _create_user(data=None):
+        """Create user."""
+        default_data = dict(
+            email="user@example.org",
+            password="user",
+            username="user",
+            user_profile={
+                "full_name": "Created User",
+                "affiliations": "CERN",
+            },
+            preferences={
+                "visibility": "public",
+                "email_visibility": "restricted",
+                "notifications": {
+                    "enabled": True,
+                },
+            },
+            active=True,
+            confirmed=True,
+        )
+        data = data or {}
+        actual_data = dict(default_data, **data)
+        u = UserFixture(**actual_data)
+        u.create(app, db)
+        current_users_service.indexer.process_bulk_queue()
+        current_users_service.record_cls.index.refresh()
+        db.session.commit()
+        return u
+
+    return _create_user
+
+
 #
 # Communities
 #
@@ -371,7 +413,7 @@ def minimal_community():
         "access": {
             "visibility": "public",
             "members_visibility": "public",
-            "record_policy": "open",
+            "record_submission_policy": "open",
         },
         "slug": "public",
         "metadata": {
@@ -387,7 +429,7 @@ def minimal_restricted_community_1():
         "access": {
             "visibility": "restricted",
             "members_visibility": "restricted",
-            "record_policy": "closed",
+            "record_submission_policy": "closed",
         },
         "slug": "community1",
         "metadata": {
@@ -403,7 +445,7 @@ def minimal_restricted_community_2():
         "access": {
             "visibility": "restricted",
             "members_visibility": "restricted",
-            "record_policy": "closed",
+            "record_submission_policy": "closed",
         },
         "slug": "community2",
         "metadata": {
@@ -420,7 +462,7 @@ def full_community():
             "visibility": "public",
             "members_visibility": "public",
             "member_policy": "open",
-            "record_policy": "open",
+            "record_submission_policy": "open",
         },
         "slug": "my_community_id",
         "metadata": {

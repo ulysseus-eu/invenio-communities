@@ -9,6 +9,107 @@
 Changes
 =======
 
+Version v15.0.0 (released 2024-08-26)
+- improve communities mapping with edge_ngram analyzer and accent analyzer
+
+Version v14.10.0 (released 2024-08-26)
+
+- fixes defaults for COMMUNITIES_CUSTOM_FIELDS
+- deprecated record_policy in favour of record_submission_policy
+- add new policy to allow only members of a community to submit records 
+
+Version v14.9.0 (released 2024-08-22)
+
+- bump invenio-vocabularies
+
+Version v14.8.0 (released 2024-08-22)
+
+- bump invenio-requests
+
+Version v14.7.0 (released 2024-08-22)
+
+- package: bump react-invenio-forms
+
+Version 14.6.1 (released 2024-08-09)
+
+- permissions: implement missing excludes clause in ReviewPolicy generator
+
+Version 14.6.0 (released 2024-08-09)
+
+- settings-ui: [#855] set membership policy
+- fix(logo): not fully deleted
+- user_moderation: dispatch Celery tasks for each community operation
+- review policy: allow all community members to submit records to community without review
+- permissions: add member policy generator
+- invitation: Update RichEditor to use inputValue
+- services: use and adjust vnd.inveniordm.v1+json http accept header
+
+Version 14.5.1 (released 2024-06-28)
+
+- subcommunity: updated fieldpaths and error handling
+- subcommunity: updated error mapping in the ui
+
+Version 14.5.0 (released 2024-06-28)
+
+- subcommunities: pass "payload" to request creation
+
+Version 14.4.0 (released 2024-06-28)
+
+- subcommunity: updated fieldpaths in the ui
+- subcommunities: fix request redirect url
+- errors: added subcommunities errors
+- subcommunities: check for parent children allow
+
+Version 14.3.0 (released 2024-06-27)
+
+- subcommunities: made the request form overridable
+- subcommunities: pass community object
+- subcommunities: added auto-accept to request
+- request: added subcommunity type as a function to entry point
+- profile: rename award label
+    * closes https://github.com/inveniosoftware/invenio-app-rdm/issues/2602
+
+Version 14.2.0 (released 2024-06-24)
+
+- subcommunities: fixed redirect url after new request
+- subcommunities: add notifications
+- subcommunities-ui: explicitly sort by newest first in form dropdown
+- bug: return 404 if community cannot have children
+- bug: filter out communities that have a parent or can have children (#1154)
+- bug: allow adding existing communities
+
+Version 14.1.0 (released 2024-06-20)
+
+- mappings: add dynamic mappings for user profiles and preferences
+- community-ui: improve creation UX
+    * cast slug to lowercase
+- subcommunities: initial minimal feature implementation
+- ui: fixed tombstone dumping
+
+Version 14.0.0 (released 2024-06-04)
+
+- installation: bump invenio-vocabularies
+
+Version 13.0.3 (released 2024-05-15)
+
+- components: fix parent update permissions
+
+Version 13.0.2 (released 2024-05-07)
+
+- groups: moved groups config and permission generator to invenio-users-resources
+
+Version 13.0.1 (released 2024-04-15)
+
+- fix: community theme and menus visibility
+
+Version 13.0.0 (released 2024-04-10)
+
+- ext: space-out community menu items
+- systemfields: dump `@v` field during indexing
+- members modal: generalise to be reusable
+- records: optimize performance of is_verified
+- models: fix memberships querying
+
 Version 12.2.0 (released 2024-03-23)
 
 - application: fix before_first_request deprecation

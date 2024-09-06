@@ -135,7 +135,7 @@ class CommunityProfileForm extends Component {
       access: {
         visibility: "public",
         member_policy: "open",
-        record_policy: "open",
+        record_submission_policy: "open",
       },
     });
 
@@ -518,7 +518,7 @@ class CommunityProfileForm extends Component {
                           fieldPath="metadata.organizations"
                           suggestionAPIUrl="/api/affiliations"
                           suggestionAPIHeaders={{
-                            Accept: "application/json",
+                            Accept: "application/vnd.inveniordm.v1+json",
                           }}
                           placeholder={i18next.t("Search for an organization by name")}
                           clearable
@@ -592,7 +592,7 @@ class CommunityProfileForm extends Component {
                               size: 5,
                             },
                           }}
-                          label={i18next.t("Awards")}
+                          label={i18next.t("Awards/Grants")}
                           labelIcon="money bill alternate outline"
                           deserializeAward={(award) => {
                             return {

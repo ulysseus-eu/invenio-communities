@@ -7,6 +7,7 @@
 # under the terms of the MIT License; see LICENSE file for more details.
 
 """Community PID slug field."""
+
 from uuid import UUID
 
 from invenio_records.dictutils import filter_dict_keys
@@ -87,9 +88,15 @@ class ParentCommunityField(SystemField):
         parent_community = getattr(record, self.attr_name)
         if parent_community:
             dump = parent_community.dumps()
+
+            # Add a version counter "@v" used for optimistic concurrency control. It
+            # allows to search for all outdated community references and reindex them
+            dump["@v"] = f"{parent_community.id}::{parent_community.revision_id}"
+
             data[self.key] = filter_dict_keys(
                 dump,
                 keys=[
+                    "@v",
                     "uuid",
                     "created",
                     "updated",

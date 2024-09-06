@@ -53,7 +53,7 @@ def _assert_optional_access_items_response(response):
     fields_to_check = [
         "visibility",
         "member_policy",
-        "record_policy",
+        "record_submission_policy",
     ]
 
     for field in fields_to_check:
@@ -400,6 +400,12 @@ def test_simple_search_response(
     assert res.json["hits"]["total"] == total
     assert len(res.json["hits"]["hits"]) == 5
 
+    # Test search for prefix
+    res = client.get(f"/communities", query_string={"q": "Comm"}, headers=headers)
+    assert res.status_code == 200
+    _assert_single_item_search(res)
+    assert res.json["hits"]["total"] == total  # they all have the name "My Community"
+
 
 def test_simple_get_response(
     client,
@@ -482,7 +488,7 @@ def test_simple_put_response(
         "visibility": "restricted",
         "members_visibility": "restricted",
         "member_policy": "closed",
-        "record_policy": "closed",
+        "record_submission_policy": "closed",
     }
 
     res = client.put(f"/communities/{id_}", headers=headers, json=data)
@@ -534,7 +540,7 @@ def test_update_renamed_record(
         "visibility": "restricted",
         "members_visibility": "restricted",
         "member_policy": "closed",
-        "record_policy": "closed",
+        "record_submission_policy": "closed",
     }
     res = client.put(f"/communities/{renamed_id_}", headers=headers, json=data)
     assert res.status_code == 200
@@ -707,7 +713,7 @@ def test_invalid_community_ids_create(
     assert res.status_code == 400
     assert (
         res.json["errors"][0]["messages"][0]
-        == "The ID should contain only letters with numbers or dashes."
+        == "The identifier should contain only letters, numbers, or dashes."
     )
 
 
@@ -732,7 +738,7 @@ def test_invalid_community_ids(
     assert res.status_code == 400
     assert (
         res.json["errors"][0]["messages"][0]
-        == "The ID should contain only letters with numbers or dashes."
+        == "The identifier should contain only letters, numbers, or dashes."
     )
 
     data = copy.deepcopy(minimal_community)

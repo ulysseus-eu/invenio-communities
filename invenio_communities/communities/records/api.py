@@ -19,7 +19,6 @@ from invenio_records_resources.records.systemfields import (
     PIDListRelation,
     PIDRelation,
 )
-from invenio_requests.records.dumpers import CalculatedFieldDumperExt
 from invenio_vocabularies.contrib.affiliations.api import Affiliation
 from invenio_vocabularies.contrib.awards.api import Award
 from invenio_vocabularies.contrib.funders.api import Funder
@@ -64,11 +63,10 @@ class Community(Record):
         extensions=[
             FeaturedDumperExt("featured"),
             RelationDumperExt("relations"),
-            CalculatedFieldDumperExt("is_verified"),
         ]
     )
 
-    index = IndexField("communities-communities-v1.0.0", search_alias="communities")
+    index = IndexField("communities-communities-v2.0.0", search_alias="communities")
 
     access = CommunityAccessField()
 
@@ -121,7 +119,7 @@ class Community(Record):
         custom=CustomFieldsRelation("COMMUNITIES_CUSTOM_FIELDS"),
     )
 
-    is_verified = IsVerifiedField("is_verified")
+    is_verified = IsVerifiedField("is_verified", use_cache=True, index=True)
 
     deletion_status = CommunityDeletionStatusField()
 

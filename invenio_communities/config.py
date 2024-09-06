@@ -14,6 +14,9 @@ from datetime import timedelta
 
 from invenio_i18n import lazy_gettext as _
 
+from invenio_communities.communities.records.systemfields.access import (
+    RecordSubmissionPolicyEnum,
+)
 from invenio_communities.communities.services import facets
 
 COMMUNITIES_ROUTES = {
@@ -23,8 +26,9 @@ COMMUNITIES_ROUTES = {
     "upload": "/communities/<pid_value>/upload",
     "settings": "/communities/<pid_value>/settings",
     "requests": "/communities/<pid_value>/requests",
+    "new_subcommunity": "/communities/<pid_value>/subcommunities/new",
     "settings_privileges": "/communities/<pid_value>/settings/privileges",
-    "settings_curation_policy": "/communities/<pid_value>/settings/curation-policy",
+    "settings_submission_policy": "/communities/<pid_value>/settings/submission-policy",
     "settings_pages": "/communities/<pid_value>/settings/pages",
     "members": "/communities/<pid_value>/members",
     "invitations": "/communities/<pid_value>/invitations",
@@ -36,7 +40,7 @@ COMMUNITIES_ROUTES = {
     "settings_persons": "/persons/<pid_value>/settings",
     "requests_persons": "/persons/<pid_value>/requests",
     "settings_privileges_persons": "/persons/<pid_value>/settings/privileges",
-    "settings_curation_policy_persons": "/persons/<pid_value>/settings/curation-policy",
+    "settings_submission_policy_persons": "/persons/<pid_value>/settings/submission-policy",
     "settings_pages_persons": "/persons/<pid_value>/settings/pages",
     "members_persons": "/persons/<pid_value>/members",
     "invitations_persons": "/persons/<pid_value>/invitations",
@@ -48,7 +52,7 @@ COMMUNITIES_ROUTES = {
     "settings_organizations": "/organizations/<pid_value>/settings",
     "requests_organizations": "/organizations/<pid_value>/requests",
     "settings_privileges_organizations": "/organizations/<pid_value>/settings/privileges",
-    "settings_curation_policy_organizations": "/organizations/<pid_value>/settings/curation-policy",
+    "settings_submission_policy_organizations": "/organizations/<pid_value>/settings/submission-policy",
     "settings_pages_organizations": "/organizations/<pid_value>/settings/pages",
     "members_organizations": "/organizations/<pid_value>/members",
     "invitations_organizations": "/organizations/<pid_value>/invitations",
@@ -57,9 +61,6 @@ COMMUNITIES_ROUTES = {
 }
 
 """Communities ui endpoints."""
-
-COMMUNITIES_GROUPS_ENABLED = True
-"""Config to allow invitation of groups."""
 
 COMMUNITIES_FACETS = {
     "type": {
@@ -251,7 +252,7 @@ For example:
 
 """
 
-COMMUNITIES_CUSTOM_FIELDS = {}
+COMMUNITIES_CUSTOM_FIELDS = []
 """Communities custom fields definition.
 
 Of the shape:
@@ -274,7 +275,7 @@ For example:
     ]
 """
 
-COMMUNITIES_CUSTOM_FIELDS_UI = {}
+COMMUNITIES_CUSTOM_FIELDS_UI = []
 """Communities custom fields UI configuration.
 
 Of the shape:
@@ -343,3 +344,9 @@ COMMUNITIES_ALWAYS_SHOW_CREATE_LINK = False
 COMMUNITIES_SHOW_TYPES_LINK = False
 """Controls visibility of community types in menu when set to True."""
 COMMUNITIES_SHOW_SPECIFIC_TYPES = True
+
+COMMUNITIES_ALLOW_MEMBERSHIP_REQUESTS = False
+"""Feature flag for membership request."""
+
+COMMUNITIES_DEFAULT_RECORD_SUBMISSION_POLICY = RecordSubmissionPolicyEnum.OPEN
+"""Default value of record submission policy community access setting."""

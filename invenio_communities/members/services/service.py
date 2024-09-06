@@ -40,7 +40,7 @@ from ...notifications.builders import CommunityInvitationSubmittedNotificationBu
 from ...proxies import current_roles
 from ..errors import AlreadyMemberError, InvalidMemberError
 from ..records.api import ArchivedInvitation
-from .request import CommunityInvitation
+from .request import CommunityInvitation, MembershipRequestRequestType
 from .schemas import (
     AddBulkSchema,
     DeleteBulkSchema,
@@ -48,6 +48,7 @@ from .schemas import (
     InviteBulkSchema,
     MemberDumpSchema,
     PublicDumpSchema,
+    RequestMembershipSchema,
     UpdateBulkSchema,
 )
 
@@ -102,6 +103,11 @@ class MemberService(RecordService):
     def delete_schema(self):
         """Schema for bulk delete."""
         return ServiceSchemaWrapper(self, schema=DeleteBulkSchema)
+
+    @property
+    def request_membership_schema(self):
+        """Wrapped schema for request membership."""
+        return ServiceSchemaWrapper(self, schema=RequestMembershipSchema)
 
     @property
     def archive_indexer(self):
@@ -256,7 +262,7 @@ class MemberService(RecordService):
                 active=active,
                 visible=visible,
                 request_id=request_id,
-                **member_arg
+                **member_arg,
             )
         except IntegrityError as e:
             raise AlreadyMemberError() from e
@@ -339,7 +345,7 @@ class MemberService(RecordService):
         params=None,
         search_preference=None,
         extra_filter=None,
-        **kwargs
+        **kwargs,
     ):
         """Search."""
         # Apply extra filters
@@ -356,7 +362,7 @@ class MemberService(RecordService):
             extra_filter=filter_,
             params=params,
             search_preference=search_preference,
-            **kwargs
+            **kwargs,
         )
 
     def scan(
@@ -366,7 +372,7 @@ class MemberService(RecordService):
         params=None,
         search_preference=None,
         extra_filter=None,
-        **kwargs
+        **kwargs,
     ):
         """Scan community members to retrieve all matching the query."""
         # Apply extra filters
@@ -384,7 +390,7 @@ class MemberService(RecordService):
             scan_params=params,
             search_preference=search_preference,
             scan=True,
-            **kwargs
+            **kwargs,
         )
 
     def search_public(
@@ -406,7 +412,7 @@ class MemberService(RecordService):
             ),
             params=params,
             search_preference=search_preference,
-            **kwargs
+            **kwargs,
         )
 
     def search_invitations(
@@ -426,7 +432,7 @@ class MemberService(RecordService):
             extra_filter=dsl.Q("term", **{"active": False}),
             params=params,
             search_preference=search_preference,
-            **kwargs
+            **kwargs,
         )
 
     def _members_search(
@@ -441,7 +447,7 @@ class MemberService(RecordService):
         search_preference=None,
         scan=False,
         scan_params=None,
-        **kwargs
+        **kwargs,
     ):
         """Members search."""
         community = self.community_cls.get_record(community_id)
@@ -464,7 +470,7 @@ class MemberService(RecordService):
             search_opts=search_opts,
             permission_action=None,
             extra_filter=filter,
-            **kwargs
+            **kwargs,
         )
         # scan has a default scroll timeout of 5 minutes
         # https://github.com/opensearch-project/opensearch-py/blob/fe3b5a8922aa8eb04f735c74d127d7ea68a00bec/opensearchpy/helpers/actions.py#L492-L503
@@ -734,3 +740,120 @@ class MemberService(RecordService):
         self.archive_indexer.bulk_index([inv.id for inv in archived_invitations])
 
         return True
+
+    # Request membership
+    @unit_of_work()
+    def request_membership(self, identity, community_id, data, uow=None):
+        """Request membership to the community.
+
+        A user can only have one request per community.
+
+        All validations raise, so it's up to parent layer to handle them.
+        """
+        community = self.community_cls.get_record(community_id)
+
+        data, errors = self.request_membership_schema.load(
+            data,
+            context={"identity": identity},
+        )
+        message = data.get("message", "")
+
+        self.require_permission(
+            identity,
+            "request_membership",
+            record=community,
+        )
+
+        # Create request
+        title = _('Request to join "{community}"').format(
+            community=community.metadata["title"],
+        )
+        request_item = current_requests_service.create(
+            identity,
+            data={
+                "title": title,
+                # "description": description,
+            },
+            request_type=MembershipRequestRequestType,
+            receiver=community,
+            creator={"user": str(identity.user.id)},
+            topic=community,  # user instead?
+            # TODO: Consider expiration
+            # expires_at=invite_expires_at(),
+            uow=uow,
+        )
+
+        if message:
+            data = {"payload": {"content": message}}
+            current_events_service.create(
+                identity,
+                request_item.id,
+                data,
+                CommentEventType,
+                uow=uow,
+                notify=False,
+            )
+
+        # TODO: Add notification mechanism
+        # uow.register(
+        #     NotificationOp(
+        #         MembershipRequestSubmittedNotificationBuilder.build(
+        #             request=request_item._request,
+        #             # explicit string conversion to get the value of LazyText
+        #             role=str(role.title),
+        #             message=message,
+        #         )
+        #     )
+        # )
+
+        # Create an inactive member entry linked to the request.
+        self._add_factory(
+            identity,
+            community=community,
+            role=current_roles["reader"],
+            visible=False,
+            member={"type": "user", "id": str(identity.user.id)},
+            message=message,
+            uow=uow,
+            active=False,
+            request_id=request_item.id,
+        )
+
+        # No registered component with a request_membership method for now,
+        # so no run_components for now.
+
+        # Has to return the request so that frontend can redirect to it
+        return request_item
+
+    @unit_of_work()
+    def update_membership_request(self, identity, community_id, data, uow=None):
+        """Update membership request."""
+        # TODO: Implement me
+        pass
+
+    def search_membership_requests(self):
+        """Search membership requests."""
+        # TODO: Implement me
+        pass
+
+    @unit_of_work()
+    def accept_membership_request(self, identity, request_id, uow=None):
+        """Accept membership request."""
+        # TODO: Implement me
+        pass
+
+    @unit_of_work()
+    def close_membership_request(self, identity, request_id, uow=None):
+        """Close membership request.
+
+        Used for cancelling, declining, or expiring a membership request.
+
+        For now we just delete the "fake" member that was created in
+        request_membership. TODO: explore alternatives/ramifications at a
+        later point.
+        """
+        # Permissions are checked on the request action
+        assert identity == system_identity
+        member = self.record_cls.get_member_by_request(request_id)
+        assert member.active is False
+        uow.register(RecordDeleteOp(member, indexer=self.indexer, force=True))

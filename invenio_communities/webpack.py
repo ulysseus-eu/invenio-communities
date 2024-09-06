@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2016-2022 CERN.
+# Copyright (C) 2016-2024 CERN.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -26,10 +26,11 @@ communities = WebpackThemeBundle(
     themes={
         "semantic-ui": dict(
             entry={
+                "invenio-communities-header": "./js/invenio_communities/community/header/index.js",
                 "invenio-communities-new": "./js/invenio_communities/community/new.js",
                 "invenio-communities-privileges": "./js/invenio_communities/settings/privileges/index.js",
                 "invenio-communities-profile": "./js/invenio_communities/settings/profile/index.js",
-                "invenio-communities-curation-policy": "./js/invenio_communities/settings/curationPolicy/index.js",
+                "invenio-communities-submission-policy": "./js/invenio_communities/settings/submissionPolicy/index.js",
                 "invenio-communities-settings-pages": "./js/invenio_communities/settings/pages/index.js",
                 "invenio-communities-requests": "./js/invenio_communities/requests/index.js",
                 "invenio-communities-details": "./js/invenio_communities/community/details.js",
@@ -43,12 +44,13 @@ communities = WebpackThemeBundle(
                 "invenio-communities-admin-search": "./js/invenio_communities/administration/search.js",
                 "invenio-communities-featured": "./js/invenio_communities/community/featuredCommunities/index.js",
                 "invenio-communities-admin-featured": "./js/invenio_communities/administration/details.js",
+                "invenio-communities-subcommunities-new": "./js/invenio_communities/subcommunity/new.js",
                 "invenio-communities-admin-specific-types": "./js/invenio_communities/administration/specific-types.js",
             },
             dependencies={
                 "@semantic-ui-react/css-patch": "^1.0.0",
                 "react-router-dom": "^6.3.0",
-                "react-invenio-forms": "^3.0.0",
+                "react-invenio-forms": "^4.0.0",
                 "axios": "^0.21.0",
                 "formik": "^2.1.0",
                 "i18next": "^20.3.0",

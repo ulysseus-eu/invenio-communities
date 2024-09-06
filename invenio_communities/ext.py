@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2016-2021 CERN.
+# Copyright (C) 2016-2024 CERN.
 # Copyright (C) 2022 Northwestern University.
 # Copyright (C) 2023-2024 Graz University of Technology.
 #
@@ -31,12 +31,22 @@ from invenio_communities.members import (
     MemberService,
     MemberServiceConfig,
 )
+from invenio_communities.subcommunities import (
+    SubcommunityRequestResource,
+    SubCommunityResourceConfig,
+    SubCommunityService,
+    SubCommunityServiceConfig,
+)
 
 from . import config
 from .cache.cache import IdentityCache
 from .roles import RoleRegistry
 from .utils import load_community_needs, on_datastore_post_commit
-from .views.ui import _can_create_community
+from .views.ui import (
+    _has_about_page_content,
+    _has_curation_policy_page_content,
+    _show_create_community_link,
+)
 
 
 class InvenioCommunities(object):
@@ -76,6 +86,9 @@ class InvenioCommunities(object):
             files_service=FileService(CommunityFileServiceConfig.build(app)),
             members_service=MemberService(MemberServiceConfig.build(app)),
         )
+        self.subcommunity_service = SubCommunityService(
+            SubCommunityServiceConfig.build(app)
+        )
 
     def init_resource(self, app):
         """Initialize communities resources."""
@@ -87,6 +100,11 @@ class InvenioCommunities(object):
         self.members_resource = MemberResource(
             MemberResourceConfig,
             self.service.members,
+        )
+
+        self.subcommunities_resource = SubcommunityRequestResource(
+            config=SubCommunityResourceConfig.build(app),
+            service=self.subcommunity_service,
         )
 
     def init_hooks(self, app):
@@ -133,8 +151,8 @@ def register_menus(app):
     current_menu.submenu("plus.community").register(
         endpoint="invenio_communities.communities_new",
         text=_("New community"),
-        order=3,
-        visible_when=_can_create_community,
+        order=2,
+        visible_when=_show_create_community_link,
     )
 
     communities = current_menu.submenu("communities")
@@ -142,38 +160,41 @@ def register_menus(app):
     communities.submenu("requests").register(
         endpoint="invenio_communities.communities_requests",
         text=_("Requests"),
-        order=2,
+        order=20,
         expected_args=["pid_value"],
-        **{"icon": "comments", "permissions": "can_search_requests"}
+        **{"icon": "inbox", "permissions": "can_search_requests"},
     )
     communities.submenu("members").register(
         endpoint="invenio_communities.members",
         text=_("Members"),
-        order=3,
+        order=30,
         expected_args=["pid_value"],
-        **{"icon": "users", "permissions": "can_read"}
+        **{"icon": "users", "permissions": "can_members_search_public"},
     )
 
     communities.submenu("settings").register(
         endpoint="invenio_communities.communities_settings",
         text=_("Settings"),
-        order=4,
+        order=40,
         expected_args=["pid_value"],
-        **{"icon": "settings", "permissions": "can_update"}
+        **{"icon": "settings", "permissions": "can_update"},
     )
+
     communities.submenu("curation_policy").register(
         endpoint="invenio_communities.communities_curation_policy",
         text=_("Curation policy"),
-        order=5,
+        order=50,
+        visible_when=_has_curation_policy_page_content,
         expected_args=["pid_value"],
-        **{"icon": "balance scale", "permissions": "can_read"}
+        **{"icon": "balance scale", "permissions": "can_read"},
     )
     communities.submenu("about").register(
         endpoint="invenio_communities.communities_about",
         text=_("About"),
-        order=6,
+        order=60,
+        visible_when=_has_about_page_content,
         expected_args=["pid_value"],
-        **{"icon": "info", "permissions": "can_read"}
+        **{"icon": "info", "permissions": "can_read"},
     )
     if show_specific_types:
         """Register persons menu items."""
@@ -181,7 +202,7 @@ def register_menus(app):
             endpoint="invenio_communities.persons_new",
             text=_("New person"),
             order=5,
-            visible_when=_can_create_community,
+            visible_when=_show_create_community_link,
         )
 
         persons = current_menu.submenu("persons")
@@ -227,7 +248,7 @@ def register_menus(app):
             endpoint="invenio_communities.organizations_new",
             text=_("New organization"),
             order=4,
-            visible_when=_can_create_community,
+            visible_when=_show_create_community_link,
         )
 
         organizations = current_menu.submenu("organizations")

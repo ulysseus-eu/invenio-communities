@@ -8,6 +8,7 @@
 # under the terms of the MIT License; see LICENSE file for more details.
 
 """Community schema."""
+
 import re
 from functools import partial
 from uuid import UUID
@@ -111,11 +112,21 @@ class CommunityAccessSchema(Schema):
             ]
         )
     )
+    record_submission_policy = fields.Str(
+        validate=validate.OneOf(
+            [
+                "open",
+                "closed",
+                "restricted",
+            ]
+        )
+    )
     review_policy = fields.Str(
         validate=validate.OneOf(
             [
                 "open",
                 "closed",
+                "members",
             ]
         )
     )
@@ -233,7 +244,9 @@ class BaseCommunitySchema(BaseRecordSchema, FieldPermissionsMixin):
             validate.Regexp(
                 r"^[-\w]+$",
                 flags=re.ASCII,
-                error=_("The ID should contain only letters with numbers or dashes."),
+                error=_(
+                    "The identifier should contain only letters, numbers, or dashes."
+                ),
             ),
             is_not_uuid,
         ],
