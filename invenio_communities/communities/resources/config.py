@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2016-2021 CERN.
+# Copyright (C) 2016-2024 CERN.
 # Copyright (C) 2023      TU Wien.
 #
 # Invenio is free software; you can redistribute it and/or modify it
@@ -31,6 +31,7 @@ from invenio_communities.communities.resources.serializer import (
 from invenio_communities.errors import (
     CommunityDeletedError,
     CommunityFeaturedEntryDoesNotExistError,
+    LogoNotFoundError,
     LogoSizeLimitError,
     OpenRequestsForCommunityDeletionError,
     SetDefaultCommunityError,
@@ -39,7 +40,7 @@ from invenio_communities.errors import (
 community_error_handlers = RecordResourceConfig.error_handlers.copy()
 community_error_handlers.update(
     {
-        FileNotFoundError: create_error_handler(
+        LogoNotFoundError: create_error_handler(
             HTTPJSONException(
                 code=404,
                 description="No logo exists for this community.",
@@ -97,6 +98,7 @@ class CommunityResourceConfig(RecordResourceConfig, ConfiguratorMixin):
         "user-communities": "/user/communities",
         "community-requests": "/communities/<pid_value>/requests",
         "restore-community": "/communities/<pid_value>/restore",
+        "list-subcommunities": "/communities/<pid_value>/subcommunities",
         "list-persons": "/persons",
         "item-persons": "/persons/<pid_value>",
         "rename-persons": "/persons/<pid_value>/rename",

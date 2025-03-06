@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2016-2021 CERN.
+# Copyright (C) 2016-2024 CERN.
 # Copyright (C) 2021 Northwestern University.
 # Copyright (C) 2022 Graz University of Technology.
 #
@@ -63,6 +63,7 @@ class CommunityResource(RecordResource):
             route("DELETE", routes["featured-item"], self.featured_delete),
             route("GET", routes["community-requests"], self.search_community_requests),
             route("POST", routes["restore-community"], self.restore_community),
+            route("GET", routes["list-subcommunities"], self.search_subcommunities),
             route("GET", routes["list-persons"], self.search_persons),
             route("POST", routes["list-persons"], self.create_person),
             route("GET", routes["item-persons"], self.read_person),
@@ -458,7 +459,6 @@ class CommunityResource(RecordResource):
 
     @request_view_args
     @request_stream
-    @response_handler()
     def update_logo(self):
         """Upload logo content."""
         item = self.service.update_logo(
@@ -471,7 +471,6 @@ class CommunityResource(RecordResource):
 
     @request_view_args
     @request_stream
-    @response_handler()
     def update_logo_persons(self):
         """Upload logo content."""
         item = self.service.update_logo(
@@ -484,7 +483,6 @@ class CommunityResource(RecordResource):
 
     @request_view_args
     @request_stream
-    @response_handler()
     def update_logo_organizations(self):
         """Upload logo content."""
         item = self.service.update_logo(
@@ -647,7 +645,6 @@ class CommunityResource(RecordResource):
 
     @request_headers
     @request_view_args
-    @response_handler()
     def featured_list(self):
         """List featured entries for a community."""
         items = self.service.featured_list(
@@ -658,7 +655,6 @@ class CommunityResource(RecordResource):
 
     @request_headers
     @request_view_args
-    @response_handler()
     def featured_list_persons(self):
         """List featured entries for a community."""
         items = self.service.featured_list(
@@ -669,7 +665,6 @@ class CommunityResource(RecordResource):
 
     @request_headers
     @request_view_args
-    @response_handler()
     def featured_list_organizations(self):
         """List featured entries for a community."""
         items = self.service.featured_list(
@@ -681,7 +676,6 @@ class CommunityResource(RecordResource):
     @request_headers
     @request_view_args
     @request_data
-    @response_handler()
     def featured_create(self):
         """Create a featured community entry."""
         item = self.service.featured_create(
@@ -694,7 +688,6 @@ class CommunityResource(RecordResource):
     @request_headers
     @request_view_args
     @request_data
-    @response_handler()
     def featured_create_persons(self):
         """Create a featured community entry."""
         item = self.service.featured_create(
@@ -707,7 +700,6 @@ class CommunityResource(RecordResource):
     @request_headers
     @request_view_args
     @request_data
-    @response_handler()
     def featured_create_organizations(self):
         """Create a featured community entry."""
         item = self.service.featured_create(
@@ -720,7 +712,6 @@ class CommunityResource(RecordResource):
     @request_headers
     @request_view_args
     @request_data
-    @response_handler()
     def featured_update(self):
         """Update a featured community entry."""
         item = self.service.featured_update(
@@ -734,7 +725,6 @@ class CommunityResource(RecordResource):
     @request_headers
     @request_view_args
     @request_data
-    @response_handler()
     def featured_update_persons(self):
         """Update a featured community entry."""
         item = self.service.featured_update(
@@ -748,7 +738,6 @@ class CommunityResource(RecordResource):
     @request_headers
     @request_view_args
     @request_data
-    @response_handler()
     def featured_update_organizations(self):
         """Update a featured community entry."""
         item = self.service.featured_update(
@@ -788,3 +777,18 @@ class CommunityResource(RecordResource):
             featured_id=resource_requestctx.view_args["featured_id"],
         )
         return "", 204
+
+    @request_view_args
+    @response_handler(many=True)
+    @request_extra_args
+    @request_search_args
+    def search_subcommunities(self):
+        """List subcommunities."""
+        result = self.service.search_subcommunities(
+            identity=g.identity,
+            id_=resource_requestctx.view_args["pid_value"],
+            params=resource_requestctx.args,
+            search_preference=search_preference(),
+            expand=resource_requestctx.args.get("expand", False),
+        )
+        return result.to_dict(), 200

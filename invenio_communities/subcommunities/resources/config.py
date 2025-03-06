@@ -19,7 +19,16 @@ from invenio_records_resources.resources.records.headers import etag_headers
 from invenio_records_resources.services.base.config import ConfiguratorMixin
 from marshmallow import fields
 
+from invenio_communities.communities.resources.args import (
+    CommunitiesSearchRequestArgsSchema,
+)
+from invenio_communities.communities.resources.serializer import (
+    UICommunityJSONSerializer,
+)
+
 from ..services.errors import ParentChildrenNotAllowed
+
+json_response_handler = ResponseHandler(JSONSerializer(), headers=etag_headers)
 
 
 class SubCommunityResourceConfig(ConfiguratorMixin, ResourceConfig):
@@ -41,9 +50,12 @@ class SubCommunityResourceConfig(ConfiguratorMixin, ResourceConfig):
     request_body_parsers = {"application/json": RequestBodyParser(JSONDeserializer())}
     default_content_type = "application/json"
 
+    request_search_args = CommunitiesSearchRequestArgsSchema
+
     # Response handling
     response_handlers = {
-        "application/json": ResponseHandler(JSONSerializer(), headers=etag_headers)
+        "application/json": json_response_handler,
+        "application/vnd.inveniordm.v1+json": json_response_handler,
     }
     default_accept_mimetype = "application/json"
 

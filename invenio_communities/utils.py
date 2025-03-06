@@ -8,6 +8,8 @@
 
 """Utilities."""
 
+from decimal import ROUND_HALF_UP, Decimal
+
 from flask import session
 from flask_principal import Identity
 from invenio_accounts.models import Role
@@ -146,3 +148,14 @@ class CommunityType:
 
     def get_plural_with_prefix_or_empty(self,prefix=''):
         return prefix+self.get_plural() if self.community_type != self.community else ""
+
+
+def humanize_byte_size(size):
+    """Converts bytes to largest unit (e.g., KB, MB, GB)."""
+    BYTES_PER_UNIT = 1000
+    s = Decimal(size)
+    q = Decimal("0.00")
+    for unit in ["B", "KB", "MB", "GB", "TB", "PB"]:
+        if s < BYTES_PER_UNIT:
+            return s.quantize(q, rounding=ROUND_HALF_UP), unit
+        s /= BYTES_PER_UNIT

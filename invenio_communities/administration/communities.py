@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2022 CERN.
+# Copyright (C) 2022-2024 CERN.
 #
 # Invenio-Communities is free software; you can redistribute it and/or
 # modify it under the terms of the MIT License; see LICENSE file for more
@@ -85,8 +85,8 @@ class CommunityListView(AdminResourceListView):
             hidden_params=[
                 ["include_deleted", "1"],
             ],
-            page=1,
-            size=30,
+            pagination_options=(20, 50),
+            default_size=20,
         )
 
     @staticmethod

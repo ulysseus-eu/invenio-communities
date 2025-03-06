@@ -1,6 +1,7 @@
 ..
     This file is part of Invenio.
     Copyright (C) 2016-2024 CERN.
+    Copyright (C) 2024 Graz University of Technology.
 
     Invenio is free software; you can redistribute it and/or modify it
     under the terms of the MIT License; see LICENSE file for more details.
@@ -9,6 +10,144 @@
 Changes
 =======
 
+Version v18.0.0 (released 2025-02-13)
+
+- Promote to stable release
+- administration: fix UI
+
+Version v18.0.0.dev2 (released 2025-01-23)
+
+Version v18.0.0.dev1 (released 2024-12-12)
+
+- setup: change to reusable workflows
+- setup: bump major dependencies
+- service: allow passing custom expires_at
+
+Version v17.8.1 (released 2025-01-16)
+
+- Revert "notifications: add comment notification for record and membership"
+    * This is actually a breaking change since it introduces a new
+      set of notification templates that will potentialy not be
+      styled if overridden in an instance's overlay.
+
+Version v17.8.0 (released 2025-01-15)
+
+- organizations: updated knownOrganizations to use id
+- notifications: add comment notification for record and membership
+
+Version v17.7.1 (released 2024-12-13)
+
+- schema: skip unknown fields when loading organizations
+
+Version v17.7.0 (released 2024-12-13)
+
+- service: allow passing custom expires_at
+
+Version v17.6.1 (released 2024-12-11)
+
+- mappings: add `identifiers` to parent organizations
+    * Adds the missing `identifiers` property to parent communities.
+
+Version v17.6.0 (released 2024-12-09)
+
+- notifications: add comment notification for subcoms
+    fix new subcommunity title
+- ui: refactored and generalized OrganizationsList
+- affiliations: added identifiers in orgs
+- schema: added  orgs in ui schema
+- fix: extend invitation request expiry
+- tests: remove invenio-admin dependence
+    * Removes the dependence on the invenio-admin action need.
+    * Adds some more test cases for featured communities.
+
+Version v17.5.1 (released 2024-11-28)
+
+- settings-ui: fix organizations metadata payload
+    * Fixes a bug where organizations selected from the search in the
+      profile form, should also submit the `id` so that it's linked to the
+      affiliation vocabulary entry.
+
+Version v17.5.0 (released 2024-11-27)
+
+- subcommunities: implement invitation request
+    * Allows parent communities to create requests to invite other
+      communities as their children.
+- config: add LogoNotFoundError
+- communities: config: Update static page URLs to prevent name collisions
+
+Version v17.4.0 (released 2024-11-11)
+
+- admin: change default number of results from 10 to 20
+- UI/UX: improve display of ROR information in select field
+
+Version v17.3.2 (released 2024-10-18)
+
+- ui: avoid exceptions if organizations list and request membership are not defined
+- ui: verified icon display logic change
+
+Version v17.3.1 (released 2024-10-18)
+
+- communities-ui: make verified icon display depend on parent community
+
+Version v17.3.0 (released 2024-10-17)
+
+- Added verified icon and parent community
+
+Version v17.2.0 (released 2024-10-16)
+
+- subcommunities: updated page layout
+
+Version 17.1.3 (released 2024-10-15)
+
+- subcommunities: revert UI serializer config change
+
+Version v17.1.2 (released 2024-10-11)
+
+- chore: fix tests
+- subcommunities: moved endpoint to communities resource
+
+Version v17.1.1 (released 2024-10-10)
+
+- setup: bump invenio-search-ui to fix dependency installation
+
+Version v17.1.0 (released 2024-10-10)
+
+- webpack: update axios and react-searchkit (due to axios upgrade) major versions
+
+Version v17.0.0 (released 2024-10-08)
+
+- mappings: updated awards with subj and orgs
+
+Version v16.0.0 (released 2024-10-04)
+
+- installation: bump invenio-vocabularies
+
+Version v15.2.2 (released 2024-10-04)
+
+- subcommunities: temporary fix for self link
+
+Version v15.2.1 (released 2024-10-01)
+
+- subcommunities: fix error getting whether children allowed
+- subcommunities: added i18n translate messages
+
+Version v15.2.0 (released 2024-09-27)
+
+- Added subcommunities endpoint and page
+
+Version v15.1.1 (released 2024-09-26)
+
+* Return raw JSON instead of doing content negotiation for logo update responses.
+
+Version v15.1.0 (released 2024-09-26)
+
+- subcommunities: handle vnd.inveniordm.v1+json
+- resource: remove response handler from featured communities
+- members-search: fix negative paging
+    * closes https://github.com/inveniosoftware/invenio-communities/issues/1136
+- bug: fix display of non-ROR orgs and fix commas
+- UX: link org name to ROR
+
 Version v15.0.0 (released 2024-08-26)
 - improve communities mapping with edge_ngram analyzer and accent analyzer
 
@@ -16,7 +155,7 @@ Version v14.10.0 (released 2024-08-26)
 
 - fixes defaults for COMMUNITIES_CUSTOM_FIELDS
 - deprecated record_policy in favour of record_submission_policy
-- add new policy to allow only members of a community to submit records 
+- add new policy to allow only members of a community to submit records
 
 Version v14.9.0 (released 2024-08-22)
 

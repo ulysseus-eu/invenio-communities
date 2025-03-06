@@ -1,16 +1,16 @@
 // This file is part of InvenioRDM
-// Copyright (C) 2022 CERN.
+// Copyright (C) 2022-2024 CERN.
 //
 // Invenio App RDM is free software; you can redistribute it and/or modify it
 // under the terms of the MIT License; see LICENSE file for more details.
 
-import { i18next } from "@translations/invenio_app_rdm/i18next";
+import { i18next } from "@translations/invenio_communities/i18next";
 import { CommunityTypeLabel } from "../labels";
 import { RestrictedLabel } from "../labels";
 import _truncate from "lodash/truncate";
 import React from "react";
 import { Image, InvenioPopup } from "react-invenio-forms";
-import { Icon, Label } from "semantic-ui-react";
+import { Icon, Label, Popup } from "semantic-ui-react";
 import PropTypes from "prop-types";
 
 export const CommunityCompactItemMobile = ({
@@ -46,6 +46,18 @@ export const CommunityCompactItemMobile = ({
               aria-label={`${metadata.title} (${i18next.t("opens in new tab")})`}
             >
               {metadata.title}
+              {/* Show the icon for subcommunities */}
+              {result.parent && (
+                <p className="ml-5 display-inline-block">
+                  <Popup
+                    content="Verified community"
+                    trigger={
+                      <Icon size="small" color="green" name="check circle outline" />
+                    }
+                    position="top center"
+                  />
+                </p>
+              )}
             </a>
             <i className="small icon external primary" aria-hidden="true" />
           </div>

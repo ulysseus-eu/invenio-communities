@@ -38,6 +38,7 @@ from invenio_communities.communities.services.uow import (
 )
 from invenio_communities.errors import (
     CommunityFeaturedEntryDoesNotExistError,
+    LogoNotFoundError,
     LogoSizeLimitError,
     OpenRequestsForCommunityDeletionError,
 )
@@ -234,7 +235,7 @@ class CommunityService(RecordService):
         self.require_permission(identity, "read", record=record)
         logo_file = record.files.get("logo")
         if logo_file is None:
-            raise FileNotFoundError()
+            raise LogoNotFoundError()
         return self.files.file_result_item(
             self.files,
             identity,
@@ -276,7 +277,7 @@ class CommunityService(RecordService):
         self.require_permission(identity, "update", record=record)
         deleted_file = record.files.pop("logo", None)
         if deleted_file is None:
-            raise FileNotFoundError()
+            raise LogoNotFoundError()
 
         deleted_file.delete(force=True)
 
@@ -743,6 +744,35 @@ class CommunityService(RecordService):
                 uow=uow,
             )
         return True
+
+    def search_subcommunities(self, identity, id_, params=None, **kwargs):
+        """Search for subcommunities of a community."""
+        community = self.record_cls.pid.resolve(id_)
+        self.require_permission(identity, "search", record=community)
+
+        params = params or {}
+        search_result = self._search(
+            "search",
+            identity,
+            params=params,
+            extra_filter=dsl.query.Bool(
+                "must", must=[dsl.Q("term", **{"parent.id": str(community.id)})]
+            ),
+            permission_action="read",
+            **kwargs,
+        ).execute()
+
+        return self.result_list(
+            self,
+            identity,
+            search_result,
+            params,
+            links_tpl=LinksTemplate(
+                self.config.links_subcommunities_search,
+                context={"community_id": id_, "args": params},
+            ),
+            links_item_tpl=self.links_item_tpl,
+        )
 
 
 @cached_with_expiration

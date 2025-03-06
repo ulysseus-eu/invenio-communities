@@ -1,6 +1,6 @@
 /*
  * // This file is part of Invenio-App-Rdm
- * // Copyright (C) 2023 CERN.
+ * // Copyright (C) 2023-2024 CERN.
  * //
  * // Invenio-App-Rdm is free software; you can redistribute it and/or modify it
  * // under the terms of the MIT License; see LICENSE file for more details.
@@ -13,7 +13,7 @@ import PropTypes from "prop-types";
 import { Button, Modal, Icon } from "semantic-ui-react";
 import { ActionModal, ActionForm } from "@js/invenio_administration";
 import _isEmpty from "lodash/isEmpty";
-import { i18next } from "@translations/invenio_app_rdm/i18next";
+import { i18next } from "@translations/invenio_communities/i18next";
 
 export class RecordResourceActions extends Component {
   constructor(props) {
@@ -25,7 +25,10 @@ export class RecordResourceActions extends Component {
     };
   }
 
-  onModalTriggerClick = (e, { payloadSchema, dataName, dataActionKey }) => {
+  onModalTriggerClick = (
+    e,
+    { payloadSchema, dataName, dataActionKey, actionConfig }
+  ) => {
     const { resource } = this.props;
 
     if (dataActionKey === "delete") {
@@ -63,6 +66,7 @@ export class RecordResourceActions extends Component {
             actionSuccessCallback={this.handleSuccess}
             actionCancelCallback={this.closeModal}
             resource={resource}
+            actionConfig={actionConfig}
           />
         ),
       });
@@ -106,7 +110,7 @@ export class RecordResourceActions extends Component {
                 labelPosition="left"
               >
                 <Icon name="trash alternate" />
-                {actionConfig.text}
+                {actionConfig.text}...
               </Element>
             );
           } else if (actionKey === "restore" && resource.deletion_status.is_deleted) {
@@ -122,19 +126,21 @@ export class RecordResourceActions extends Component {
                 labelPosition="left"
               >
                 <Icon name="undo" />
-                {actionConfig.text}
+                {actionConfig.text}...
               </Element>
             );
           } else if (!resource.deletion_status.is_deleted && actionKey !== "restore") {
             return (
               <Element
                 key={actionKey}
-                onClick={this.onModalTriggerClick}
+                onClick={(e, data) =>
+                  this.onModalTriggerClick(e, { ...data, actionConfig: actionConfig })
+                }
                 payloadSchema={actionConfig.payload_schema}
                 dataName={actionConfig.text}
                 dataActionKey={actionKey}
               >
-                {actionConfig.text}
+                {actionConfig.text}...
               </Element>
             );
           }

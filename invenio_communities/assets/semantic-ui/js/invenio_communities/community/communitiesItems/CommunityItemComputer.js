@@ -1,16 +1,17 @@
 // This file is part of InvenioRDM
-// Copyright (C) 2022 CERN.
+// Copyright (C) 2022-2024 CERN.
 //
 // Invenio App RDM is free software; you can redistribute it and/or modify it
 // under the terms of the MIT License; see LICENSE file for more details.
 
-import { i18next } from "@translations/invenio_app_rdm/i18next";
+import { i18next } from "@translations/invenio_communities/i18next";
 import { CommunityTypeLabel } from "../labels";
 import { RestrictedLabel } from "../labels";
 import React from "react";
 import { Image } from "react-invenio-forms";
-import { Button, Grid, Icon } from "semantic-ui-react";
+import { Button, Grid, Icon, Popup, Header } from "semantic-ui-react";
 import PropTypes from "prop-types";
+import OrganizationsList from "../../organizations/OrganizationsList";
 
 export const CommunityItemComputer = ({ result }) => {
   const communityType = result.ui?.type?.title_l10n;
@@ -39,13 +40,32 @@ export const CommunityItemComputer = ({ result }) => {
                 <RestrictedLabel access={result.access.visibility} />
               </div>
             )}
-            <a className="ui medium header mb-0" href={resultHref}>
+            <Header as="a" className="ui medium header" href={resultHref}>
               {result.metadata.title}
-            </a>
-            {result.metadata.description && (
+              {/* Show the icon for subcommunities */}
+              {result.parent && (
+                <p className="ml-5 display-inline-block">
+                  <Popup
+                    content="Verified community"
+                    trigger={
+                      <Icon size="small" color="green" name="check circle outline" />
+                    }
+                    position="top center"
+                  />
+                </p>
+              )}
+            </Header>
               <p className="truncate-lines-1 text size small text-muted mt-5">
                 {result.metadata.description}
               </p>
+            )}
+            {result.parent && (
+              <div className="sub header">
+                Part of{" "}
+                <a href={`/communities/${result.parent.slug}`}>
+                  {result.parent.metadata.title}
+                </a>
+              </div>
             )}
 
             {(communityType ||
@@ -71,34 +91,7 @@ export const CommunityItemComputer = ({ result }) => {
                 )}
 
                 {result.metadata.organizations && (
-                  <div>
-                    <Icon name="building outline" />
-                    {result.metadata.organizations.map((org, index) => {
-                      const separator = (index > 0 && ", ") || "";
-
-                      return (
-                        <span className="text-muted" key={org.name}>
-                          {separator}
-                          {org.name}
-                          {org.id && (
-                            <a
-                              href={`https://ror.org/${org.id}`}
-                              aria-label={`${org.name}'s ROR ${i18next.t("profile")}`}
-                              title={`${org.name}'s ROR ${i18next.t("profile")}`}
-                              target="_blank"
-                              rel="noreferrer"
-                            >
-                              <img
-                                className="inline-id-icon ml-5"
-                                src="/static/images/ror-icon.svg"
-                                alt=""
-                              />
-                            </a>
-                          )}
-                        </span>
-                      );
-                    })}
-                  </div>
+                  <OrganizationsList organizations={result.metadata.organizations} />
                 )}
               </div>
             )}

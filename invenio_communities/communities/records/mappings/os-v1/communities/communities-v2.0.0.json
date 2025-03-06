@@ -13,11 +13,7 @@
           "tokenizer": "standard",
           "type": "custom",
           "char_filter": ["strip_special_chars"],
-          "filter": [
-            "lowercase",
-            "asciifolding",
-            "edgegrams"
-          ]
+          "filter": ["lowercase", "asciifolding", "edgegrams"]
         }
       },
       "filter": {
@@ -209,6 +205,21 @@
               },
               "name": {
                 "type": "text"
+              },
+              "identifiers": {
+                "properties": {
+                  "identifier": {
+                    "type": "text",
+                    "fields": {
+                      "keyword": {
+                        "type": "keyword"
+                      }
+                    }
+                  },
+                  "scheme": {
+                    "type": "keyword"
+                  }
+                }
               }
             }
           },
@@ -270,6 +281,39 @@
                     "fields": {
                       "text": {
                         "type": "text"
+                      }
+                    }
+                  },
+                  "subjects": {
+                    "properties": {
+                      "@v": {
+                        "type": "keyword"
+                      },
+                      "id": {
+                        "type": "keyword"
+                      },
+                      "subject": {
+                        "type": "keyword"
+                      },
+                      "scheme": {
+                        "type": "keyword"
+                      },
+                      "props": {
+                        "type": "object",
+                        "dynamic": "true"
+                      }
+                    }
+                  },
+                  "organizations": {
+                    "properties": {
+                      "scheme": {
+                        "type": "keyword"
+                      },
+                      "id": {
+                        "type": "keyword"
+                      },
+                      "organization": {
+                        "type": "keyword"
                       }
                     }
                   },
@@ -410,6 +454,21 @@
                   },
                   "name": {
                     "type": "text"
+                  },
+                  "identifiers": {
+                    "properties": {
+                      "identifier": {
+                        "type": "text",
+                        "fields": {
+                          "keyword": {
+                            "type": "keyword"
+                          }
+                        }
+                      },
+                      "scheme": {
+                        "type": "keyword"
+                      }
+                    }
                   }
                 }
               },
@@ -444,6 +503,39 @@
                         "fields": {
                           "text": {
                             "type": "text"
+                          }
+                        }
+                      },
+                      "subjects": {
+                        "properties": {
+                          "@v": {
+                            "type": "keyword"
+                          },
+                          "id": {
+                            "type": "keyword"
+                          },
+                          "subject": {
+                            "type": "keyword"
+                          },
+                          "scheme": {
+                            "type": "keyword"
+                          },
+                          "props": {
+                            "type": "object",
+                            "dynamic": "true"
+                          }
+                        }
+                      },
+                      "organizations": {
+                        "properties": {
+                          "scheme": {
+                            "type": "keyword"
+                          },
+                          "id": {
+                            "type": "keyword"
+                          },
+                          "organization": {
+                            "type": "keyword"
                           }
                         }
                       },

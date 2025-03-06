@@ -19,7 +19,9 @@ from invenio_records_resources.services.base.config import (
     SearchOptionsMixin,
 )
 from invenio_records_resources.services.files.links import FileLink
-from invenio_records_resources.services.records.config import RecordServiceConfig
+from invenio_records_resources.services.records.config import (
+    RecordServiceConfig,
+)
 from invenio_records_resources.services.records.config import (
     SearchOptions as SearchOptionsBase,
 )
@@ -72,6 +74,17 @@ class SearchOptions(SearchOptionsBase, SearchOptionsMixin):
     ]
 
 
+def children_allowed(record, _):
+    """Determine if children are allowed."""
+    try:
+        return getattr(record.children, "allow", False)
+    except AttributeError:
+        # This is needed because a types.SimpleNamespace object can be passed by
+        # the entity_resolver when generating the logo which does not have
+        # `children` and fails
+        return False
+
+
 class CommunityServiceConfig(RecordServiceConfig, ConfiguratorMixin):
     """Communities service configuration."""
 
@@ -114,6 +127,10 @@ class CommunityServiceConfig(RecordServiceConfig, ConfiguratorMixin):
         "invitations": CommunityLink("{+api}/{type}/{id}/invitations"),
         "requests": CommunityLink("{+api}/{type}/{id}/requests"),
         "records": CommunityLink("{+api}/{type}/{id}/records"),
+        "subcommunities": CommunityLink(
+            "{+api}/communities/{id}/subcommunities",
+            when=children_allowed,
+        ),
         "membership_requests": CommunityLink(
             "{+api}/{type}/{id}/membership-requests"
         ),
@@ -128,6 +145,9 @@ class CommunityServiceConfig(RecordServiceConfig, ConfiguratorMixin):
     links_user_search = pagination_links("{+api}/user/communities{?args*}")
     links_community_requests_search = pagination_links(
         "{+api}/communities/{community_id}/requests{?args*}"
+    )
+    links_subcommunities_search = pagination_links(
+        "{+api}/communities/{community_id}/subcommunities{?args*}"
     )
 
     available_actions = [

@@ -9,6 +9,7 @@
 
 import React from "react";
 import ReactDOM from "react-dom";
+import { i18next } from "@translations/invenio_communities/i18next";
 
 import CommunitiesCardGroup from "./CommunitiesCardGroup";
 import {CommunityType} from "./utils";
@@ -64,7 +65,7 @@ if (newCommunitiesContainer) {
   ReactDOM.render(
     <CommunitiesCardGroup
       fetchDataUrl={"/api/"+communityTypeNewCommunities.getPlural()+"?q=&sort=newest&page=1&size=1"}
-      emptyMessage={"There are no new " + communityTypeNewCommunities.getPlural() + "."}
+      emptyMessage={i18next.t("There are no new " + communityTypeNewCommunities.getPlural() + ".")}
       defaultLogo="/static/images/square-placeholder.png"
       itemsPerRow={1}
     />,

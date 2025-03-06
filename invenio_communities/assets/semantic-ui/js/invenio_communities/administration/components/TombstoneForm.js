@@ -1,6 +1,6 @@
 /*
  * // This file is part of Invenio-App-Rdm
- * // Copyright (C) 2023 CERN.
+ * // Copyright (C) 2023-2024 CERN.
  * //
  * // Invenio-App-Rdm is free software; you can redistribute it and/or modify it
  * // under the terms of the MIT License; see LICENSE file for more details.
@@ -10,7 +10,7 @@ import RemovalReasonsSelect from "./RemovalReasonsSelect";
 import { InvenioAdministrationCommunitiesApi } from "../api";
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { i18next } from "@translations/invenio_app_rdm/i18next";
+import { i18next } from "@translations/invenio_communities/i18next";
 import { Formik } from "formik";
 import {
   withCancel,

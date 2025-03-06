@@ -19,7 +19,9 @@ from invenio_records_resources.services.records.schema import (
     BaseGhostSchema,
     BaseRecordSchema,
 )
-from invenio_vocabularies.contrib.affiliations.schema import AffiliationRelationSchema
+from invenio_vocabularies.contrib.affiliations.schema import (
+    AffiliationRelationSchema as BaseAffiliationRelationSchema,
+)
 from invenio_vocabularies.contrib.awards.schema import FundingRelationSchema
 from invenio_vocabularies.services.schema import (
     VocabularyRelationSchema as VocabularySchema,
@@ -144,6 +146,16 @@ class OrganizationSchema(Schema):
     """Person schema."""
     gridcode = SanitizedUnicode(required=False, validate=_not_blank(max=250))
     ror = SanitizedUnicode(required=False, validate=_not_blank(max=250))
+
+
+# TODO: Probably this should be the default behavior for all relations
+class AffiliationRelationSchema(BaseAffiliationRelationSchema):
+    """Relaxed affiliation relation schema."""
+
+    class Meta:
+        """Meta attributes for the schema."""
+
+        unknown = EXCLUDE
 
 
 class CommunityMetadataSchema(Schema):

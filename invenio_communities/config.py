@@ -21,11 +21,14 @@ from invenio_communities.communities.services import facets
 
 COMMUNITIES_ROUTES = {
     "frontpage": "/communities",
-    "search": "/communities/search",
-    "new": "/communities/new",
+    "search": "/communities-search",
+    "deprecated_search": "/communities/search",
+    "new": "/communities-new",
+    "deprecated_new": "/communities/new",
     "upload": "/communities/<pid_value>/upload",
     "settings": "/communities/<pid_value>/settings",
     "requests": "/communities/<pid_value>/requests",
+    "subcommunities": "/communities/<pid_value>/browse/subcommunities",
     "new_subcommunity": "/communities/<pid_value>/subcommunities/new",
     "settings_privileges": "/communities/<pid_value>/settings/privileges",
     "settings_submission_policy": "/communities/<pid_value>/settings/submission-policy",
@@ -77,6 +80,10 @@ COMMUNITIES_FACETS = {
     },
 }
 """Available facets defined for this module."""
+
+
+COMMUNITIES_SUBCOMMUNITIES_FACETS = COMMUNITIES_FACETS
+
 
 COMMUNITIES_SORT_OPTIONS = {
     "bestmatch": dict(
@@ -153,6 +160,12 @@ COMMUNITIES_SEARCH = {
 
 COMMUNITIES_SEARCH_SORT_BY_VERIFIED = False
 """Sort communities by 'verified' first."""
+
+COMMUNITIES_SUBCOMMUNITIES_SEARCH = {
+    "facets": ["type"],
+    "sort": ["bestmatch", "newest", "oldest"],
+}
+"""Community search configuration (i.e list of communities)"""
 
 COMMUNITIES_REQUESTS_SEARCH = {
     "facets": ["type", "status"],

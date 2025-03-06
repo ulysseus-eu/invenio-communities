@@ -1,6 +1,6 @@
 /*
  * This file is part of Invenio.
- * Copyright (C) 2016-2024 CERN.
+ * Copyright (C) 2016-2025 CERN.
  * Copyright (C) 2021-2022 Northwestern University.
  *
  * Invenio is free software; you can redistribute it and/or modify it
@@ -18,7 +18,6 @@ import _isEmpty from "lodash/isEmpty";
 import _isNull from "lodash/isNull";
 import _isNumber from "lodash/isNumber";
 import _isObject from "lodash/isObject";
-import _map from "lodash/map";
 import _mapValues from "lodash/mapValues";
 import _pick from "lodash/pick";
 import _pickBy from "lodash/pickBy";
@@ -31,8 +30,9 @@ import {
   FieldLabel,
   RemoteSelectField,
   SelectField,
-  TextAreaField,
   TextField,
+  TextAreaField,
+  AffiliationsSuggestions,
 } from "react-invenio-forms";
 import { Button, Form, Grid, Icon, Message, Divider } from "semantic-ui-react";
 import * as Yup from "yup";
@@ -142,12 +142,14 @@ class CommunityProfileForm extends Component {
     // create a map with all organizations that are not custom (part of the
     // vocabulary), so that on form submission, newly custom organization input
     // by the user can be identified and correctly sent to the backend.
-    const organizationsNames = initialValues.metadata.organizations.map((org) => {
+    const organizations = initialValues.metadata.organizations.map((org) => {
       const isNonCustomOrganization = org.id;
       if (isNonCustomOrganization) {
-        this.knownOrganizations[org.name] = org.id;
+        this.knownOrganizations[org.id] = org.name;
+        return org.id; // For known organizations, return the id
+      } else {
+        return org.name; // For custom organizations, return the name
       }
-      return org.name;
     });
 
     _unset(initialValues, "metadata.type.title");
@@ -231,7 +233,7 @@ class CommunityProfileForm extends Component {
       ...initialValues,
       metadata: {
         ...initialValues.metadata,
-        organizations: organizationsNames,
+        organizations: organizations,
         funding,
       },
     };
@@ -295,13 +297,11 @@ class CommunityProfileForm extends Component {
     // Serialize organisations. If it is known and has an id, serialize a pair 'id/name'. Otherwise use 'name' only
     const organizations = submittedCommunity.metadata.organizations.map(
       (organization) => {
-        const orgID = this.knownOrganizations[organization];
-        return {
-          ...(orgID && { id: orgID }),
-          name: organization,
-        };
+        const orgName = this.knownOrganizations[organization];
+        return orgName ? { id: organization, name: orgName } : { name: organization };
       }
     );
+
     // Serialize each funding record, award being optional.
     const funding = submittedCommunity.metadata?.funding?.map((fund) => {
       return {
@@ -352,6 +352,7 @@ class CommunityProfileForm extends Component {
 
       const { message, errors } = communityErrorSerializer(error);
 
+      setSubmitting(false);
 
       if (message) {
         this.setGlobalError(error);
@@ -360,97 +361,96 @@ class CommunityProfileForm extends Component {
         errors.map(({ field, messages }) => setFieldError(field, messages[0]));
       }
     }
-    setSubmitting(false);
   };
 
-    render() {
-        const {
-            types,
-            customFields,
-            community,
-            hasLogo,
-            defaultLogo,
-            logoMaxSize,
-            permissions,
-        } = this.props;
-        const {error} = this.state;
-        const includesPaths = [
-            "metadata.title",
-            "metadata.person.given_name",
-            "metadata.person.family_name",
-            "metadata.type.id",
-            "metadata.website",
-            "metadata.organizations",
-            "metadata.description",
-        ]
-        const isPerson = (community.metadata.type?.id === CommunityType.person);
-        const isOrganization = (community.metadata.type?.id === CommunityType.organization);
-        const shallDisplayType = !(isPerson || isOrganization);
-        return (
-            <Formik
-                initialValues={this.getInitialValues(community)}
-                validationSchema={COMMUNITY_VALIDATION_SCHEMA}
-                onSubmit={this.onSubmit}
-            >
-                {({isSubmitting, isValid, handleSubmit, values}) => (
-                    <Form onSubmit={handleSubmit} className="communities-profile">
-                        <Message hidden={error === ""} negative>
-                            <Grid container>
-                                <Grid.Column width={15} textAlign="left">
-                                    <strong>{error}</strong>
-                                </Grid.Column>
-                            </Grid>
-                        </Message>
-                        <Grid>
-                            <Grid.Row>
-                                <Grid.Column
-                                    as="section"
-                                    mobile={16}
-                                    tablet={10}
-                                    computer={11}
-                                    className="rel-pb-2"
-                                >
-                                    <AccordionField
-                                        includesPaths={includesPaths}
-                                        label={i18next.t("Basic information")}
-                                        active
-                                    >
-                                        <div className="rel-ml-1 rel-mr-1">
-                                            {(values.metadata.type.id !== CommunityType.person) && (
-                                            <TextField
-                                                fluid
-                                                fieldPath="metadata.title"
-                                                label={
-                                                    <FieldLabel
-                                                        htmlFor="metadata.title"
-                                                        icon="book"
-                                                        label={i18next.t("Name")}
-                                                    />
-                                                }
-                                            />)}
-                                            {(values.metadata.type.id === CommunityType.person) && <TextField
-                                                fluid
-                                                fieldPath="metadata.person.given_name"
-                                                label={
-                                                    <FieldLabel
-                                                        htmlFor="metadata.person.given_name"
-                                                        icon="user"
-                                                        label={i18next.t("First name")}
-                                                    />
-                                                }
-                                            />}
+  render() {
+    const {
+      types,
+      customFields,
+      community,
+      hasLogo,
+      defaultLogo,
+      logoMaxSize,
+      permissions,
+    } = this.props;
+    const { error } = this.state;
+    const includesPaths = [
+        "metadata.title",
+        "metadata.person.given_name",
+        "metadata.person.family_name",
+        "metadata.type.id",
+        "metadata.website",
+        "metadata.organizations",
+        "metadata.description",
+    ]
+    const isPerson = (community.metadata.type?.id === CommunityType.person);
+    const isOrganization = (community.metadata.type?.id === CommunityType.organization);
+    const shallDisplayType = !(isPerson || isOrganization);
+    return (
+      <Formik
+        initialValues={this.getInitialValues(community)}
+        validationSchema={COMMUNITY_VALIDATION_SCHEMA}
+        onSubmit={this.onSubmit}
+      >
+        {({ isSubmitting, isValid, handleSubmit, values }) => (
+          <Form onSubmit={handleSubmit} className="communities-profile">
+            <Message hidden={error === ""} negative>
+              <Grid container>
+                <Grid.Column width={15} textAlign="left">
+                  <strong>{error}</strong>
+                </Grid.Column>
+              </Grid>
+            </Message>
+            <Grid>
+              <Grid.Row>
+                <Grid.Column
+                  as="section"
+                  mobile={16}
+                  tablet={10}
+                  computer={11}
+                  className="rel-pb-2"
+                >
+                  <AccordionField
+                    includesPaths={includesPaths}
+                    label={i18next.t("Basic information")}
+                    active
+                  >
+                    <div className="rel-ml-1 rel-mr-1">
+                      {(values.metadata.type.id !== CommunityType.person) && (
+                      <TextField
+                          fluid
+                          fieldPath="metadata.title"
+                          label={
+                              <FieldLabel
+                                  htmlFor="metadata.title"
+                                  icon="book"
+                                  label={i18next.t("Name")}
+                              />
+                          }
+                      />)}
+                      {(values.metadata.type.id === CommunityType.person) && <TextField
+                          fluid
+                          fieldPath="metadata.person.given_name"
+                          label={
+                              <FieldLabel
+                                  htmlFor="metadata.person.given_name"
+                                  icon="user"
+                                  label={i18next.t("First name")}
+                              />
+                          }
+                      />}
 
-                                            {(values.metadata.type.id === CommunityType.person) && <TextField
-                                                fluid
-                                                fieldPath="metadata.person.family_name"
-                                                label={
-                                                    <FieldLabel
-                                                        htmlFor="metadata.person.family_name"
-                                                        icon="user"
-                                                        label={i18next.t("Last name")}
-                                                    />
-                                                }
-                                            />}
+                      {(values.metadata.type.id === CommunityType.person) && <TextField
+                          fluid
+                          fieldPath="metadata.person.family_name"
+                          label={
+                              <FieldLabel
+                                  htmlFor="metadata.person.family_name"
+                                  icon="user"
+                                  label={i18next.t("Last name")}
+                              />
+                          }
+                      />}
 
                       <Overridable
                         id="InvenioCommunities.CommunityProfileForm.TextAreaField.MetadataDescription"
@@ -528,25 +528,22 @@ class CommunityProfileForm extends Component {
                             "metadata.organizations",
                             []
                           )}
-                          serializeSuggestions={(organizations) =>
-                            _map(organizations, (organization) => {
+                          serializeSuggestions={(organizations) => {
+                            // Add organization IDs to known organizations
+                            organizations.forEach((organization) => {
                               // eslint-disable-next-line no-prototype-builtins
                               const isKnownOrg = this.knownOrganizations.hasOwnProperty(
-                                organization.name
+                                organization.id
                               );
                               if (!isKnownOrg) {
                                 this.knownOrganizations = {
                                   ...this.knownOrganizations,
-                                  [organization.name]: organization.id,
+                                  [organization.id]: organization.name,
                                 };
                               }
-                              return {
-                                text: organization.name,
-                                value: organization.name,
-                                key: organization.name,
-                              };
-                            })
-                          }
+                            });
+                            return AffiliationsSuggestions(organizations, true);
+                          }}
                           label={
                             <FieldLabel
                               htmlFor="metadata.organizations"

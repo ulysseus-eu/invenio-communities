@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 #
+# Copyright (C) 2024-2025 CERN.
 # Copyright (C) 2023 Graz University of Technology.
 #
 # Invenio-Communities is free software; you can redistribute it and/or modify
@@ -216,3 +217,117 @@ class SubCommunityDecline(SubCommunityBuilderBase):
     """Notification builder for subcommunity request decline."""
 
     type = f"{SubCommunityBuilderBase.type}.decline"
+
+
+class SubComInvitationBuilderBase(SubCommunityBuilderBase):
+    """Base notification builder for subcommunity invitation requests."""
+
+    type = "subcommunity-invitation-request"
+
+    context = [
+        EntityResolve("request"),
+        EntityResolve("request.created_by"),
+        EntityResolve("request.receiver"),
+        EntityResolve("executing_user"),
+    ]
+
+
+class SubComInvitationCreate(SubComInvitationBuilderBase):
+    """Notification builder for subcommunity request creation."""
+
+    type = f"{SubComInvitationBuilderBase.type}.create"
+
+    context = [
+        EntityResolve("request"),
+        EntityResolve("request.created_by"),
+        EntityResolve("request.receiver"),
+        # EntityResolve("executing_user") creating via script only for now
+    ]
+
+    recipients = [
+        CommunityMembersRecipient("request.receiver", roles=["owner", "manager"]),
+    ]
+
+
+class SubComInvitationAccept(SubComInvitationBuilderBase):
+    """Notification builder for subcommunity request accept."""
+
+    type = f"{SubComInvitationBuilderBase.type}.accept"
+
+    recipient_filters = [
+        UserPreferencesRecipientFilter(),
+        # Don't send notifications to the user performing the action
+        UserRecipientFilter("executing_user"),
+    ]
+
+
+class SubComInvitationDecline(SubComInvitationBuilderBase):
+    """Notification builder for subcommunity request decline."""
+
+    type = f"{SubComInvitationBuilderBase.type}.decline"
+
+    recipient_filters = [
+        UserPreferencesRecipientFilter(),
+        # Don't send notifications to the user performing the action
+        UserRecipientFilter("executing_user"),
+    ]
+
+
+class SubComInvitationExpire(SubComInvitationBuilderBase):
+    """Notification builder for subcommunity invitation expire."""
+
+    type = f"{SubComInvitationBuilderBase.type}.expire"
+
+    context = [
+        EntityResolve("request"),
+        EntityResolve("request.created_by"),
+        EntityResolve("request.receiver"),
+    ]
+
+    recipients = [
+        CommunityMembersRecipient("request.receiver", roles=["owner", "manager"]),
+    ]
+
+
+#
+# Comments
+#
+class SubComCommentNotificationBuilderBase(SubCommunityBuilderBase):
+    """Notification builder for comment request event creation."""
+
+    context = [
+        EntityResolve(key="request"),
+        EntityResolve(key="request.created_by"),
+        EntityResolve(key="request.receiver"),
+        EntityResolve(key="request_event"),
+        EntityResolve(key="request_event.created_by"),
+    ]
+
+    @classmethod
+    def build(cls, request, request_event):
+        """Build notification with request context."""
+        return Notification(
+            type=cls.type,
+            context={
+                "request": EntityResolverRegistry.reference_entity(request),
+                "request_event": EntityResolverRegistry.reference_entity(request_event),
+            },
+        )
+
+    recipient_filters = [
+        # do not send notification to user creating the comment
+        UserRecipientFilter(key="request_event.created_by"),
+        UserPreferencesRecipientFilter(),
+    ]
+
+
+class SubComReqCommentNotificationBuilder(SubComCommentNotificationBuilderBase):
+    """Notification builder for comment request event creation."""
+
+    type = f"comment-{SubCommunityBuilderBase.type}.create"
+
+
+class SubComInvCommentNotificationBuilder(SubComCommentNotificationBuilderBase):
+    """Notification builder for comment request event creation."""
+
+    type = f"comment-{SubComInvitationBuilderBase.type}.create"

@@ -1,6 +1,6 @@
 /*
  * // This file is part of Invenio-Communities
- * // Copyright (C) 2023 CERN.
+ * // Copyright (C) 2023-2024 CERN.
  * //
  * // Invenio-App-Rdm is free software; you can redistribute it and/or modify it
  * // under the terms of the MIT License; see LICENSE file for more details.
@@ -12,7 +12,7 @@ import PropTypes from "prop-types";
 import { NotificationContext } from "@js/invenio_administration";
 import { withCancel, ErrorMessage } from "react-invenio-forms";
 import { Button, Modal } from "semantic-ui-react";
-import { i18next } from "@translations/invenio_app_rdm/i18next";
+import { i18next } from "@translations/invenio_communities/i18next";
 
 export class RestoreConfirmation extends Component {
   constructor(props) {

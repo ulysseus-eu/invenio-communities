@@ -22,7 +22,7 @@ from jinja2 import TemplateError
 from invenio_communities.proxies import current_communities
 
 from ..communities.resources.ui_schema import TypesSchema
-from ..members.records.api import Member
+from ..errors import LogoNotFoundError
 from .decorators import pass_community
 from .template_loader import CommunityThemeChoiceJinjaLoader
 from ..utils import CommunityType
@@ -371,6 +371,22 @@ def communities_new_subcommunity(pid_value, community, community_ui):
 
 
 @pass_community(serialize=True)
+def communities_subcommunities(pid_value, community, community_ui):
+    """Community page for listing subcommunities."""
+    permissions = community.has_permissions_to(PRIVATE_PERMISSIONS)
+
+    if not community["children"]["allow"]:
+        abort(404)
+
+    return render_community_theme_template(
+        "invenio_communities/details/subcommunity/index.html",
+        theme=community_ui.get("theme", {}),
+        community=community_ui,
+        permissions=permissions,
+    )
+
+
+@pass_community(serialize=True)
 def communities_settings(pid_value, community, community_ui):
     """Community settings/profile page."""
     permissions = community.has_permissions_to(PRIVATE_PERMISSIONS)
@@ -390,7 +406,7 @@ def communities_settings(pid_value, community, community_ui):
     try:
         current_communities.service.read_logo(g.identity, pid_value)
         logo = True
-    except FileNotFoundError:
+    except LogoNotFoundError:
         logo = False
 
     logo_size_limit = 10**6

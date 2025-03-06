@@ -24,7 +24,7 @@ from invenio_communities.communities.resources.serializer import (
 )
 from invenio_communities.proxies import current_communities
 
-from ..errors import CommunityDeletedError
+from ..errors import CommunityDeletedError, LogoNotFoundError
 from ..searchapp import search_app_context
 from .communities import (
     communities_about,
@@ -38,6 +38,7 @@ from .communities import (
     communities_settings_pages,
     communities_settings_privileges,
     communities_settings_submission_policy,
+    communities_subcommunities,
     community_theme_css_config,
     invitations,
     members,
@@ -54,6 +55,7 @@ from .communities import (
     persons_requests,
     persons_members,
 )
+from .decorators import warn_deprecation
 
 
 #
@@ -173,6 +175,15 @@ def create_ui_blueprint(app):
     )
 
     blueprint.add_url_rule(
+        routes["deprecated_search"],
+        endpoint="deprecated_communities_search",
+        view_func=warn_deprecation(routes["deprecated_search"], routes["search"])(
+            communities_search
+        ),
+        strict_slashes=False,
+    )
+
+    blueprint.add_url_rule(
         routes["search_persons"],
         view_func=persons_search,
         strict_slashes=False,
@@ -200,6 +211,14 @@ def create_ui_blueprint(app):
     )
 
     blueprint.add_url_rule(
+        routes["deprecated_new"],
+        endpoint="deprecated_communities_new",
+        view_func=warn_deprecation(routes["deprecated_new"], routes["new"])(
+            communities_new
+        ),
+    )
+
+    blueprint.add_url_rule(
         routes["about"],
         view_func=communities_about,
     )
@@ -212,6 +231,11 @@ def create_ui_blueprint(app):
     blueprint.add_url_rule(
         routes["new_subcommunity"],
         view_func=communities_new_subcommunity,
+    )
+
+    blueprint.add_url_rule(
+        routes["subcommunities"],
+        view_func=communities_subcommunities,
     )
 
     # Settings tab routes
@@ -358,7 +382,7 @@ def create_ui_blueprint(app):
                 identity=g.identity,
                 id_=community_id,
             )
-        except FileNotFoundError:
+        except LogoNotFoundError:
             return url_for("static", filename="images/square-placeholder.png")
 
         return logo_link
