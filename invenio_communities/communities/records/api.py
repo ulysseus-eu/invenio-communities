@@ -57,7 +57,7 @@ class Community(Record):
     parent = ParentCommunityField()
     children = ChildrenField()
 
-    schema = ConstantField("$schema", "local://communities/communities-v1.0.0.json")
+    schema = ConstantField("$schema", "local://communities/communities-v2.0.0.json")
 
     model_cls = models.CommunityMetadata
 

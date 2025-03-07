@@ -122,9 +122,9 @@ class CommunityCreateForm extends Component {
 
     onSubmit = async (values, {setSubmitting, setFieldError}) => {
       setSubmitting(true);
-      const payload = this.serializeValues(values);
       const client = new CommunityApi();
-      this.cancellableCreate = withCancel(client.create(payload, null));
+      const payload = this.serializeValues(values);
+      this.cancellableCreate = withCancel(client.create(payload));
 
     try {
       const response = await this.cancellableCreate.promise;
