@@ -55,6 +55,7 @@ export const CommunityItemComputer = ({ result }) => {
                 </p>
               )}
             </Header>
+            {result.metadata.description && (
               <p className="truncate-lines-1 text size small text-muted mt-5">
                 {result.metadata.description}
               </p>
