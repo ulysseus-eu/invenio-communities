@@ -145,16 +145,11 @@
       {
         "title": "GeoJSON Point",
         "type": "object",
-        "required": [
-          "type",
-          "coordinates"
-        ],
+        "required": ["type", "coordinates"],
         "properties": {
           "type": {
             "type": "string",
-            "enum": [
-              "Point"
-            ]
+            "enum": ["Point"]
           },
           "coordinates": {
             "type": "array",
@@ -175,16 +170,11 @@
       {
         "title": "GeoJSON LineString",
         "type": "object",
-        "required": [
-          "type",
-          "coordinates"
-        ],
+        "required": ["type", "coordinates"],
         "properties": {
           "type": {
             "type": "string",
-            "enum": [
-              "LineString"
-            ]
+            "enum": ["LineString"]
           },
           "coordinates": {
             "type": "array",
@@ -209,16 +199,11 @@
       {
         "title": "GeoJSON Polygon",
         "type": "object",
-        "required": [
-          "type",
-          "coordinates"
-        ],
+        "required": ["type", "coordinates"],
         "properties": {
           "type": {
             "type": "string",
-            "enum": [
-              "Polygon"
-            ]
+            "enum": ["Polygon"]
           },
           "coordinates": {
             "type": "array",
@@ -246,16 +231,11 @@
       {
         "title": "GeoJSON MultiPoint",
         "type": "object",
-        "required": [
-          "type",
-          "coordinates"
-        ],
+        "required": ["type", "coordinates"],
         "properties": {
           "type": {
             "type": "string",
-            "enum": [
-              "MultiPoint"
-            ]
+            "enum": ["MultiPoint"]
           },
           "coordinates": {
             "type": "array",
@@ -279,16 +259,11 @@
       {
         "title": "GeoJSON MultiLineString",
         "type": "object",
-        "required": [
-          "type",
-          "coordinates"
-        ],
+        "required": ["type", "coordinates"],
         "properties": {
           "type": {
             "type": "string",
-            "enum": [
-              "MultiLineString"
-            ]
+            "enum": ["MultiLineString"]
           },
           "coordinates": {
             "type": "array",
@@ -316,16 +291,11 @@
       {
         "title": "GeoJSON MultiPolygon",
         "type": "object",
-        "required": [
-          "type",
-          "coordinates"
-        ],
+        "required": ["type", "coordinates"],
         "properties": {
           "type": {
             "type": "string",
-            "enum": [
-              "MultiPolygon"
-            ]
+            "enum": ["MultiPolygon"]
           },
           "coordinates": {
             "type": "array",
@@ -384,10 +354,7 @@
   "nameType": {
     "description": "Type of name.",
     "type": "string",
-    "enum": [
-      "personal",
-      "organizational"
-    ]
+    "enum": ["personal", "organizational"]
   },
   "person_or_org": {
     "type": "object",
@@ -427,9 +394,105 @@
       "family_name": {
         "type": "string"
       },
+      "languages": {
+        "description": "Languages of a person.",
+        "type": "string"
+      },
+      "orcid": {
+        "description": "Orcid of a person.",
+        "type": "string"
+      },
       "email": {
         "description": "Email of a person.",
         "type": "string"
+      },
+      "other_profiles": {
+        "description": "Other_profiles of a person.",
+        "type": "string"
+      },
+      "gender": {
+        "description": "gender of a person.",
+        "type": "string"
+      },
+      "university": {
+        "description": "university of a person.",
+        "type": "string"
+      },
+      "faculty_center_institute": {
+        "description": "faculty_center_institute of a person.",
+        "type": "string"
+      },
+      "department": {
+        "description": "department of a person.",
+        "type": "string"
+      },
+      "experts_profile": {
+        "description": "experts_profile of a person.",
+        "type": "string"
+      },
+      "career_stage": {
+        "description": "career_stage of a person.",
+        "type": "string"
+      },
+      "research_group": {
+        "description": "research_group of a person.",
+        "type": "string"
+      },
+      "principal_investigator": {
+        "description": "principal_investigator of a person.",
+        "type": "string"
+      },
+      "area_s_of_expertise": {
+        "description": "area_s_of_expertise of a person.",
+        "type": "string"
+      },
+      "additional_keywords": {
+        "description": "additional_keywords of a person.",
+        "type": "string"
+      },
+      "main_keywords": {
+        "description": "main_keywords of a person.",
+        "type": "string"
+      },
+      "eu_proposal_writer": {
+        "description": "eu_proposal_writer of a person.",
+        "type": "string"
+      },
+      "eu_project_leader": {
+        "description": "eu_project_leader of a person.",
+        "type": "string"
+      },
+      "coordinated_projects_and_calls": {
+        "description": "coordinated_projects_and_calls of a person.",
+        "type": "string"
+      },
+      "eu_project_member": {
+        "description": "eu_project_member of a person.",
+        "type": "string"
+      },
+      "eu_project_evaluator": {
+        "description": "eu_project_evaluator of a person.",
+        "type": "string"
+      },
+      "knowledge_transfer": {
+        "description": "knowledge_transfer of a person.",
+        "type": "string"
+      },
+      "patents": {
+        "description": "knowledge_transfer of a person.",
+        "type": "string"
+      },
+      "interest_in_joint_research_groups": {
+        "description": "knowledge_transfer of a person.",
+        "type": "string"
+      },
+      "additional_relevant_publications": {
+        "description": "additional_relevant_publications of a person.",
+        "type": "array"
+      },
+      "additional_most_significant_projects": {
+        "description": "additional_most_significant_projects of a person.",
+        "type": "array"
       },
       "identifiers": {
         "type": "array",
@@ -520,10 +583,7 @@
     "additionalProperties": false,
     "properties": {
       "user": {
-        "type": [
-          "integer",
-          "string"
-        ]
+        "type": ["integer", "string"]
       }
     }
   },

@@ -26,15 +26,22 @@ import React, { Component } from "react";
 import { FundingField } from "@js/invenio_vocabularies";
 import {
   AccordionField,
+  AffiliationsSuggestions,
   CustomFields,
   FieldLabel,
   RemoteSelectField,
   SelectField,
-  TextField,
   TextAreaField,
-  AffiliationsSuggestions,
+  TextField,
 } from "react-invenio-forms";
-import { Button, Form, Grid, Icon, Message, Divider } from "semantic-ui-react";
+import {
+  Button,
+  Divider,
+  Form,
+  Grid,
+  Icon,
+  Message,
+} from "semantic-ui-react";
 import * as Yup from "yup";
 import { CommunityApi } from "../../api";
 import { communityErrorSerializer } from "../../api/serializers";
@@ -43,42 +50,50 @@ import PropTypes from "prop-types";
 import { default as DangerZone } from "./DangerZone";
 import { default as LogoUploader } from "./LogoUploader";
 import Overridable from "react-overridable";
-import {CommunityType} from "../../community";
+import { CommunityType } from "../../community";
+import { CommunityPersonAdditionalFields } from "./community-person-additional-fields";
 
 export const COMMUNITY_VALIDATION_SCHEMA = Yup.object({
-    metadata: Yup.object({
-        title: Yup.string().when(
-            'type',
-            {
-                is: (val) => val && val["id"] === CommunityType.person,
-                then: Yup.string(),
-                otherwise: Yup.string().required("Community shall have a name").max(250, i18next.t("Maximum number of characters is 250")),
-            },
-        ),
-        description: Yup.string().max(
-            250,
-            i18next.t("Maximum number of characters is 250")
-        ),
-        website: Yup.string().url(i18next.t("Must be a valid URL")),
-        type: Yup.object().shape({
-            id: Yup.string(),
-        }),
-        person: Yup.object().when('type', {
-            is: (val) => val && val["id"] === CommunityType.person,
-            then: Yup.object().shape({
-                given_name: Yup.string().required('First name is required'),
-                family_name: Yup.string().required('Last name is required'),
-                middle_name: Yup.string(),
-            }),
-        }),
-        organizations: Yup.array().when('type', {
-            is: (val) => val && val["id"] === CommunityType.organization,
-            then: Yup.array().min(
-                1,
-                i18next.t("Minimum number of organizations is 1"))
-        }),
+  metadata: Yup.object({
+    title: Yup.string().when("type", {
+      is: (val) => val && val["id"] === CommunityType.person,
+      then: Yup.string(),
+      otherwise: Yup.string()
+        .required("Community shall have a name")
+        .max(250, i18next.t("Maximum number of characters is 250")),
     }),
-    slug: Yup.string().required("Slug is required for any community"),
+    description: Yup.string().max(
+      250,
+      i18next.t("Maximum number of characters is 250")
+    ),
+    website: Yup.string().url(i18next.t("Must be a valid URL")),
+    type: Yup.object().shape({
+      id: Yup.string(),
+    }),
+    person: Yup.object().when("type", {
+      is: (val) => val && val["id"] === CommunityType.person,
+      then: Yup.object().shape({
+        given_name: Yup.string().required("First name is required"),
+        family_name: Yup.string().required("Last name is required"),
+        university: Yup.string(),
+        email: Yup.string(),
+        orcid: Yup.string(),
+        university: Yup.string(),
+        languages: Yup.string(),
+        middle_name: Yup.string(),
+        additional_relevant_publications: Yup.array(),
+        additional_most_significant_projects: Yup.array()
+      }),
+    }),
+    organizations: Yup.array().when("type", {
+      is: (val) => val && val["id"] === CommunityType.organization,
+      then: Yup.array().min(
+        1,
+        i18next.t("Minimum number of organizations is 1")
+      ),
+    }),
+  }),
+  slug: Yup.string().required("Slug is required for any community"),
 });
 
 /**
@@ -123,7 +138,10 @@ class CommunityProfileForm extends Component {
       metadata: {
         description: "",
         title: "",
-        person: {},
+        person: {
+          additional_relevant_publications: [],
+          additional_most_significant_projects: [],
+        },
         organization: {},
         curation_policy: "",
         type: {},
@@ -287,7 +305,9 @@ class CommunityProfileForm extends Component {
 
       let serializedValue = {};
       if (fund !== null) {
-        serializedValue = Array.isArray(fund) ? fund.map(_serialize) : _serialize(fund);
+        serializedValue = Array.isArray(fund)
+          ? fund.map(_serialize)
+          : _serialize(fund);
       }
       return serializedValue;
     };
@@ -298,7 +318,9 @@ class CommunityProfileForm extends Component {
     const organizations = submittedCommunity.metadata.organizations.map(
       (organization) => {
         const orgName = this.knownOrganizations[organization];
-        return orgName ? { id: organization, name: orgName } : { name: organization };
+        return orgName
+          ? { id: organization, name: orgName }
+          : { name: organization };
       }
     );
 
@@ -324,7 +346,9 @@ class CommunityProfileForm extends Component {
     };
     if (submittedCommunity.metadata.type?.id === CommunityType.person) {
       submittedCommunity.metadata["title"] =
-        submittedCommunity.metadata.person.family_name + ", " + submittedCommunity.metadata.person.given_name;
+        submittedCommunity.metadata.person.family_name +
+        ", " +
+        submittedCommunity.metadata.person.given_name;
     }
 
     // Clean values
@@ -341,7 +365,8 @@ class CommunityProfileForm extends Component {
   onSubmit = async (values, { setSubmitting, setFieldError }) => {
     setSubmitting(true);
     const payload = this.serializeValues(values);
-    const client = new CommunityApi();
+    const client = new CommunityApi("/api/persons");
+
     const { community } = this.props;
 
     try {
@@ -375,16 +400,37 @@ class CommunityProfileForm extends Component {
     } = this.props;
     const { error } = this.state;
     const includesPaths = [
-        "metadata.title",
-        "metadata.person.given_name",
-        "metadata.person.family_name",
-        "metadata.type.id",
-        "metadata.website",
-        "metadata.organizations",
-        "metadata.description",
-    ]
-    const isPerson = (community.metadata.type?.id === CommunityType.person);
-    const isOrganization = (community.metadata.type?.id === CommunityType.organization);
+      "metadata.title",
+      "metadata.person.given_name",
+      "metadata.person.family_name",
+      "metadata.person.email",
+      "metadata.person.orcid",
+      "metadata.person.other_profiles",
+      "metadata.person.gender",
+      "metadata.person.languages",
+      "metadata.person.university",
+      "metadata.person.faculty_center_institute",
+      "metadata.person.department",
+      "metadata.person.experts_profile",
+      "metadata.person.career_stage",
+      "metadata.person.research_group",
+      "metadata.person.principal_investigator",
+      "metadata.person.area_s_of_expertise",
+      "metadata.person.additional_keywords",
+      "metadata.person.main_keywords",
+      "metadata.person.eu_proposal_writer",
+      "metadata.person.eu_project_leader",
+      "metadata.person.coordinated_projects_and_calls",
+      "metadata.person.additional_relevant_publications",
+      "metadata.person.additional_most_significant_projects",
+      "metadata.type.id",
+      "metadata.website",
+      "metadata.organizations",
+      "metadata.description",
+    ];
+    const isPerson = community.metadata.type?.id === CommunityType.person;
+    const isOrganization =
+      community.metadata.type?.id === CommunityType.organization;
     const shallDisplayType = !(isPerson || isOrganization);
     return (
       <Formik
@@ -417,40 +463,21 @@ class CommunityProfileForm extends Component {
                   >
                     <div className="rel-ml-1 rel-mr-1">
                       {(values.metadata.type.id !== CommunityType.person) && (
-                      <TextField
+                        <TextField
                           fluid
                           fieldPath="metadata.title"
                           label={
-                              <FieldLabel
-                                  htmlFor="metadata.title"
-                                  icon="book"
-                                  label={i18next.t("Name")}
-                              />
+                            <FieldLabel
+                              htmlFor="metadata.title"
+                              icon="book"
+                              label={i18next.t("Name")}
+                            />
                           }
-                      />)}
-                      {(values.metadata.type.id === CommunityType.person) && <TextField
-                          fluid
-                          fieldPath="metadata.person.given_name"
-                          label={
-                              <FieldLabel
-                                  htmlFor="metadata.person.given_name"
-                                  icon="user"
-                                  label={i18next.t("First name")}
-                              />
-                          }
-                      />}
+                        />)}
 
-                      {(values.metadata.type.id === CommunityType.person) && <TextField
-                          fluid
-                          fieldPath="metadata.person.family_name"
-                          label={
-                              <FieldLabel
-                                  htmlFor="metadata.person.family_name"
-                                  icon="user"
-                                  label={i18next.t("Last name")}
-                              />
-                          }
-                      />}
+                      {values.metadata.type.id === CommunityType.person && (
+                        <CommunityPersonAdditionalFields fieldPath={"metadata.person"} personValues={values.metadata.person} />
+                      )}
 
                       <Overridable
                         id="InvenioCommunities.CommunityProfileForm.TextAreaField.MetadataDescription"
@@ -469,29 +496,31 @@ class CommunityProfileForm extends Component {
                         />
                       </Overridable>
 
-                      {shallDisplayType && <Overridable
-                        id="InvenioCommunities.CommunityProfileForm.SelectField.MetadataType"
-                        community={community}
-                      >
-                        <SelectField
-                          search
-                          clearable
-                          fieldPath="metadata.type.id"
-                          label={
-                            <FieldLabel
-                              htmlFor="metadata.type.id"
-                              icon="tag"
-                              label={i18next.t("Type")}
-                            />
-                          }
-                          options={types.map((ct) => {
-                            return {
-                              value: ct.id,
-                              text: ct?.title_l10n ?? ct.id,
-                            };
-                          })}
-                        />
-                      </Overridable>}
+                      {shallDisplayType && (
+                        <Overridable
+                          id="InvenioCommunities.CommunityProfileForm.SelectField.MetadataType"
+                          community={community}
+                        >
+                          <SelectField
+                            search
+                            clearable
+                            fieldPath="metadata.type.id"
+                            label={
+                              <FieldLabel
+                                htmlFor="metadata.type.id"
+                                icon="tag"
+                                label={i18next.t("Type")}
+                              />
+                            }
+                            options={types.map((ct) => {
+                              return {
+                                value: ct.id,
+                                text: ct?.title_l10n ?? ct.id,
+                              };
+                            })}
+                          />
+                        </Overridable>
+                      )}
 
                       <Overridable
                         id="InvenioCommunities.CommunityProfileForm.TextField.MetadataWebsite"
@@ -520,7 +549,9 @@ class CommunityProfileForm extends Component {
                           suggestionAPIHeaders={{
                             Accept: "application/vnd.inveniordm.v1+json",
                           }}
-                          placeholder={i18next.t("Search for an organization by name")}
+                          placeholder={i18next.t(
+                            "Search for an organization by name"
+                          )}
                           clearable
                           multiple
                           initialSuggestions={_get(
@@ -532,9 +563,10 @@ class CommunityProfileForm extends Component {
                             // Add organization IDs to known organizations
                             organizations.forEach((organization) => {
                               // eslint-disable-next-line no-prototype-builtins
-                              const isKnownOrg = this.knownOrganizations.hasOwnProperty(
-                                organization.id
-                              );
+                              const isKnownOrg =
+                                this.knownOrganizations.hasOwnProperty(
+                                  organization.id
+                                );
                               if (!isKnownOrg) {
                                 this.knownOrganizations = {
                                   ...this.knownOrganizations,
@@ -551,9 +583,13 @@ class CommunityProfileForm extends Component {
                               label={i18next.t("Organizations")}
                             />
                           }
-                          noQueryMessage={i18next.t("Search for organizations...")}
+                          noQueryMessage={i18next.t(
+                            "Search for organizations..."
+                          )}
                           allowAdditions
-                          search={(filteredOptions, searchQuery) => filteredOptions}
+                          search={(filteredOptions, searchQuery) =>
+                            filteredOptions
+                          }
                         />
                       </Overridable>
                     </div>
@@ -608,9 +644,13 @@ class CommunityProfileForm extends Component {
                             return {
                               id: funder.id,
                               name: funder.name,
-                              ...(funder.title_l10n && { title: funder.title_l10n }),
+                              ...(funder.title_l10n && {
+                                title: funder.title_l10n,
+                              }),
                               ...(funder.pid && { pid: funder.pid }),
-                              ...(funder.country && { country: funder.country }),
+                              ...(funder.country && {
+                                country: funder.country,
+                              }),
                               ...(funder.identifiers && {
                                 identifiers: funder.identifiers,
                               }),
@@ -653,7 +693,8 @@ class CommunityProfileForm extends Component {
                     <CustomFields
                       config={customFields.ui}
                       templateLoaders={[
-                        (widget) => import(`@templates/custom_fields/${widget}.js`),
+                        (widget) =>
+                          import(`@templates/custom_fields/${widget}.js`),
                         (widget) => import(`react-invenio-forms`),
                       ]}
                       fieldPathPrefix="custom_fields"

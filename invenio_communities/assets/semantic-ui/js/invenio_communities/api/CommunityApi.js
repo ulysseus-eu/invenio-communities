@@ -14,7 +14,12 @@ import { http } from "react-invenio-forms";
  *
  */
 export class CommunityApi {
-  baseUrl = "/api/communities";
+  baseUrl = null;
+
+  constructor(baseUrl = "/api/communities") {
+    this.baseUrl = baseUrl;
+  }
+
 
   /**
    * Create a new community.

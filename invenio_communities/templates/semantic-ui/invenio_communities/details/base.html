@@ -1,10 +1,10 @@
 {# -*- coding: utf-8 -*-
 
-  This file is part of Invenio.
-  Copyright (C) 2016-2020 CERN.
+This file is part of Invenio.
+Copyright (C) 2016-2020 CERN.
 
-  Invenio is free software; you can redistribute it and/or modify it
-  under the terms of the MIT License; see LICENSE file for more details.
+Invenio is free software; you can redistribute it and/or modify it
+under the terms of the MIT License; see LICENSE file for more details.
 #}
 
 {% extends "invenio_communities/base.html" %}
@@ -12,9 +12,10 @@
 {%- block javascript %}
 {{ super() }}
 {{ webpack['invenio-communities-header.js'] }}
+{{ webpack['invenio-communities-community-about-pages.js'] }}
 {%- endblock javascript %}
 
 {%- block page_body %}
-  {% set community_menu_active = True %}
-  {% include "invenio_communities/details/header.html" %}
+{% set community_menu_active = True %}
+{% include "invenio_communities/details/header.html" %}
 {%- endblock page_body %}
