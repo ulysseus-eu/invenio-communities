@@ -155,6 +155,9 @@
           }
         }
       },
+      "user_profile": {
+        "type": "object"
+      },
       "custom_fields": {
         "type": "object"
       },

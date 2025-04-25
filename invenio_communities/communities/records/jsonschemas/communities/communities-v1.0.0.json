@@ -16,50 +16,33 @@
       "properties": {
         "visibility": {
           "description": "Community visibility.",
-          "enum": [
-            "public",
-            "restricted"
-          ]
+          "enum": ["public", "restricted"]
         },
         "members_visibility": {
           "description": "Community members visibility.",
-          "enum": [
-            "public",
-            "restricted"
-          ]
+          "enum": ["public", "restricted"]
         },
         "member_policy": {
           "description": "Community member policy.",
-          "enum": [
-            "open",
-            "closed"
-          ]
+          "enum": ["open", "closed"]
         },
         "record_policy": {
           "description": "Deprecated field. Please use record_submission_policy instead.",
-          "enum": [
-            "open",
-            "closed",
-            "restricted"
-          ]
+          "enum": ["open", "closed", "restricted"]
         },
         "record_submission_policy": {
           "description": "Community record submission policy.",
-          "enum": [
-            "open",
-            "closed",
-            "restricted"
-          ]
+          "enum": ["open", "closed", "restricted"]
         },
         "review_policy": {
           "description": "Community review policy.",
-          "enum": [
-            "open",
-            "closed",
-            "members"
-          ]
+          "enum": ["open", "closed", "members"]
         }
       }
+    },
+    "user_profile": {
+      "type": "object",
+      "description": "Configured additional metadata"
     },
     "custom_fields": {
       "type": "object",
@@ -167,7 +150,7 @@
         }
       }
     },
-    "children":{
+    "children": {
       "type": "object",
       "description": "Children communities.",
       "properties": {

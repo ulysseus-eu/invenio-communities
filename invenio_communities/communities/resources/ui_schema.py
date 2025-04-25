@@ -106,6 +106,8 @@ class UICommunitySchema(BaseObjectSchema):
 
     theme = fields.Nested(CommunityThemeSchema, dump_only=True, load_default={})
 
+    user_profile = fields.Raw()
+    
     # Custom fields
     custom_fields = fields.Nested(
         partial(CustomFieldsSchemaUI, fields_var="COMMUNITIES_CUSTOM_FIELDS")

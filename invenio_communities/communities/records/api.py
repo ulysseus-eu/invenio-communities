@@ -39,7 +39,7 @@ from .systemfields.deletion_status import CommunityDeletionStatusField
 from .systemfields.parent_community import ParentCommunityField
 from .systemfields.pidslug import PIDSlugField
 from .systemfields.tombstone import TombstoneField
-
+from .systemfields.user_profile import UserProfileField
 
 class CommunityFile(FileRecord):
     """Community file API."""
@@ -71,6 +71,8 @@ class Community(Record):
     index = IndexField("communities-communities-v2.0.0", search_alias="communities")
 
     access = CommunityAccessField()
+
+    user_profile = UserProfileField()
 
     #: Custom fields system field.
     custom_fields = DictField(clear_none=True, create_if_missing=True)
