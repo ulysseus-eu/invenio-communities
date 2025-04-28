@@ -46,7 +46,6 @@ from .views.ui import (
     _has_about_page_content,
     _has_curation_policy_page_content,
     _show_create_community_link,
-    _has_profile_page_content
 )
 
 
@@ -234,7 +233,7 @@ def register_menus(app):
             text=_("Profile"),
             order=5,
             expected_args=["pid_value"],
-            visible_when=_has_profile_page_content,
+            visible_when=_show_create_community_link,
             **{"icon": "info", "permissions": "can_create"}
         )
 

@@ -124,13 +124,6 @@ def _has_about_page_content():
     return False
 
 
-def _has_profile_page_content():
-    """Function used to check if profile page has content."""
-    community = request.community
-    if community and "user_profile" in community and "profile" in community["user_profile"]:
-        return community["user_profile"]["profile"] != ""
-    return False
-    
 def _has_curation_policy_page_content():
     """Function used to check if curation policy page has content."""
     community = request.community

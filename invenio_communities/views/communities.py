@@ -609,16 +609,9 @@ def persons_members(pid_value, community, community_ui):
 def communities_profile(pid_value, community, community_ui):
     """Persons about page."""
     
-    permissions = community.has_permissions_to({
-        "create",
-        "read",
-        "update",
-        "search_requests",
-        "members_search_public",
-        "moderate",
-        "request_membership",
-        "submit_record",
-    })
+    permissions = community.has_permissions_to(HEADER_PERMISSIONS| {
+    "create",
+})
     
     if not permissions["can_create"]:
         raise PermissionDeniedError()
