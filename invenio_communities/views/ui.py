@@ -40,6 +40,7 @@ from .communities import (
     communities_settings_submission_policy,
     communities_subcommunities,
     community_theme_css_config,
+    communities_profile,
     invitations,
     members,
     organizations_frontpage,
@@ -118,11 +119,18 @@ def _show_create_community_link():
 def _has_about_page_content():
     """Function used to check if about page has content."""
     community = request.community
-    if community and "metadata" in community and "page" in community["metadata"]:
-        return community["metadata"]["page"] != ""
+    if community and "user_profile" in community and "profile" in community["user_profile"]:
+        return community["user_profile"]["profile"] != ""
     return False
 
 
+def _has_profile_page_content():
+    """Function used to check if profile page has content."""
+    community = request.community
+    if community and "user_profile" in community and "profile" in community["user_profile"]:
+        return community["user_profile"]["profile"] != ""
+    return False
+    
 def _has_curation_policy_page_content():
     """Function used to check if curation policy page has content."""
     community = request.community
@@ -222,6 +230,11 @@ def create_ui_blueprint(app):
         routes["about"],
         view_func=communities_about,
     )
+    
+    blueprint.add_url_rule(
+        routes["communities_profile"],
+        view_func=communities_profile,
+    )
 
     blueprint.add_url_rule(
         routes["curation_policy"],
@@ -272,11 +285,6 @@ def create_ui_blueprint(app):
     blueprint.add_url_rule(
         "/communities/<pid_value>/community-theme-<revision>.css",
         view_func=community_theme_css_config,
-    )
-
-    blueprint.add_url_rule(
-        routes["about_persons"],
-        view_func=communities_about,
     )
 
     blueprint.add_url_rule(

@@ -72,7 +72,6 @@ class Community(Record):
 
     access = CommunityAccessField()
 
-    user_profile = UserProfileField()
 
     #: Custom fields system field.
     custom_fields = DictField(clear_none=True, create_if_missing=True)
@@ -137,6 +136,8 @@ class Community(Record):
         ),
         custom=CustomFieldsRelation("COMMUNITIES_CUSTOM_FIELDS"),
     )
+
+    user_profile = UserProfileField()
 
     is_verified = IsVerifiedField("is_verified", use_cache=True, index=True)
 

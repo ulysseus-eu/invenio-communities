@@ -1,4 +1,3 @@
-import json
 from invenio_records.systemfields import SystemField
 from invenio_db import db
 from sqlalchemy import Column, Integer, String
@@ -17,7 +16,6 @@ class Members(Base):
     
     def to_dict(self):
         return {
-            "role": self.role,
             "community_id": self.community_id,
             "user_id": self.user_id,
         }
@@ -51,7 +49,6 @@ class UserProfileField(SystemField):
             return {}
         
         # get user profile by user_id
-        
         user = db.session.query(User).filter_by(id=user_id).first()
         if user is None:
             return {}

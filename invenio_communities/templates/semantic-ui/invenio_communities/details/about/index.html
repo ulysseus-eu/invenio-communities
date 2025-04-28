@@ -15,7 +15,6 @@ under the terms of the MIT License; see LICENSE file for more details.
 {{ super() }}
 
 <div class="ui text container rel-m-2 rel-pt-1">
-  <div id="community-about-pages" data-community='{{ community | tojson }}'></div>
   {{ community.metadata.page | safe }}
   {% if community.ui.funding|length %}
   <h3 class="ui header">{{ _("Awards") }}</h3>

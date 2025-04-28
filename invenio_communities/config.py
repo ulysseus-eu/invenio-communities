@@ -48,6 +48,7 @@ COMMUNITIES_ROUTES = {
     "members_persons": "/persons/<pid_value>/members",
     "invitations_persons": "/persons/<pid_value>/invitations",
     "about_persons": "/persons/<pid_value>/about",
+    "communities_profile": "/persons/<pid_value>/profile",
     "curation_policy_persons": "/persons/<pid_value>/curation-policy",
     "frontpage_organizations": "/organizations",
     "search_organizations": "/organizations/search",

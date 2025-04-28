@@ -46,6 +46,7 @@ from .views.ui import (
     _has_about_page_content,
     _has_curation_policy_page_content,
     _show_create_community_link,
+    _has_profile_page_content
 )
 
 
@@ -228,19 +229,13 @@ def register_menus(app):
             expected_args=["pid_value"],
             **{"icon": "settings", "permissions": "can_update"}
         )
-        persons.submenu("curation_policy").register(
-            endpoint="invenio_communities.communities_curation_policy",
-            text=_("Curation policy"),
+        persons.submenu("profile").register(
+            endpoint="invenio_communities.communities_profile",
+            text=_("Profile"),
             order=5,
             expected_args=["pid_value"],
-            **{"icon": "balance scale", "permissions": "can_read"}
-        )
-        persons.submenu("about").register(
-            endpoint="invenio_communities.communities_about",
-            text=_("About"),
-            order=6,
-            expected_args=["pid_value"],
-            **{"icon": "info", "permissions": "can_read"}
+            visible_when=_has_profile_page_content,
+            **{"icon": "info", "permissions": "can_create"}
         )
 
         """Register organizations menu items."""

@@ -606,6 +606,31 @@ def persons_members(pid_value, community, community_ui):
 
 
 @pass_community(serialize=True)
+def communities_profile(pid_value, community, community_ui):
+    """Persons about page."""
+    
+    permissions = community.has_permissions_to({
+        "create",
+        "read",
+        "update",
+        "search_requests",
+        "members_search_public",
+        "moderate",
+        "request_membership",
+        "submit_record",
+    })
+    
+    if not permissions["can_create"]:
+        raise PermissionDeniedError()
+
+    return render_community_theme_template(
+        "invenio_communities/details/profile/index.html",
+        theme=community_ui.get("theme", {}),
+        community=community_ui,
+        permissions=permissions,
+        custom_fields_ui=load_custom_fields(dump_only_required=False)["ui"])
+    
+@pass_community(serialize=True)
 def organizations_settings(pid_value, community, community_ui):
     """Person settings/profile page."""
     return communities_settings(pid_value=pid_value, community=community, community_ui=community_ui)
