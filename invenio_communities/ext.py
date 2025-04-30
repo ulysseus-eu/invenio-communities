@@ -234,7 +234,7 @@ def register_menus(app):
             order=5,
             expected_args=["pid_value"],
             visible_when=_show_create_community_link,
-            **{"icon": "info", "permissions": "can_create"}
+            **{"icon": "info", "permissions": "can_read"}
         )
 
         """Register organizations menu items."""

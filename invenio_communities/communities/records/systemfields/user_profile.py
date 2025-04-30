@@ -53,6 +53,18 @@ class UserProfileField(SystemField):
         if user is None:
             return {}
         
+        user_profile = user.to_dict()["profile"] if "profile" in user.to_dict() else None
+        if user_profile is None:
+            return {}
+        
+        # if user has not check "Declaration of consent" return nothing
+        if "consent_by_providing_my_consent" in user_profile and not user_profile["consent_by_providing_my_consent"]:
+            return {}
+        
+        # if user check private, return nothing
+        if "consent_profile_privacy_level" in user_profile and user_profile['consent_profile_privacy_level']:
+            return {}
+        
         return user.to_dict()
 
     def __get__(self, record, owner=None):
