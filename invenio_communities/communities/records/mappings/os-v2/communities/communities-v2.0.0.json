@@ -248,76 +248,7 @@
               "family_name": {
                 "type": "text"
               },
-              "orcid": {
-                "type": "text"
-              },
-              "additional_relevant_publications": {
-                "type": "text"
-              },
-              "additional_most_significant_projects": {
-                "type": "text"
-              },
               "email": {
-                "type": "text"
-              },
-              "eu_project_member": {
-                "type": "text"
-              },
-              "eu_project_evaluator": {
-                "type": "text"
-              },
-              "university": {
-                "type": "text"
-              },
-              "interest_in_joint_research_groups": {
-                "type": "text"
-              },
-              "patents": {
-                "type": "text"
-              },
-              "knowledge_transfer": {
-                "type": "text"
-              },
-              "languages": {
-                "type": "text"
-              },
-              "coordinated_projects_and_calls": {
-                "type": "text"
-              },
-              "other_profiles": {
-                "type": "text"
-              },
-              "gender": {
-                "type": "text"
-              },
-              "faculty_center_institute": {
-                "type": "text"
-              },
-              "department": {
-                "type": "text"
-              },
-              "experts_profile": {
-                "type": "text"
-              },
-              "career_stage": {
-                "type": "text"
-              },
-              "research_group": {
-                "type": "text"
-              },
-              "principal_investigator": {
-                "type": "text"
-              },
-              "area_s_of_expertise": {
-                "type": "text"
-              },
-              "additional_keywords": {
-                "type": "text"
-              },
-              "main_keywords": {
-                "type": "text"
-              },
-              "eu_proposal_writer": {
                 "type": "text"
               },
               "eu_project_leader": {

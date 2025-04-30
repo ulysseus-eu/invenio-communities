@@ -7,6 +7,7 @@
  * under the terms of the MIT License; see LICENSE file for more details.
  */
 
+import { FundingField } from "@js/invenio_vocabularies";
 import { i18next } from "@translations/invenio_communities/i18next";
 import { Formik } from "formik";
 import _cloneDeep from "lodash/cloneDeep";
@@ -22,8 +23,8 @@ import _mapValues from "lodash/mapValues";
 import _pick from "lodash/pick";
 import _pickBy from "lodash/pickBy";
 import _unset from "lodash/unset";
+import PropTypes from "prop-types";
 import React, { Component } from "react";
-import { FundingField } from "@js/invenio_vocabularies";
 import {
   AccordionField,
   AffiliationsSuggestions,
@@ -34,24 +35,16 @@ import {
   TextAreaField,
   TextField,
 } from "react-invenio-forms";
-import {
-  Button,
-  Divider,
-  Form,
-  Grid,
-  Icon,
-  Message,
-} from "semantic-ui-react";
+import Overridable from "react-overridable";
+import { Button, Divider, Form, Grid, Icon, Message } from "semantic-ui-react";
 import * as Yup from "yup";
 import { CommunityApi } from "../../api";
 import { communityErrorSerializer } from "../../api/serializers";
-import { CustomFieldSerializer } from "./CustomFieldSerializer";
-import PropTypes from "prop-types";
-import { default as DangerZone } from "./DangerZone";
-import { default as LogoUploader } from "./LogoUploader";
-import Overridable from "react-overridable";
 import { CommunityType } from "../../community";
 import { CommunityPersonAdditionalFields } from "./community-person-additional-fields";
+import { CustomFieldSerializer } from "./CustomFieldSerializer";
+import { default as DangerZone } from "./DangerZone";
+import { default as LogoUploader } from "./LogoUploader";
 
 export const COMMUNITY_VALIDATION_SCHEMA = Yup.object({
   metadata: Yup.object({
@@ -75,14 +68,6 @@ export const COMMUNITY_VALIDATION_SCHEMA = Yup.object({
       then: Yup.object().shape({
         given_name: Yup.string().required("First name is required"),
         family_name: Yup.string().required("Last name is required"),
-        university: Yup.string(),
-        email: Yup.string(),
-        orcid: Yup.string(),
-        university: Yup.string(),
-        languages: Yup.string(),
-        middle_name: Yup.string(),
-        additional_relevant_publications: Yup.array(),
-        additional_most_significant_projects: Yup.array()
       }),
     }),
     organizations: Yup.array().when("type", {
@@ -138,10 +123,7 @@ class CommunityProfileForm extends Component {
       metadata: {
         description: "",
         title: "",
-        person: {
-          additional_relevant_publications: [],
-          additional_most_significant_projects: [],
-        },
+        person: {},
         organization: {},
         curation_policy: "",
         type: {},
@@ -403,26 +385,6 @@ class CommunityProfileForm extends Component {
       "metadata.title",
       "metadata.person.given_name",
       "metadata.person.family_name",
-      "metadata.person.email",
-      "metadata.person.orcid",
-      "metadata.person.other_profiles",
-      "metadata.person.gender",
-      "metadata.person.languages",
-      "metadata.person.university",
-      "metadata.person.faculty_center_institute",
-      "metadata.person.department",
-      "metadata.person.experts_profile",
-      "metadata.person.career_stage",
-      "metadata.person.research_group",
-      "metadata.person.principal_investigator",
-      "metadata.person.area_s_of_expertise",
-      "metadata.person.additional_keywords",
-      "metadata.person.main_keywords",
-      "metadata.person.eu_proposal_writer",
-      "metadata.person.eu_project_leader",
-      "metadata.person.coordinated_projects_and_calls",
-      "metadata.person.additional_relevant_publications",
-      "metadata.person.additional_most_significant_projects",
       "metadata.type.id",
       "metadata.website",
       "metadata.organizations",
@@ -462,7 +424,7 @@ class CommunityProfileForm extends Component {
                     active
                   >
                     <div className="rel-ml-1 rel-mr-1">
-                      {(values.metadata.type.id !== CommunityType.person) && (
+                      {values.metadata.type.id !== CommunityType.person && (
                         <TextField
                           fluid
                           fieldPath="metadata.title"
@@ -473,10 +435,14 @@ class CommunityProfileForm extends Component {
                               label={i18next.t("Name")}
                             />
                           }
-                        />)}
+                        />
+                      )}
 
                       {values.metadata.type.id === CommunityType.person && (
-                        <CommunityPersonAdditionalFields fieldPath={"metadata.person"} personValues={values.metadata.person} />
+                        <CommunityPersonAdditionalFields
+                          fieldPath={"metadata.person"}
+                          personValues={values.metadata.person}
+                        />
                       )}
 
                       <Overridable

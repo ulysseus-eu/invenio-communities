@@ -72,7 +72,6 @@ class Community(Record):
 
     access = CommunityAccessField()
 
-
     #: Custom fields system field.
     custom_fields = DictField(clear_none=True, create_if_missing=True)
     theme = DictField(clear_none=True)

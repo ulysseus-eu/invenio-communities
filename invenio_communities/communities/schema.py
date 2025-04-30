@@ -134,45 +134,14 @@ class CommunityAccessSchema(Schema):
     )
 
 
-class PublicationsSchema(Schema):
-    title= SanitizedUnicode()
-    doi= SanitizedUnicode()
-    keywords= SanitizedUnicode()
-    summary= SanitizedUnicode()
-
 class PersonSchema(Schema):
     """Person schema."""
-
     given_name = SanitizedUnicode(required=False, validate=_not_blank(max=250))
     middle_name = SanitizedUnicode(required=False, validate=_not_blank(max=250))
     family_name = SanitizedUnicode(required=True, validate=_not_blank(max=250))
-    orcid = SanitizedUnicode(required=False, validate=_not_blank(max=250))
-    email = SanitizedUnicode(required=False, validate=_not_blank(max=250))
-    languages = SanitizedUnicode(required=False, validate=_not_blank(max=250))
-    other_profiles = SanitizedUnicode(required=False, validate=_not_blank(max=250))
-    gender = SanitizedUnicode(required=False, validate=_not_blank(max=250))
-    university = SanitizedUnicode(required=False, validate=_not_blank(max=250))
-    faculty_center_institute = SanitizedUnicode(required=False, validate=_not_blank(max=250))
-    department = SanitizedUnicode(required=False, validate=_not_blank(max=250))
-    experts_profile = SanitizedUnicode(required=False, validate=_not_blank(max=250))
-    career_stage = SanitizedUnicode(required=False, validate=_not_blank(max=250))
-    research_group = SanitizedUnicode(required=False, validate=_not_blank(max=250))
-    principal_investigator = SanitizedUnicode(required=False, validate=_not_blank(max=250))
-    area_s_of_expertise = SanitizedUnicode(required=False, validate=_not_blank(max=250))
-    additional_keywords = SanitizedUnicode(required=False, validate=_not_blank(max=250))
-    main_keywords = SanitizedUnicode(required=False, validate=_not_blank(max=250))
-    eu_proposal_writer = SanitizedUnicode(required=False, validate=_not_blank(max=250))
-    eu_project_leader = SanitizedUnicode(required=False, validate=_not_blank(max=250))
-    coordinated_projects_and_calls = SanitizedUnicode(required=False, validate=_not_blank(max=250))
-    eu_project_member = SanitizedUnicode(required=False, validate=_not_blank(max=250))
-    eu_project_evaluator = SanitizedUnicode(required=False, validate=_not_blank(max=250))
-    knowledge_transfer = SanitizedUnicode(required=False, validate=_not_blank(max=250))
-    patents = SanitizedUnicode(required=False, validate=_not_blank(max=250))
-    interest_in_joint_research_groups = SanitizedUnicode(required=False, validate=_not_blank(max=250))
-    additional_relevant_publications = fields.List(fields.Raw())
-    additional_most_significant_projects = fields.List(fields.Raw())
 
-    
+
+
 class OrganizationSchema(Schema):
     """Person schema."""
     gridcode = SanitizedUnicode(required=False, validate=_not_blank(max=250))
