@@ -5,8 +5,14 @@
 {%- block page_body %}
 {{ super() }}
 
-<div class="ui text container rel-m-2 rel-pt-1">
-    <div id="community-profile-pages" data-community='{{ community | tojson }}'></div>
+<div class="ui text rel-m-2 rel-pt-1">
+    <div id="community-profile-pages" data-community='{{ community | tojson }}' style=></div>
 </div>
 
 {%- endblock page_body -%}
+
+{
+  font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+  max-width: 700px !important;
+  line-height: 1.5;
+}
