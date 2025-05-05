@@ -30,6 +30,11 @@ visibility = TermsFacet(
         "restricted": _("Restricted"),
     },
 )
+            
+university = TermsFacet(
+    field="id",
+    label="University",
+)
 
 role = TermsFacet(
     field="role",

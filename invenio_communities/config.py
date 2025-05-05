@@ -79,6 +79,12 @@ COMMUNITIES_FACETS = {
             "field": "visibility",
         },
     },
+    "university": {
+        "facet": facets.university,
+        "ui": {
+            "field": "university",
+        },
+    },
 }
 """Available facets defined for this module."""
 
@@ -154,7 +160,7 @@ COMMUNITIES_ROLES = [
 """Community roles."""
 
 COMMUNITIES_SEARCH = {
-    "facets": ["type", "visibility"],
+    "facets": ["type", "visibility","university"],
     "sort": ["bestmatch", "newest", "oldest"],
 }
 """Community search configuration (i.e list of communities)"""
