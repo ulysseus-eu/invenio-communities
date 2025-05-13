@@ -235,6 +235,13 @@ class ChildrenSchema(Schema):
     allow = fields.Boolean()
 
 
+class CommunityUserProfileSchema(Schema):
+    """Community User Profile Schema."""
+
+    id = fields.Int()
+    username = fields.Str()
+    profile = fields.Raw()
+    
 class BaseCommunitySchema(BaseRecordSchema, FieldPermissionsMixin):
     """Base schema for the community metadata."""
 
@@ -266,7 +273,7 @@ class BaseCommunitySchema(BaseRecordSchema, FieldPermissionsMixin):
     metadata = NestedAttribute(CommunityMetadataSchema, required=True)
     access = NestedAttribute(CommunityAccessSchema, required=True)
 
-    user_profile = fields.Raw()
+    user_profile = NestedAttribute(CommunityUserProfileSchema)
     
     custom_fields = NestedAttribute(
         partial(CustomFieldsSchema, fields_var="COMMUNITIES_CUSTOM_FIELDS")

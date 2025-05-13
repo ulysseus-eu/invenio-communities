@@ -146,6 +146,8 @@ class CommunityResource(RecordResource):
         GET /persons
         """
         extra_filter = dsl.Q("term", **{"metadata.type.id": "person"})
+        
+        # TODO : resolve crash of .search()
         hits = self.service.search(
             identity=g.identity,
             params=resource_requestctx.args,

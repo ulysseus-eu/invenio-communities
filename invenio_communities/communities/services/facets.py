@@ -32,7 +32,7 @@ visibility = TermsFacet(
 )
             
 university = TermsFacet(
-    field="id",
+    field="user_profile.username",
     label="University",
 )
 

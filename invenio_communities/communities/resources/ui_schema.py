@@ -23,7 +23,7 @@ from invenio_vocabularies.resources import VocabularyL10Schema
 from marshmallow import Schema, fields, post_dump
 from marshmallow_utils.fields import FormatEDTF as FormatEDTF_
 
-from invenio_communities.communities.schema import CommunityThemeSchema
+from invenio_communities.communities.schema import CommunityThemeSchema, CommunityUserProfileSchema
 from invenio_communities.proxies import current_communities
 
 
@@ -106,7 +106,7 @@ class UICommunitySchema(BaseObjectSchema):
 
     theme = fields.Nested(CommunityThemeSchema, dump_only=True, load_default={})
 
-    user_profile = fields.Raw()
+    user_profile = fields.Nested(CommunityUserProfileSchema, dump_only=True, load_default={})
     
     # Custom fields
     custom_fields = fields.Nested(

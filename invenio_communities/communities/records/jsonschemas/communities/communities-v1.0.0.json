@@ -41,8 +41,19 @@
       }
     },
     "user_profile": {
+      "additionalProperties": false,
       "type": "object",
-      "description": "Configured additional metadata"
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "username": {
+          "type": "string"
+        },
+        "profile": {
+          "type": "object"
+        }
+      }
     },
     "custom_fields": {
       "type": "object",

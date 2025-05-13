@@ -120,7 +120,18 @@
         }
       },
       "user_profile": {
-        "type": "object"
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "text"
+          },
+          "username": {
+            "type": "text"
+          },
+          "profile": {
+            "type": "object"
+          }
+        }
       },
       "custom_fields": {
         "type": "object"
