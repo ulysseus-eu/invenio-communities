@@ -158,16 +158,8 @@ def custom_field_exists_in_communities(field_name):
 
 
 @communities.command("create")
-@click.option(
-    "-d",
-    "--data",
-    type=str,
-    required=False,
-    multiple=False,
-    help="Community data",
-)
 @with_appcontext
-def create(profile):
+def create():
     """Create community."""
     click.secho("Creating community...", fg="green")
     faker = Faker()
