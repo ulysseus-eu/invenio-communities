@@ -26,6 +26,7 @@ from invenio_search.engine import search as search_engine
 from invenio_search.utils import build_alias_name
 
 from .fixtures.demo import create_fake_community
+from .fixtures.create_community import create_community
 from .fixtures.tasks import create_demo_community
 from .proxies import current_communities, current_identities_cache
 
@@ -154,3 +155,24 @@ def custom_field_exists_in_communities(field_name):
         click.secho(f"Field {field_name} exists", fg="green")
     else:
         click.secho(f"Field {field_name} does not exist", fg="red")
+
+
+@communities.command("create")
+@click.option(
+    "-d",
+    "--data",
+    type=str,
+    required=False,
+    multiple=False,
+    help="Community data",
+)
+@with_appcontext
+def create(profile):
+    """Create community."""
+    click.secho("Creating community...", fg="green")
+    faker = Faker()
+    fake_data = create_community(faker, "totoestbienici" )
+    create_demo_community.delay(fake_data)
+
+    click.secho("Created communities!", fg="green")
+    
