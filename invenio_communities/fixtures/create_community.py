@@ -1,23 +1,21 @@
 import json
-import random
 
-def create_community(faker, name):
+def create_community(data):
     """Create fake communities for demo purposes."""
     data_to_use = {
         "access": {
             "visibility": "public",
-            "member_policy": random.choice(["open", "closed"]),
-            "record_submission_policy": random.choice(["open", "closed"]),
         },
-        "slug": faker.unique.domain_word(),
+        "slug": data["slug"],
         "metadata": {
-            "title": name,
-            "description": name,
-            "type": {
-                "id": random.choice(["person"])
+            "title": f"{data['family_name']}, {data['given_name']}",
+            "person":{
+                "given_name": data['given_name'],
+                "family_name": data['family_name'],
             },
-            "curation_policy": faker.text(max_nb_chars=50000),
-            "page": faker.text(max_nb_chars=50000),
+            "type": {
+                "id": "person"
+            },
         },
     }
 

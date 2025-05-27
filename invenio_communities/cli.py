@@ -8,6 +8,7 @@
 
 """Command-line tools for demo module."""
 
+import json
 import click
 from faker import Faker
 from flask import current_app
@@ -158,13 +159,14 @@ def custom_field_exists_in_communities(field_name):
 
 
 @communities.command("create")
+@click.argument("data")
 @with_appcontext
-def create():
+def create(data):
     """Create community."""
     click.secho("Creating community...", fg="green")
-    faker = Faker()
-    fake_data = create_community(faker, "totoestbienici" )
-    create_demo_community.delay(fake_data)
+    
+    community = create_community(json.loads(data))
+    create_demo_community.delay(community)
 
     click.secho("Created communities!", fg="green")
     
