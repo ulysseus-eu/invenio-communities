@@ -62,7 +62,7 @@ class UserProfileField(SystemField):
             return {}
         
         # if user check private, return nothing
-        if "consent_profile_privacy_level" in user_profile and user_profile['consent_profile_privacy_level']:
+        if "Visibility" in user_profile and user_profile['Visibility']:
             return {}
         
         return user.to_dict()
