@@ -159,3 +159,13 @@ def humanize_byte_size(size):
         if s < BYTES_PER_UNIT:
             return s.quantize(q, rounding=ROUND_HALF_UP), unit
         s /= BYTES_PER_UNIT
+
+
+expertise_thematic_options = {
+    "1135": "agricultural sciences",
+    "1174": "engineering and technology",
+    "1383": "humanities",
+    "1450": "medical and health sciences",
+    "1627": "natural sciences",
+    "2019": "social sciences"
+}

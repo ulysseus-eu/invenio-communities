@@ -2,17 +2,13 @@ import React from "react";
 import ReactDOM from "react-dom";
 
 import { Card, CardContent, CardDescription, Grid, GridColumn, GridRow, Header, HeaderContent, Image, Label, List, ListItem } from 'semantic-ui-react';
+import { capitalizeFirstLetter } from "./utils";
 
 const rootContainer = document.getElementById("details-container");
 const community = rootContainer.dataset.community;
 const dataCommunity = JSON.parse(community);
 const fullName = `${dataCommunity.person?.givenName ? capitalizeFirstLetter(dataCommunity.person.givenName) + (dataCommunity.person?.familyName ? ' ' + dataCommunity.person.familyName.toUpperCase() : '') : (capitalizeFirstLetter(dataCommunity.title) ?? '')}`;
 
-function capitalizeFirstLetter(str) {
-    if (str.length > 0) {
-        return str.charAt(0).toUpperCase() + str.slice(1);
-    }
-}
 
 ReactDOM.render(
     <>

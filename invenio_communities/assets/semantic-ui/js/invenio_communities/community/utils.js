@@ -48,6 +48,11 @@ export class CommunityType {
 /**
  * Capitalize first letter of string
  */
-function capitalizeFirstLetter(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
+export function capitalizeFirstLetter(iString) {
+  if (iString?.length > 1) {
+    return iString.charAt(0).toUpperCase() + iString.slice(1).toLowerCase();
+  }
+  else {
+    return iString? iString.toUpperCase(): "";
+  }
 }

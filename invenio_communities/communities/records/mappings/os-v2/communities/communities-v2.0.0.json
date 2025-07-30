@@ -12,8 +12,14 @@
         "accent_edge_analyzer": {
           "tokenizer": "standard",
           "type": "custom",
-          "char_filter": ["strip_special_chars"],
-          "filter": ["lowercase", "asciifolding", "edgegrams"]
+          "char_filter": [
+            "strip_special_chars"
+          ],
+          "filter": [
+            "lowercase",
+            "asciifolding",
+            "edgegrams"
+          ]
         }
       },
       "filter": {
@@ -156,7 +162,189 @@
         }
       },
       "user_profile": {
-        "type": "object"
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "text"
+          },
+          "profile": {
+            "type": "object",
+            "properties": {
+              "Additional_Keywords": {
+                "type": "text"
+              },
+              "Areas_of_expertise": {
+                "type": "text",
+                "fields": {
+                  "keyword": {
+                    "type": "keyword"
+                  }
+                }
+              },
+              "Career_stage": {
+                "type": "text",
+                "fields": {
+                  "keyword": {
+                    "type": "keyword"
+                  }
+                }
+              },
+              "TRL_level": {
+                "type": "text",
+                "fields": {
+                  "keyword": {
+                    "type": "keyword"
+                  }
+                }
+              },
+              "affiliations": {
+                "type": "text"
+              },
+              "Principal_Investigator": {
+                "type": "text"
+              },
+              "Department": {
+                "type": "text"
+              },
+              "EU_project_evaluator": {
+                "type": "boolean"
+              },
+              "EU_project_leader": {
+                "type": "boolean"
+              },
+              "EU_project_member": {
+                "type": "boolean"
+              },
+              "EU_proposal_writer": {
+                "type": "boolean"
+              },
+              "Expert_profile": {
+                "type": "text",
+                "fields": {
+                  "keyword": {
+                    "type": "keyword"
+                  }
+                }
+              },
+              "Faculty_Center_Institute": {
+                "type": "text"
+              },
+              "profile_please_indicate_the_full_name_of_your_research_group_in_english": {
+                "type": "text"
+              },
+              "Gender": {
+                "type": "text",
+                "fields": {
+                  "keyword": {
+                    "type": "keyword"
+                  }
+                }
+              },
+              "Others_initiatives": {
+                "type": "text"
+              },
+              "Affiliation_to_entities": {
+                "type": "text"
+              },
+              "Interest_in_Joint_Research_Groups": {
+                "type": "boolean"
+              },
+              "Knowledge_Transfer": {
+                "type": "boolean"
+              },
+              "knowledge_transfer_experience": {
+                "type": "text",
+                "fields": {
+                  "keyword": {
+                    "type": "keyword"
+                  }
+                }
+              },
+              "Languages": {
+                "type": "text"
+              },
+              "Main_Keywords": {
+                "type": "text",
+                "fields": {
+                  "keyword": {
+                    "type": "keyword"
+                  }
+                }
+              },
+              "Relevant_projects": {
+                "type": "text"
+              },
+              "Relevant_publications": {
+                "type": "text"
+              },
+              "Research_Group_PI": {
+                "type": "boolean"
+              },
+              "Research_Group_member": {
+                "type": "boolean"
+              },
+              "University": {
+                "type": "text",
+                "fields": {
+                  "keyword": {
+                    "type": "keyword"
+                  }
+                }
+              },
+              "Visibility": {
+                "type": "boolean"
+              },
+              "email": {
+                "type": "text"
+              },
+              "family_name": {
+                "type": "text"
+              },
+              "full_name": {
+                "type": "text"
+              },
+              "given_name": {
+                "type": "text"
+              },
+              "orcid": {
+                "type": "text"
+              },
+              "linkedin": {
+                "type": "text"
+              },
+              "profile_links": {
+                "type": "text"
+              },
+              "Coordinated_projects_and_calls": {
+                "type": "text"
+              },
+              "Founder_of_a_spin_off": {
+                "type": "text"
+              },
+              "Member_of_a_spin_off": {
+                "type": "text"
+              },
+              "Patents": {
+                "type": "text"
+              },
+              "Member_of_an_Industrial_Chair": {
+                "type": "text"
+              },
+              "projects_other": {
+                "type": "text"
+              },
+              "projects_other_response": {
+                "type": "text"
+              },
+              "projects_affiliated_relevant_associations_platforms_clusters": {
+                "type": "text"
+              },
+              "consent_by_providing_my_consent": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
       },
       "custom_fields": {
         "type": "object"
@@ -240,13 +428,28 @@
           "person": {
             "properties": {
               "given_name": {
-                "type": "text"
+                "type": "text",
+                "fields": {
+                  "keyword": {
+                    "type": "keyword"
+                  }
+                }
               },
               "middle_name": {
-                "type": "text"
+                "type": "text",
+                "fields": {
+                  "keyword": {
+                    "type": "keyword"
+                  }
+                }
               },
               "family_name": {
-                "type": "text"
+                "type": "text",
+                "fields": {
+                  "keyword": {
+                    "type": "keyword"
+                  }
+                }
               },
               "email": {
                 "type": "text"

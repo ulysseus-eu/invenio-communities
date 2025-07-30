@@ -4,19 +4,21 @@
 // Invenio App RDM is free software; you can redistribute it and/or modify it
 // under the terms of the MIT License; see LICENSE file for more details.
 
-import { i18next } from "@translations/invenio_communities/i18next";
-import { CommunityTypeLabel } from "../labels";
-import { RestrictedLabel } from "../labels";
+import {i18next} from "@translations/invenio_communities/i18next";
+import {CommunityTypeLabel} from "../labels";
+import {RestrictedLabel} from "../labels";
 import React from "react";
-import { Image } from "react-invenio-forms";
-import { Button, Grid, Icon, Popup, Header } from "semantic-ui-react";
+import {Image} from "react-invenio-forms";
+import {Button, Grid, Icon, Popup, Header, Label} from "semantic-ui-react";
 import PropTypes from "prop-types";
 import OrganizationsList from "../../organizations/OrganizationsList";
+import { capitalizeFirstLetter } from "../utils";
 
-export const CommunityItemComputer = ({ result }) => {
+export const CommunityItemComputer = ({result}) => {
   const communityType = result.ui?.type?.title_l10n;
   const canUpdate = result.ui?.permissions?.can_update;
   let resultHref = result.links.self_html;
+  const mainKeywords = result.user_profile?.profile?.Main_Keywords ? result.user_profile.profile.Main_Keywords : [];
 
   return (
     <Grid className="computer tablet only item community-item">
@@ -37,7 +39,7 @@ export const CommunityItemComputer = ({ result }) => {
           <div>
             {result.access.visibility === "restricted" && (
               <div className="rel-mb-1">
-                <RestrictedLabel access={result.access.visibility} />
+                <RestrictedLabel access={result.access.visibility}/>
               </div>
             )}
             <Header as="a" className="ui medium header" href={resultHref}>
@@ -48,7 +50,7 @@ export const CommunityItemComputer = ({ result }) => {
                   <Popup
                     content="Verified community"
                     trigger={
-                      <Icon size="small" color="green" name="check circle outline" />
+                      <Icon size="small" color="green" name="check circle outline"/>
                     }
                     position="top center"
                   />
@@ -74,12 +76,12 @@ export const CommunityItemComputer = ({ result }) => {
               result.metadata.organizations) && (
               <div className="flex align-items-center wrap mt-5 text size small text-muted">
                 {communityType && (
-                  <CommunityTypeLabel transparent type={communityType} />
+                  <CommunityTypeLabel transparent type={communityType}/>
                 )}
 
                 {result.metadata.website && (
                   <div className="rel-mr-1">
-                    <Icon name="linkify" />
+                    <Icon name="linkify"/>
                     <a
                       href={result.metadata.website}
                       target="_blank"
@@ -92,9 +94,19 @@ export const CommunityItemComputer = ({ result }) => {
                 )}
 
                 {result.metadata.organizations && (
-                  <OrganizationsList organizations={result.metadata.organizations} />
+                  <OrganizationsList organizations={result.metadata.organizations}/>
                 )}
               </div>
+            )}
+            {mainKeywords.length > 0 && (
+              <>
+                <div style={{display: "flex", paddingTop: "1rem", flexWrap: "wrap", gap: "1rem"}}>
+                  {mainKeywords?.map((userExpertiseKeyword) => (
+                    <Label
+                      key={userExpertiseKeyword}>{capitalizeFirstLetter(userExpertiseKeyword)}</Label>
+                  ))}
+                </div>
+              </>
             )}
           </div>
         </div>

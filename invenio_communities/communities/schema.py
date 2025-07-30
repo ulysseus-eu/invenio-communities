@@ -267,7 +267,7 @@ class BaseCommunitySchema(BaseRecordSchema, FieldPermissionsMixin):
     access = NestedAttribute(CommunityAccessSchema, required=True)
 
     user_profile = fields.Raw()
-    
+
     custom_fields = NestedAttribute(
         partial(CustomFieldsSchema, fields_var="COMMUNITIES_CUSTOM_FIELDS")
     )

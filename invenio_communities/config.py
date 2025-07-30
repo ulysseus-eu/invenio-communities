@@ -85,6 +85,84 @@ COMMUNITIES_FACETS = {
             "field": "university",
         },
     },
+    "gender": {
+        "facet": facets.gender,
+        "ui": {
+            "field": "gender",
+        }
+    },
+    "expert_profile": {
+        "facet": facets.expert_profile,
+        "ui": {
+            "field": "expert_profile",
+        }
+    },
+    "carrer_stage": {
+        "facet": facets.career_stage,
+        "ui": {
+            "field": "carrer_stage",
+        }
+    },
+    "trl_level": {
+        "facet": facets.trl_level,
+        "ui": {
+            "field": "trl_level",
+        }
+    },
+    "Areas_of_expertise": {
+        "facet": facets.Areas_of_expertise,
+        "ui": {
+            "field": "Areas_of_expertise",
+        }
+    },
+    "Main_Keywords": {
+        "facet": facets.Main_Keywords,
+        "ui": {
+            "field": "Main_Keywords",
+        }
+    },
+    "eu_proposal_writer": {
+        "facet": facets.eu_proposal_writer,
+        "ui": {
+            "field": "eu_proposal_writer",
+        }
+    },
+    "eu_project_leader":{
+        "facet": facets.eu_project_leader,
+        "ui": {
+            "field": "eu_project_leader",
+        }
+    },
+    "eu_project_member":{
+        "facet": facets.eu_project_member,
+        "ui": {
+            "field": "eu_project_member",
+        }
+    },
+    "eu_project_evaluator":{
+        "facet": facets.eu_project_evaluator,
+        "ui": {
+            "field": "eu_project_evaluator",
+        }
+    },
+    "knowledge_transfer": {
+        "facet": facets.knowledge_transfer,
+        "ui": {
+            "field": "knowledge_transfer",
+        }
+    },
+    "knowledge_transfer_experience": {
+        "facet": facets.knowledge_transfer_experience,
+        "ui": {
+            "field": "knowledge_transfer_experience",
+        }
+    },
+    "interest_in_joint_research_groups": {
+        "facet": facets.interest_in_joint_research_groups,
+        "ui": {
+            "field": "interest_in_joint_research_groups",
+        }
+    }
 }
 """Available facets defined for this module."""
 
@@ -160,7 +238,23 @@ COMMUNITIES_ROLES = [
 """Community roles."""
 
 COMMUNITIES_SEARCH = {
-    "facets": ["type", "visibility","university"],
+    "facets": [
+        "type",
+        "university",
+        "gender",
+        "expert_profile",
+        "carrer_stage",
+        "trl_level",
+        "Areas_of_expertise",
+        "Main_Keywords",
+        "eu_proposal_writer",
+        "eu_project_leader",
+        "eu_project_member",
+        "eu_project_evaluator",
+        "knowledge_transfer",
+        "knowledge_transfer_experience",
+        "interest_in_joint_research_groups"
+    ],
     "sort": ["bestmatch", "newest", "oldest"],
 }
 """Community search configuration (i.e list of communities)"""
