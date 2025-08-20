@@ -35,19 +35,19 @@ class User(Base):
 
     def to_dict(self):
         modified_profile = copy.deepcopy(self.profile)
-        modified_profile["Main_Keywords"] = json.loads(modified_profile.get("Main_Keywords", "[]"))
-        modified_profile["TRL_level"] = json.loads(modified_profile.get("TRL_level", "[]"))
-        modified_profile["Expert_profile"] = json.loads(modified_profile.get("Expert_profile", "[]"))
-        modified_profile["Areas_of_expertise"] = list(map(
+        modified_profile["main_keywords"] = json.loads(modified_profile.get("main_keywords", "[]"))
+        modified_profile["trl_level"] = json.loads(modified_profile.get("trl_level", "[]"))
+        modified_profile["expert_profile"] = json.loads(modified_profile.get("expert_profile", "[]"))
+        modified_profile["areas_of_expertise"] = list(map(
             lambda it_area_code: utils.expertise_thematic_options[it_area_code],
-            json.loads(modified_profile.get("Areas_of_expertise", "[]"))
+            json.loads(modified_profile.get("areas_of_expertise", "[]"))
         ))
         modified_profile["knowledge_transfer_experience"] = []
         knowledge_transfer_experience = {
-            "Founder_of_a_spin_off": "Founder of a spin-off",
-            "Member_of_a_spin_off": "Member of a spin off",
-            "Patents": "Patent owner",
-            "Member_of_an_Industrial_Chair": "Member of an Industrial Chair"
+            "founder_of_a_spin_off": "Founder of a spin-off",
+            "member_of_a_spin_off": "Member of a spin-off",
+            "patents": "Patent owner",
+            "member_of_an_industrial_chair": "Member of an Industrial Chair"
 
         }
         for it_experience in knowledge_transfer_experience:
@@ -90,7 +90,7 @@ class UserProfileField(SystemField):
             return {}
 
         # if user check private, return nothing
-        if "Visibility" in user_profile and user_profile['Visibility']:
+        if "visibility" in user_profile and user_profile['visibility']:
             return {}
 
         return user.to_dict()

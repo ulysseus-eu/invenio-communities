@@ -32,24 +32,24 @@ visibility = TermsFacet(
 )
 
 university = TermsFacet(
-    field="user_profile.profile.University.keyword",
+    field="user_profile.profile.university.keyword",
     label="University",
 )
 
-Main_Keywords = TermsFacet(
-    field="user_profile.profile.Main_Keywords.keyword",
+main_keywords = TermsFacet(
+    field="user_profile.profile.main_keywords.keyword",
     label="Main Keywords",
     value_labels=lambda keys: {k: k.capitalize() for k in keys}
 )
 
-Areas_of_expertise = TermsFacet(
-    field="user_profile.profile.Areas_of_expertise.keyword",
+areas_of_expertise = TermsFacet(
+    field="user_profile.profile.areas_of_expertise.keyword",
     label="Areas of expertise",
     value_labels=lambda keys: {k: k.capitalize() for k in keys}
 )
 
 gender = TermsFacet(
-    field="user_profile.profile.Gender.keyword",
+    field="user_profile.profile.gender.keyword",
     label="Gender",
     value_labels={
         "m": _("Male"),
@@ -59,20 +59,20 @@ gender = TermsFacet(
 )
 
 expert_profile = TermsFacet(
-    field="user_profile.profile.Expert_profile.keyword",
+    field="user_profile.profile.expert_profile.keyword",
     label="Type of expert",
     value_labels={
-        "teacher-lecturer": _("Teacher or Lecturer"),
+        "teacher_lecturer": _("Teacher or Lecturer"),
         "researcher": _("Researcher"),
-        "ulysseus-staff": _("Ulysseus staff"),
-        "ulysseus-associated-partner": _("Ulysseus Associated Partner"),
-        "other-stakeholders": _("Other Stakeholders"),
+        "ulysseus_staff": _("Ulysseus staff"),
+        "ulysseus_associated_partner": _("Ulysseus Associated Partner"),
+        "other_stakeholders": _("Other Stakeholders"),
     },
 )
 
 
 career_stage = TermsFacet(
-    field="user_profile.profile.Career_stage.keyword",
+    field="user_profile.profile.career_stage.keyword",
     label="Career Stage",
     value_labels={
         "r1": _("R1 - First Stage Researcher"),
@@ -84,31 +84,42 @@ career_stage = TermsFacet(
 )
 
 trl_level = TermsFacet(
-    field="user_profile.profile.TRL_level.keyword",
+    field="user_profile.profile.trl_level.keyword",
     label=_("TRL level"),
+    value_labels={
+        "trl_1": _("TRL1 - Basic principles observed"),
+        "trl_2": _("TRL2 - Technology concept formulated"),
+        "trl_3": _("TRL3 - Experimental proof of concept"),
+        "trl_4": _("TRL4 - Technology validated in lab"),
+        "trl_5": _("TRL5 - Technology validated in relevant environment"),
+        "trl_6": _("TRL6 - Technology demonstrated in relevant environment"),
+        "trl_7": _("TRL7 - System prototype demonstration"),
+        "trl_8": _("TRL8 - System complete and qualified"),
+        "trl_9": _("TRL9 - Actual system proven in operational environment"),
+    },
 )
 
 yes_no_value_labels = {"false": _('No'), "true": _('Yes')}
 eu_proposal_writer = TermsFacet(
-                field='user_profile.profile.EU_proposal_writer',
+                field='user_profile.profile.eu_proposal_writer',
                 label=_('Experience in writing proposal'),
                 value_labels=yes_no_value_labels
             )
 
 eu_project_leader = TermsFacet(
-                field='user_profile.profile.EU_project_leader',
+                field='user_profile.profile.eu_project_leader',
                 label=_('Experience in leading granted projects'),
                 value_labels=yes_no_value_labels
             )
 
 eu_project_member = TermsFacet(
-                field='user_profile.profile.EU_project_member',
+                field='user_profile.profile.eu_project_member',
                 label=_('Experience as partners in granted projects'),
                 value_labels=yes_no_value_labels
             )
 
 knowledge_transfer = TermsFacet(
-                field='user_profile.profile.Knowledge_Transfer',
+                field='user_profile.profile.knowledge_transfer',
                 label=_('Experience in Knowledge Transfer'),
                 value_labels=yes_no_value_labels
             )
@@ -119,13 +130,13 @@ knowledge_transfer_experience = TermsFacet(
 )
 
 interest_in_joint_research_groups = TermsFacet(
-                field='user_profile.profile.Interest_in_Joint_Research_Groups',
+                field='user_profile.profile.interest_in_joint_research_groups',
                 label=_('Interest in Joint Research Groups'),
                 value_labels=yes_no_value_labels
             )
 
 eu_project_evaluator = TermsFacet(
-                field='user_profile.profile.EU_project_evaluator',
+                field='user_profile.profile.eu_project_evaluator',
                 label=_('Evaluator of EU projects?'),
                 value_labels=yes_no_value_labels
             )

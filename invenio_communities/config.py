@@ -109,16 +109,16 @@ COMMUNITIES_FACETS = {
             "field": "trl_level",
         }
     },
-    "Areas_of_expertise": {
-        "facet": facets.Areas_of_expertise,
+    "areas_of_expertise": {
+        "facet": facets.areas_of_expertise,
         "ui": {
-            "field": "Areas_of_expertise",
+            "field": "areas_of_expertise",
         }
     },
-    "Main_Keywords": {
-        "facet": facets.Main_Keywords,
+    "main_keywords": {
+        "facet": facets.main_keywords,
         "ui": {
-            "field": "Main_Keywords",
+            "field": "main_keywords",
         }
     },
     "eu_proposal_writer": {
@@ -245,8 +245,8 @@ COMMUNITIES_SEARCH = {
         "expert_profile",
         "carrer_stage",
         "trl_level",
-        "Areas_of_expertise",
-        "Main_Keywords",
+        "areas_of_expertise",
+        "main_keywords",
         "eu_proposal_writer",
         "eu_project_leader",
         "eu_project_member",

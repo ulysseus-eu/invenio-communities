@@ -170,10 +170,10 @@
           "profile": {
             "type": "object",
             "properties": {
-              "Additional_Keywords": {
+              "additional_keywords": {
                 "type": "text"
               },
-              "Areas_of_expertise": {
+              "areas_of_expertise": {
                 "type": "text",
                 "fields": {
                   "keyword": {
@@ -181,7 +181,7 @@
                   }
                 }
               },
-              "Career_stage": {
+              "career_stage": {
                 "type": "text",
                 "fields": {
                   "keyword": {
@@ -189,7 +189,7 @@
                   }
                 }
               },
-              "TRL_level": {
+              "trl_level": {
                 "type": "text",
                 "fields": {
                   "keyword": {
@@ -200,25 +200,25 @@
               "affiliations": {
                 "type": "text"
               },
-              "Principal_Investigator": {
+              "principal_investigator": {
                 "type": "text"
               },
-              "Department": {
+              "department": {
                 "type": "text"
               },
-              "EU_project_evaluator": {
+              "eu_project_evaluator": {
                 "type": "boolean"
               },
-              "EU_project_leader": {
+              "eu_project_leader": {
                 "type": "boolean"
               },
-              "EU_project_member": {
+              "eu_project_member": {
                 "type": "boolean"
               },
-              "EU_proposal_writer": {
+              "eu_proposal_writer": {
                 "type": "boolean"
               },
-              "Expert_profile": {
+              "expert_profile": {
                 "type": "text",
                 "fields": {
                   "keyword": {
@@ -226,13 +226,13 @@
                   }
                 }
               },
-              "Faculty_Center_Institute": {
+              "faculty_center_institute": {
                 "type": "text"
               },
               "profile_please_indicate_the_full_name_of_your_research_group_in_english": {
                 "type": "text"
               },
-              "Gender": {
+              "gender": {
                 "type": "text",
                 "fields": {
                   "keyword": {
@@ -240,16 +240,16 @@
                   }
                 }
               },
-              "Others_initiatives": {
+              "others_initiatives": {
                 "type": "text"
               },
-              "Affiliation_to_entities": {
+              "affiliation_to_entities": {
                 "type": "text"
               },
-              "Interest_in_Joint_Research_Groups": {
+              "interest_in_joint_research_groups": {
                 "type": "boolean"
               },
-              "Knowledge_Transfer": {
+              "knowledge_transfer": {
                 "type": "boolean"
               },
               "knowledge_transfer_experience": {
@@ -260,10 +260,10 @@
                   }
                 }
               },
-              "Languages": {
+              "languages": {
                 "type": "text"
               },
-              "Main_Keywords": {
+              "main_keywords": {
                 "type": "text",
                 "fields": {
                   "keyword": {
@@ -271,19 +271,19 @@
                   }
                 }
               },
-              "Relevant_projects": {
+              "relevant_projects": {
                 "type": "text"
               },
-              "Relevant_publications": {
+              "relevant_publications": {
                 "type": "text"
               },
-              "Research_Group_PI": {
+              "research_group_pi": {
                 "type": "boolean"
               },
-              "Research_Group_member": {
+              "research_group_member": {
                 "type": "boolean"
               },
-              "University": {
+              "university": {
                 "type": "text",
                 "fields": {
                   "keyword": {
@@ -291,7 +291,7 @@
                   }
                 }
               },
-              "Visibility": {
+              "visibility": {
                 "type": "boolean"
               },
               "email": {
@@ -315,19 +315,19 @@
               "profile_links": {
                 "type": "text"
               },
-              "Coordinated_projects_and_calls": {
+              "coordinated_projects_and_calls": {
                 "type": "text"
               },
-              "Founder_of_a_spin_off": {
+              "founder_of_a_spin_off": {
                 "type": "text"
               },
-              "Member_of_a_spin_off": {
+              "member_of_a_spin_off": {
                 "type": "text"
               },
-              "Patents": {
+              "patents": {
                 "type": "text"
               },
-              "Member_of_an_Industrial_Chair": {
+              "member_of_an_industrial_chair": {
                 "type": "text"
               },
               "projects_other": {
