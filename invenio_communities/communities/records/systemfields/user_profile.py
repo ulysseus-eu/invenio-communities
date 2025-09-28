@@ -32,6 +32,7 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     username = Column(String)
     profile = Column(JSONB)
+    preferences = Column(JSONB)
 
     def to_dict(self):
         modified_profile = copy.deepcopy(self.profile)
@@ -53,10 +54,15 @@ class User(Base):
         for it_experience in knowledge_transfer_experience:
             if modified_profile.get(it_experience, False):
                 modified_profile["knowledge_transfer_experience"].append(knowledge_transfer_experience[it_experience])
+        modified_preferences = {
+            it_pref_key: self.preferences[it_pref_key] for it_pref_key in filter(
+                lambda it_key: "visibility" in it_key, self.preferences)
+        }
         return {
             "id": self.id,
             "username": self.username,
-            "profile": modified_profile
+            "profile": modified_profile,
+            "preferences": modified_preferences
         }
 
 
@@ -81,17 +87,12 @@ class UserProfileField(SystemField):
         if user is None:
             return {}
 
-        user_profile = user.to_dict()["profile"] if "profile" in user.to_dict() else None
-        if user_profile is None:
-            return {}
-
-        # if user has not check "Declaration of consent" return nothing
-        if "consent_by_providing_my_consent" in user_profile and not user_profile["consent_by_providing_my_consent"]:
-            return {}
-
-        # if user check private, return nothing
-        if "visibility" in user_profile and user_profile['visibility']:
-            return {}
+        # user_profile = user.to_dict().get("profile", {})
+        # user_preferences = user.to_dict().get("preferences", {})
+        # if not user_profile.get("consent_by_providing_my_consent", True) or user_preferences.get("profile_visibility", "restricted") == "restricted":
+        #     return {
+        #         "preferences": user_preferences
+        #     }
 
         return user.to_dict()
 
@@ -100,4 +101,8 @@ class UserProfileField(SystemField):
 
     def pre_dump(self, record, data, dumper=None):
         """Called after a record is dumped."""
+        data[self.attr_name] = self._get_user_profile(record, None)
+
+    def post_load(self, record, data, loader=None):
+        """Called after a record is loaded."""
         data[self.attr_name] = self._get_user_profile(record, None)

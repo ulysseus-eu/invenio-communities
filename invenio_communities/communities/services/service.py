@@ -686,6 +686,12 @@ class CommunityService(RecordService):
                 # displays tombstone
                 raise CommunityDeletedError(record, result_item=result)
 
+        can_read_profile = self.check_permission(
+            identity, "read_profile", record=record
+        )
+        if not can_read_profile:
+            result.to_dict()["user_profile"]["profile"] = {}
+
         return result
 
     @unit_of_work()

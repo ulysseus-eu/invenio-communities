@@ -167,6 +167,9 @@
           "id": {
             "type": "text"
           },
+          "username": {
+            "type": "text"
+          },
           "profile": {
             "type": "object",
             "properties": {
@@ -291,9 +294,6 @@
                   }
                 }
               },
-              "visibility": {
-                "type": "boolean"
-              },
               "email": {
                 "type": "text"
               },
@@ -341,6 +341,20 @@
               },
               "consent_by_providing_my_consent": {
                 "type": "boolean"
+              }
+            }
+          },
+          "preferences": {
+            "type": "object",
+            "properties": {
+              "visibility": {
+                "type": "keyword"
+              },
+              "email_visibility": {
+                "type": "keyword"
+              },
+              "profile_visibility": {
+                "type": "keyword"
               }
             }
           }

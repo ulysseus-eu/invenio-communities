@@ -52,6 +52,10 @@ class CommunityPermissionPolicy(BasePermissionPolicy):
         SystemProcess(),
     ]
 
+    can_read_profile = [
+        IfRestricted("profile_visibility", then_=[CommunityOwners()], else_=[AuthenticatedUser()], root_attribute="user_profile.preferences"),
+        SystemProcess(),
+    ]
     # Used for search filtering of deleted records
     # cannot be implemented inside can_read - otherwise permission will
     # kick in before tombstone renders

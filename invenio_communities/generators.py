@@ -110,19 +110,29 @@ class IfRestrictedBase(Generator):
             return q_else
 
 
+def get_chained_attributes_or_dict(target_object, attribute, default):
+    chained_attributes = attribute.split(".")
+    temp_object = target_object
+    for chained_attribute in chained_attributes:
+        if hasattr(temp_object, chained_attribute):
+            temp_object = getattr(temp_object, chained_attribute)
+        else:
+            temp_object = temp_object.get(chained_attribute, {})
+    return temp_object if temp_object != {} else default
+
+
 # TODO: Remove class once IfRestrictedBase has been moved.
 class IfRestricted(IfRestrictedBase):
     """IfRestricted."""
 
-    def __init__(self, field, then_, else_):
+    def __init__(self, field, then_, else_, root_attribute="access"):
         """Initialize."""
+        concatenated_field = ".".join([root_attribute, field])
         super().__init__(
             lambda r: (
-                getattr(r.access, field, None)
-                if hasattr(r, "access")
-                else r.get("access", {}).get(field)
+                get_chained_attributes_or_dict(r, concatenated_field, "restricted")
             ),  # needed for running permission check at serialization time and avoid db query
-            f"access.{field}",
+            f"{root_attribute}.{field}",
             "restricted",
             "public",
             then_,

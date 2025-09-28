@@ -136,6 +136,7 @@ HEADER_PERMISSIONS = {
     "moderate",
     "request_membership",
     "submit_record",
+    "read_profile"
 }
 
 PRIVATE_PERMISSIONS = HEADER_PERMISSIONS | {
@@ -606,14 +607,12 @@ def persons_members(pid_value, community, community_ui):
 
 
 @pass_community(serialize=True)
-def communities_profile(pid_value, community, community_ui):
-    """Persons about page."""
-    
-    permissions = community.has_permissions_to(HEADER_PERMISSIONS| {
-    "create",
-})
-    
-    if not permissions["can_create"]:
+def persons_profile(pid_value, community, community_ui):
+    """Persons profile page."""
+
+    permissions = community.has_permissions_to(HEADER_PERMISSIONS)
+
+    if not permissions["can_read_profile"]:
         raise PermissionDeniedError()
 
     return render_community_theme_template(
@@ -622,7 +621,7 @@ def communities_profile(pid_value, community, community_ui):
         community=community_ui,
         permissions=permissions,
         custom_fields_ui=load_custom_fields(dump_only_required=False)["ui"])
-    
+
 @pass_community(serialize=True)
 def organizations_settings(pid_value, community, community_ui):
     """Person settings/profile page."""

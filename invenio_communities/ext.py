@@ -198,13 +198,6 @@ def register_menus(app):
     )
     if show_specific_types:
         """Register persons menu items."""
-        current_menu.submenu("plus.person").register(
-            endpoint="invenio_communities.persons_new",
-            text=_("New person"),
-            order=5,
-            visible_when=_show_create_community_link,
-        )
-
         persons = current_menu.submenu("persons")
 
         persons.submenu("requests").register(
@@ -229,22 +222,14 @@ def register_menus(app):
             **{"icon": "settings", "permissions": "can_update"}
         )
         persons.submenu("profile").register(
-            endpoint="invenio_communities.communities_profile",
+            endpoint="invenio_communities.persons_profile",
             text=_("Profile"),
             order=5,
             expected_args=["pid_value"],
-            visible_when=_show_create_community_link,
-            **{"icon": "info", "permissions": "can_read"}
+            **{"icon": "info", "permissions": "can_read_profile"}
         )
 
         """Register organizations menu items."""
-        current_menu.submenu("plus.organization").register(
-            endpoint="invenio_communities.organizations_new",
-            text=_("New organization"),
-            order=4,
-            visible_when=_show_create_community_link,
-        )
-
         organizations = current_menu.submenu("organizations")
 
         organizations.submenu("requests").register(

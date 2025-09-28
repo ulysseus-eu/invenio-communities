@@ -64,7 +64,7 @@ class SearchOptions(SearchOptionsBase, SearchOptionsMixin):
     }
 
     facets = {"type": facets.type, "visibility": facets.visibility, "university": facets.university}
-    
+
     params_interpreters_cls = [
         QueryStrParam,
         PaginationParam,
