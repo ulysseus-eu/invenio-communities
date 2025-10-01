@@ -17,18 +17,18 @@ export class Filters {
 
   getRoles() {
     const values = [];
-    this.configRoles.forEach((role) => {
+    this.configRoles?.forEach((role) => {
       values.push({ key: role.name, label: role.title });
     });
-    return this.serializeFilter("role", "Role", values);
+    return this.serializeFilter("role", i18next.t("Role"), values);
   }
 
   getVisibility() {
     const values = [
-      { key: "true", label: "Public" },
-      { key: "false", label: "Hidden" },
+      { key: "true", label: i18next.t("Public") },
+      { key: "false", label: i18next.t("Hidden") },
     ];
-    return this.serializeFilter("visibility", "Visibility", values);
+    return this.serializeFilter("visibility", i18next.t("Visibility"), values);
   }
 
   getStatus() {
@@ -37,10 +37,10 @@ export class Filters {
       { key: "submitted", label: i18next.t("Submitted") },
       { key: "accepted", label: i18next.t("Accepted") },
       { key: "declined", label: i18next.t("Declined") },
-      { key: "cancel", label: i18next.t("Cancel") },
+      { key: "cancelled", label: i18next.t("Cancelled") },
       { key: "expired", label: i18next.t("Expired") },
     ];
-    return this.serializeFilter("status", "Status", values);
+    return this.serializeFilter("status", i18next.t("Status"), values);
   }
 
   getInvitationFilters() {
@@ -56,15 +56,36 @@ export class Filters {
   }
 
   getHumanReadableVisibility(value) {
-    return value === "true" ? "Public" : "Hidden";
+    return value === "true" ? i18next.t("Public") : i18next.t("Hidden");
   }
 
   getDisplayValue(filter) {
-    const filterType = _upperFirst(filter[0]);
-    let filterValue = _upperFirst(filter[1]);
-    if (filter[0] === "visibility") {
-      filterValue = this.getHumanReadableVisibility(filter[1]);
+    const [filterType, filterValue] = filter;
+    let filterData;
+
+    switch (filterType) {
+      case "role":
+        filterData = this.getRoles()[filterType];
+        break;
+      case "visibility":
+        filterData = this.getVisibility()[filterType];
+        break;
+      case "status":
+        filterData = this.getStatus()[filterType];
+        break;
+      default:
+        filterData = null;
+        break;
     }
-    return `${filterType}: ${filterValue}`;
+
+    const matchingBucket = filterData?.buckets?.find(
+      (bucket) => bucket.key === filterValue
+    );
+
+    const label = filterData?.label ?? _upperFirst(filterType);
+
+    const value = matchingBucket?.label ?? _upperFirst(filterValue);
+
+    return `${label}: ${value}`;
   }
 }

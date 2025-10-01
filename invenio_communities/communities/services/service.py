@@ -5,6 +5,7 @@
 # Copyright (C) 2021-2022 Northwestern University.
 # Copyright (C)      2022 Graz University of Technology.
 # Copyright (C) 2024 Graz University of Technology.
+# Copyright (C) 2024 KTH Royal Institute of Technology.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -13,6 +14,7 @@
 
 from flask import current_app
 from invenio_cache.decorators import cached_with_expiration
+from invenio_i18n import lazy_gettext as _
 from invenio_records_resources.proxies import current_service_registry
 from invenio_records_resources.services.base import LinksTemplate
 from invenio_records_resources.services.records import (
@@ -181,7 +183,7 @@ class CommunityService(RecordService):
             params,
             links_tpl=LinksTemplate(
                 self.config.links_community_requests_search,
-                context={"args": params, "community_id": community_id},
+                context={"args": params, "pid_value": community_id},
             ),
             links_item_tpl=current_requests_service.links_item_tpl,
             expandable_fields=self.expandable_fields,
@@ -203,7 +205,7 @@ class CommunityService(RecordService):
 
         if "slug" not in data:
             raise ValidationError(
-                "Missing data for required field.",
+                _("Missing data for required field."),
                 field_name="slug",
             )
 
@@ -775,7 +777,7 @@ class CommunityService(RecordService):
             params,
             links_tpl=LinksTemplate(
                 self.config.links_subcommunities_search,
-                context={"community_id": id_, "args": params},
+                context={"pid_value": id_, "args": params},
             ),
             links_item_tpl=self.links_item_tpl,
         )

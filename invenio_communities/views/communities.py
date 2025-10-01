@@ -2,7 +2,8 @@
 #
 # This file is part of Invenio.
 # Copyright (C) 2016-2024 CERN.
-# Copyright (C) 2023 Graz University of Technology.
+# Copyright (C) 2023-2025 Graz University of Technology.
+# Copyright (C) 2024 KTH Royal Institute of Technology.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -29,7 +30,7 @@ from ..utils import CommunityType
 
 VISIBILITY_FIELDS = [
     {
-        "text": "Public",
+        "text": _("Public"),
         "value": "public",
         "icon": "group",
         "helpText": _(
@@ -37,7 +38,7 @@ VISIBILITY_FIELDS = [
         ),
     },
     {
-        "text": "Restricted",
+        "text": _("Restricted"),
         "value": "restricted",
         "icon": "lock",
         "helpText": _("Your community or person is restricted to users" " with access."),
@@ -46,7 +47,7 @@ VISIBILITY_FIELDS = [
 
 MEMBERS_VISIBILITY_FIELDS = [
     {
-        "text": "Public",
+        "text": _("Public"),
         "value": "public",
         "icon": "group",
         "helpText": _(
@@ -55,7 +56,7 @@ MEMBERS_VISIBILITY_FIELDS = [
         ),
     },
     {
-        "text": "Members-only",
+        "text": _("Members-only"),
         "value": "restricted",
         "icon": "lock",
         "helpText": _(
@@ -67,7 +68,7 @@ MEMBERS_VISIBILITY_FIELDS = [
 
 RECORDS_SUBMISSION_POLICY_FIELDS = [
     {
-        "text": "Open",
+        "text": _("Open"),
         "value": "open",
         "icon": "lock open",
         "helpText": _(
@@ -76,23 +77,22 @@ RECORDS_SUBMISSION_POLICY_FIELDS = [
         ),
     },
     {
-        "text": "Closed",
+        "text": _("Closed"),
         "value": "closed",
         "icon": "lock",
         "helpText": _("Only members can submit records to the community."),
     },
 ]
 
-
 REVIEW_POLICY_FIELDS = [
     {
-        "text": "Review all submissions",
+        "text": _("Review all submissions"),
         "value": "closed",
         "icon": "lock",
         "helpText": _("All submissions to the community or person must be reviewed."),
     },
     {
-        "text": "Allow curators, managers and owners to publish without review",
+        "text": _("Allow curators, managers and owners to publish without review"),
         "value": "open",
         "icon": "group",
         "helpText": _(
@@ -100,7 +100,7 @@ REVIEW_POLICY_FIELDS = [
         ),
     },
     {
-        "text": "Allow all members to publish without review",
+        "text": _("Allow all members to publish without review"),
         "value": "members",
         "icon": "lock open",
         "helpText": _(
@@ -109,16 +109,15 @@ REVIEW_POLICY_FIELDS = [
     },
 ]
 
-
 MEMBER_POLICY_FIELDS = [
     {
-        "text": "Open",
+        "text": _("Open"),
         "value": "open",
         "icon": "user plus",
         "helpText": _("Users can request to join your community."),
     },
     {
-        "text": "Closed",
+        "text": _("Closed"),
         "value": "closed",
         "icon": "user times",
         "helpText": _(
@@ -357,8 +356,8 @@ def communities_new_subcommunity(pid_value, community, community_ui):
     return render_community_theme_template(
         "invenio_communities/details/new_subcommunity.html",
         theme=community_ui.get("theme", {}),
-        community=community,
         community_ui=community_ui,
+        community=community,
         permissions=permissions,  # hide/show UI components
         form_config=dict(
             access=dict(visibility=VISIBILITY_FIELDS),
@@ -382,7 +381,8 @@ def communities_subcommunities(pid_value, community, community_ui):
     return render_community_theme_template(
         "invenio_communities/details/subcommunity/index.html",
         theme=community_ui.get("theme", {}),
-        community=community_ui,
+        community_ui=community_ui,
+        community=community,
         permissions=permissions,
     )
 
@@ -418,8 +418,8 @@ def communities_settings(pid_value, community, community_ui):
     return render_community_theme_template(
         "invenio_communities/details/settings/profile.html",
         theme=community_ui.get("theme", {}),
-        community=community,
         community_ui=community_ui,
+        community=community,
         has_logo=True if logo else False,
         logo_quota=logo_size_limit,
         types=types_serialized["types"],
@@ -439,7 +439,8 @@ def communities_requests(pid_value, community, community_ui):
     return render_community_theme_template(
         "invenio_communities/details/requests/index.html",
         theme=community_ui.get("theme", {}),
-        community=community_ui,
+        community_ui=community_ui,
+        community=community,
         permissions=permissions,
     )
 
@@ -460,7 +461,8 @@ def communities_settings_privileges(pid_value, community, community_ui):
     return render_community_theme_template(
         "invenio_communities/details/settings/privileges.html",
         theme=community_ui.get("theme", {}),
-        community=community_ui,
+        community_ui=community_ui,
+        community=community,
         form_config=dict(
             access=dict(
                 visibility=VISIBILITY_FIELDS,
@@ -482,7 +484,8 @@ def communities_settings_submission_policy(pid_value, community, community_ui):
     return render_community_theme_template(
         "invenio_communities/details/settings/submission_policy.html",
         theme=community_ui.get("theme", {}),
-        community=community_ui,
+        community_ui=community_ui,
+        community=community,
         permissions=permissions,
         form_config=dict(
             access=dict(
@@ -503,7 +506,8 @@ def communities_settings_pages(pid_value, community, community_ui):
     return render_community_theme_template(
         "invenio_communities/details/settings/pages.html",
         theme=community_ui.get("theme", {}),
-        community=community_ui,
+        community_ui=community_ui,
+        community=community,
         permissions=permissions,
     )
 
@@ -518,7 +522,8 @@ def members(pid_value, community, community_ui):
     return render_community_theme_template(
         "invenio_communities/details/members/members.html",
         theme=community_ui.get("theme", {}),
-        community=community_ui,
+        community_ui=community_ui,
+        community=community,
         permissions=permissions,
         roles_can_update=_get_roles_can_update(community.id),
         roles_can_invite=_get_roles_can_invite(community.id),
@@ -534,7 +539,8 @@ def invitations(pid_value, community, community_ui):
     return render_community_theme_template(
         "invenio_communities/details/members/invitations.html",
         theme=community_ui.get("theme", {}),
-        community=community_ui,
+        community_ui=community_ui,
+        community=community,
         roles_can_invite=_get_roles_can_invite(community.id),
         permissions=permissions,
     )
@@ -550,7 +556,8 @@ def communities_about(pid_value, community, community_ui):
     return render_community_theme_template(
         "invenio_communities/details/about/index.html",
         theme=community_ui.get("theme", {}),
-        community=community_ui,
+        community_ui=community_ui,
+        community=community,
         permissions=permissions,
         custom_fields_ui=load_custom_fields(dump_only_required=False)["ui"],
     )
@@ -565,7 +572,8 @@ def communities_curation_policy(pid_value, community, community_ui):
     return render_community_theme_template(
         "invenio_communities/details/curation_policy/index.html",
         theme=community_ui.get("theme", {}),
-        community=community_ui,
+        community_ui=community_ui,
+        community=community,
         permissions=permissions,
     )
 

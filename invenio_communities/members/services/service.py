@@ -13,7 +13,6 @@ from datetime import datetime, timezone
 
 from flask import current_app
 from invenio_access.permissions import system_identity
-from invenio_accounts.models import Role
 from invenio_i18n import gettext as _
 from invenio_notifications.services.uow import NotificationOp
 from invenio_records_resources.services import LinksTemplate
@@ -33,7 +32,6 @@ from invenio_search.engine import dsl
 from kombu import Queue
 from marshmallow import ValidationError
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.local import LocalProxy
 
 from ...notifications.builders import CommunityInvitationSubmittedNotificationBuilder
@@ -281,10 +279,10 @@ class MemberService(RecordService):
         # Add member entry
         if member["type"] == "user":
             # Create request
-            title = _('Invitation to join "{community}"').format(
-                community=community.metadata["title"],
-            )
-            description = _('You will join as "{role}".').format(role=role.title)
+            title = _('Invitation to join "%(community)s"') % {
+                "community": community.metadata["title"]
+            }
+            description = _('You will join as "%(role)s".') % {"role": role.title}
 
             request_item = current_requests_service.create(
                 identity,
@@ -490,7 +488,7 @@ class MemberService(RecordService):
                     self.config.links_search,
                     context={
                         "args": params,
-                        "community_id": community_id,
+                        "pid_value": community_id,
                     },
                 )
             ),
@@ -587,11 +585,9 @@ class MemberService(RecordService):
                 data = {
                     "payload": {
                         "content": _(
-                            'You will join as "{role}" (changed from: "{previous}").'
-                        ).format(
-                            role=role.title,
-                            previous=member.role,
-                        ),
+                            'You will join as "%(role)s" (changed from: "%(previous)s").'
+                        )
+                        % {"role": role.title, "previous": member.role},
                     }
                 }
                 current_events_service.create(
@@ -765,9 +761,9 @@ class MemberService(RecordService):
         )
 
         # Create request
-        title = _('Request to join "{community}"').format(
-            community=community.metadata["title"],
-        )
+        title = _('Request to join "%(community)s"') % {
+            "community": community.metadata["title"]
+        }
         request_item = current_requests_service.create(
             identity,
             data={

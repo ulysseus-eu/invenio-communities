@@ -7,7 +7,8 @@
 # it under the terms of the MIT License; see LICENSE file for more details.
 
 """Facet definitions."""
-from invenio_i18n import gettext as _
+
+from invenio_i18n import lazy_gettext as _
 from invenio_records_resources.services.records.facets import TermsFacet
 
 type = TermsFacet(

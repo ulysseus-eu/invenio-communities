@@ -1,7 +1,7 @@
 ..
     This file is part of Invenio.
-    Copyright (C) 2016-2024 CERN.
-    Copyright (C) 2024 Graz University of Technology.
+    Copyright (C) 2016-2025 CERN.
+    Copyright (C) 2024-2025 Graz University of Technology.
 
     Invenio is free software; you can redistribute it and/or modify it
     under the terms of the MIT License; see LICENSE file for more details.
@@ -9,6 +9,81 @@
 
 Changes
 =======
+
+Version v21.0.0 (released 2025-09-22)
+
+- installation: bump invenio-requests
+
+Version v20.2.0 (released 2025-09-05)
+
+- setup: bump major version of invenio-vocabularies
+
+Version v20.1.0 (released 2025-09-05)
+
+- setup: bump major version of invenio-requests
+- views: fix handle permission denied error in the UI view functions
+- fix: correct community topic typo
+
+Version v20.0.0 (released 2025-08-01)
+
+- setup: bump major dependencies of invenio-requests
+  * Bumps a major version to isolate the invenio-requests major bump.
+
+Version v19.2.0 (released 2025-07-17)
+
+- i18n: pulled translations
+- js: add slug to subcommunity initial values
+- i18n:push translations
+
+Version v19.1.0 (released 2025-07-02)
+
+- i18n: run js compile catalog
+- i18n: run js extract msgs
+- fix: update copyright information across multiple files
+- i18n: Replace Trans component with i18next.t for selected users message
+- fix: GroupTabPane
+- i18n: Simplify label rendering in Sort component
+- i18n: Remove unnecessary Trans components from member selection
+- i18n: MembersResult replace Trans component
+- i18n: InvitationsResults replace Trans components
+- i18n: DeleteCommunityModal replace Trans component
+- i18n: refactor compileCatalog script
+- i18n: force pull languages
+- i18n: extract py msgs
+- fix: internationalized additionLabel for community organizations picker field
+- translations: using localized strings for displaying active filters
+- fix: cancelled filter has incorrect string value 'cancel'
+- admin: remove flag to always show the admin panel
+- subcomunities: fix parent community ID referencing in request payload
+- translations: wrapped user facing strings into i18next
+- using translated string for displaying role
+- membership-request [#855]: disable button until feature fully merged [+]
+
+Version v19.0.0 (released 2025-06-03)
+
+- setup: bump major dependencies
+- fix: ChangedInMarshmallow4Warning
+- tests: tomebstone: fix for entity resolver for system user
+- readthedocs: add readthedocs.yaml
+- readthedocs: Create .readthedocs.yaml
+- readme: remove experimental tag
+
+Version v18.3.0 (released 2025-05-08)
+
+- services: include Opensearch meta in the results
+- dependencies: depend explicitly on invenio-records-resources
+- fix: rename community variable in templates
+- requests views: add community objects to template context
+
+Version v18.2.0 (released 2025-04-22)
+
+- urls: integrate invenio_url_for
+
+Version v18.1.0 (released 2025-04-08)
+
+- bug: humanize byte size error on community image upload
+- assets: include missing JS on admin community_search.html closes #910
+- notifs: exclude system_user
 
 Version v18.0.0 (released 2025-02-13)
 
