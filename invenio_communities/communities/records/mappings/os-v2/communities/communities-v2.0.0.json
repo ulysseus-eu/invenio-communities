@@ -246,9 +246,6 @@
               "others_initiatives": {
                 "type": "text"
               },
-              "affiliation_to_entities": {
-                "type": "text"
-              },
               "interest_in_joint_research_groups": {
                 "type": "boolean"
               },

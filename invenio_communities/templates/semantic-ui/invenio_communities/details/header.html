@@ -42,16 +42,11 @@
   class="ui container fluid page-subheader-outer with-submenu rel-pt-2 ml-0-mobile mr-0-mobile">
   <div class="ui container relaxed grid page-subheader mr-0-mobile ml-0-mobile">
     <div class="row pb-0">
-      {% if community_ui["metadata"]["type"] is defined %}
-      <div id="details-container" class="ui container" data-community='{{ community_ui["metadata"] }}'></div>
-      {% endif %}
-
       <div
-        class="sixteen wide mobile sixteen wide tablet thirteen wide computer column">
+        class="sixteen wide mobile sixteen wide tablet eleven wide computer column">
         <div
           class="community-header flex align-items-center column-mobile align-items-start-mobile">
           <div class="flex align-items-center">
-            {% if community_ui["metadata"]["type"] is not defined %}
             <div class="ui rounded image community-image mt-5 rel-mr-2">
               <img
                 src="{{ community_ui['links']['logo'] | resolve_community_logo(community_ui['id']) }}"
@@ -59,14 +54,13 @@
                 class="rel-mb-1"
               />
             </div>
-            {% endif %}
+
             <div class="mobile only">
               {{community_title(community_ui)}}
             </div>
           </div>
 
           <div>
-            {% if community_ui["metadata"]["type"] is not defined %}
             <div class="flex align-items-center mb-5 tablet computer only">
               {{community_title(community_ui)}}
               {% if community_ui["access"]["visibility"] == 'restricted' %}
@@ -75,9 +69,8 @@
                 </div>
               {% endif %}
             </div>
-            {% endif %}
 
-            <div class="flex column">
+            <div>
               {% if community_ui["access"]["visibility"] == 'restricted' %}
                 <div class="mobile only rel-mb-1">
                   {{ access_status_label() }}
@@ -87,23 +80,12 @@
                 <div class="inline-computer mt-5 rel-mr-1">
                   <span class="ui tiny header">Part of </span>
                   <a
-                  href="{{ url_for('invenio_app_rdm_communities.communities_home', pid_value=community_ui['parent']['slug']) }}">
+                  href="{{ url_for('invenio_app_rdm_communities.communities_home', pid_value=community.parent.slug) }}">
                   {{community_ui["parent"]["metadata"]["title"]}}
                   </a>
                 </div>
               {% endif %}
 
-              {% if community_ui["metadata"]["type"] is not defined %}
-              {% if community_ui["metadata"]["gridcode"] %}
-              <div class="flex column">
-                  <div class="flex row">
-                      <h3 class="ui small header creatibutors-header">Grid code:
-                          <span style="text-transform: uppercase;"> {{ community_ui["metadata"]["gridcode"] }} </span>
-                      </h3>
-                  </div>
-              </div>
-              {% endif %}
-              {% endif %}
               {% if community_ui["metadata"]["website"] %}
                 <div class="inline-computer mt-5 rel-mr-1">
                   <i class="linkify icon" aria-hidden="true"></i>
@@ -161,18 +143,15 @@
     <div
       class="ui container secondary pointing stackable menu page-subheader pl-0 pr-0 theme-primary">
       {% if community_menu_active %}
+        {% set menu_name = "communities" %}
         {% if community_ui["metadata"]["type"] is defined %}
-        {% if community_ui["metadata"]["type"]["id"] == "person" %}
-        {% set menu_name = "persons" %}
-        {% else %}
-        {% if community_ui["metadata"]["type"]["id"] == "organization" %}
-        {% set menu_name = "organizations" %}
-        {% else %}
-        {% set menu_name = "communities" %}
-        {% endif %}
-        {% endif %}
-        {% else %}
-        {% set menu_name = "communities" %}
+          {% if community_ui["metadata"]["type"]["id"] == "person" %}
+            {% set menu_name = "persons" %}
+          {% else %}
+            {% if community_ui["metadata"]["type"]["id"] == "organization" %}
+              {% set menu_name = "organizations" %}
+            {% endif %}
+          {% endif %}
         {% endif %}
         {% for item in current_menu.submenu(menu_name).children if (item.permissions == True or permissions[item.permissions]) and item.visible %}
           <a
@@ -187,7 +166,3 @@
     </div>
   </div>
 </div>
-
-{% block javascript %}
-{{ webpack['invenio-communities-details.js'] }}
-{% endblock %}

@@ -626,7 +626,8 @@ def persons_profile(pid_value, community, community_ui):
     return render_community_theme_template(
         "invenio_communities/details/profile/index.html",
         theme=community_ui.get("theme", {}),
-        community=community_ui,
+        community=community,
+        community_ui=community_ui,
         permissions=permissions,
         custom_fields_ui=load_custom_fields(dump_only_required=False)["ui"])
 
