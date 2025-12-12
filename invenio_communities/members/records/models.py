@@ -110,6 +110,14 @@ class BaseMemberModel(RecordMetadataBase):
             q = q.filter(cls.role == role)
         return q.count()
 
+    @classmethod
+    def get_members(cls, community_id, role=None, active=True):
+        """Get members for role."""
+        q = cls.query.filter(cls.community_id == community_id, cls.active == active)
+        if role is not None:
+            q = q.filter(cls.role == role)
+        return q.distinct()
+
 
 class MemberModel(db.Model, BaseMemberModel):
     """Member and invitation model.

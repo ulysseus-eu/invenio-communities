@@ -22,10 +22,10 @@ const newOrganizationsContainer = document.getElementById("new-organizations");
 const newPersonsContainer = document.getElementById("new-persons");
 
 if (userCommunitiesContainer) {
-  const communityTypeUserCommunities = new CommunityType(JSON.parse(userCommunitiesContainer.dataset.communityType));
+  const communityTypeUserCommunities = new CommunityType(userCommunitiesContainer.dataset.communityType);
   ReactDOM.render(
     <CommunitiesCardGroup
-      fetchDataUrl={["/api/user/", communityTypeUserCommunities.getPlural(), "?q=&sort=newest&page=1&size=1"].join("")}
+      fetchDataUrl={["/api/user/", communityTypeUserCommunities.getApi(), "?q=&sort=newest&page=1&size=1"].join("")}
       emptyMessage={"You are not a member of any "+communityTypeUserCommunities.getSingular()+"."}
       defaultLogo="/static/images/square-placeholder.png"
       itemsPerRow={1}
@@ -35,10 +35,10 @@ if (userCommunitiesContainer) {
 }
 
 if (userOrganizationsContainer) {
-  const communityTypeUserCommunities = new CommunityType(JSON.parse(userOrganizationsContainer.dataset.communityType));
+  const communityTypeUserCommunities = new CommunityType(userOrganizationsContainer.dataset.communityType);
   ReactDOM.render(
     <CommunitiesCardGroup
-      fetchDataUrl={["/api/user/", communityTypeUserCommunities.getPlural(), "?q=&sort=newest&page=1&size=1"].join("")}
+      fetchDataUrl={["/api/user/", communityTypeUserCommunities.getApi(), "?q=&sort=newest&page=1&size=1"].join("")}
       emptyMessage={"You are not a member of any "+communityTypeUserCommunities.getSingular()+"."}
       defaultLogo="/static/images/square-placeholder.png"
       itemsPerRow={1}
@@ -48,10 +48,10 @@ if (userOrganizationsContainer) {
 }
 
 if (userPersonsContainer) {
-  const communityTypeUserCommunities = new CommunityType(JSON.parse(userPersonsContainer.dataset.communityType));
+  const communityTypeUserCommunities = new CommunityType(userPersonsContainer.dataset.communityType);
   ReactDOM.render(
     <CommunitiesCardGroup
-      fetchDataUrl={["/api/user/", communityTypeUserCommunities.getPlural(), "?q=&sort=newest&page=1&size=1"].join("")}
+      fetchDataUrl={["/api/user/", communityTypeUserCommunities.getApi(), "?q=&sort=newest&page=1&size=1"].join("")}
       emptyMessage={"You are not a member of any "+communityTypeUserCommunities.getSingular()+"."}
       defaultLogo="/static/images/square-placeholder.png"
       itemsPerRow={1}
@@ -61,10 +61,10 @@ if (userPersonsContainer) {
 }
 
 if (newCommunitiesContainer) {
-  const communityTypeNewCommunities = new CommunityType(JSON.parse(newCommunitiesContainer.dataset.communityType));
+  const communityTypeNewCommunities = new CommunityType(newCommunitiesContainer.dataset.communityType);
   ReactDOM.render(
     <CommunitiesCardGroup
-      fetchDataUrl={"/api/"+communityTypeNewCommunities.getPlural()+"?q=&sort=newest&page=1&size=1"}
+      fetchDataUrl={"/api/"+communityTypeNewCommunities.getApi()+"?q=&sort=newest&page=1&size=1"}
       emptyMessage={i18next.t("There are no new " + communityTypeNewCommunities.getPlural() + ".")}
       defaultLogo="/static/images/square-placeholder.png"
       itemsPerRow={1}
@@ -74,10 +74,10 @@ if (newCommunitiesContainer) {
 }
 
 if (newOrganizationsContainer) {
-  const communityTypeNewCommunities = new CommunityType(JSON.parse(newOrganizationsContainer.dataset.communityType));
+  const communityTypeNewCommunities = new CommunityType(newOrganizationsContainer.dataset.communityType);
   ReactDOM.render(
     <CommunitiesCardGroup
-      fetchDataUrl={"/api/"+communityTypeNewCommunities.getPlural()+"?q=&sort=newest&page=1&size=1"}
+      fetchDataUrl={"/api/"+communityTypeNewCommunities.getApi()+"?q=&sort=newest&page=1&size=1"}
       emptyMessage={"There are no new " + communityTypeNewCommunities.getPlural() + "."}
       defaultLogo="/static/images/square-placeholder.png"
       itemsPerRow={1}
@@ -87,10 +87,10 @@ if (newOrganizationsContainer) {
 }
 
 if (newPersonsContainer) {
-  const communityTypeNewCommunities = new CommunityType(JSON.parse(newPersonsContainer.dataset.communityType));
+  const communityTypeNewCommunities = new CommunityType(newPersonsContainer.dataset.communityType);
   ReactDOM.render(
     <CommunitiesCardGroup
-      fetchDataUrl={"/api/"+communityTypeNewCommunities.getPlural()+"?q=&sort=newest&page=1&size=1"}
+      fetchDataUrl={"/api/"+communityTypeNewCommunities.getApi()+"?q=&sort=newest&page=1&size=1"}
       emptyMessage={"There are no new " + communityTypeNewCommunities.getPlural() + "."}
       defaultLogo="/static/images/square-placeholder.png"
       itemsPerRow={1}

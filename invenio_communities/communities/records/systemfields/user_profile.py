@@ -73,6 +73,8 @@ class UserProfileField(SystemField):
         import uuid
         if not isinstance(community_id, uuid.UUID):
             return {}
+        if not "type" in record["metadata"] or record["metadata"]["type"]["id"] != "person":
+            return {}
 
         # get user_id by community_id
         from invenio_communities.members.records.api import Member

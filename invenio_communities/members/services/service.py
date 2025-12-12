@@ -25,10 +25,12 @@ from invenio_records_resources.services.uow import (
     RecordCommitOp,
     RecordDeleteOp,
     unit_of_work,
+    TaskOp,
 )
 from invenio_requests import current_events_service, current_requests_service
 from invenio_requests.customizations.event_types import CommentEventType
 from invenio_search.engine import dsl
+from invenio_userprofiles.tasks import execute_user_profile_update_actions
 from kombu import Queue
 from marshmallow import ValidationError
 from sqlalchemy.exc import IntegrityError
@@ -508,6 +510,11 @@ class MemberService(RecordService):
         """
         community = self.community_cls.get_record(community_id)
 
+        existing_first_owner = None
+        if "type" in community.metadata and community.metadata["type"]["id"] == "person":
+            existing_first_owner = self.record_cls.get_members_for_role(
+                community_id, role=current_roles.owner_role.name)[0]
+
         # Permission check - validates that:
         # - identity has permission to change any member at all (incl self)
         self.require_permission(
@@ -541,6 +548,12 @@ class MemberService(RecordService):
                 raise ValidationError(
                     _("A community must have at least one owner."),
                 )
+
+        if "type" in community.metadata and community.metadata["type"]["id"] == "person":
+            new_first_owner = self.record_cls.get_members_for_role(
+                community_id, role=current_roles.owner_role.name)[0]
+            if new_first_owner != existing_first_owner:
+                uow.register(TaskOp(execute_user_profile_update_actions, user_id=new_first_owner.user_id, action="update_owned_persons"))
 
         if refresh:
             uow.register(IndexRefreshOp(indexer=self.indexer))
@@ -662,6 +675,11 @@ class MemberService(RecordService):
                 _("A community must have at least one owner."),
             )
 
+        if "type" in community.metadata and community.metadata["type"]["id"] == "person":
+            new_first_owner = self.record_cls.get_members_for_role(
+                community_id, role=current_roles.owner_role.name)[0]
+            uow.register(TaskOp(execute_user_profile_update_actions, user_id=new_first_owner.user_id, action="update_owned_persons"))
+
         return True
 
     @unit_of_work()
@@ -671,6 +689,7 @@ class MemberService(RecordService):
         assert identity == system_identity
         member = self.record_cls.get_member_by_request(request_id)
         assert member.active is False
+        community = self.community_cls.get_record(member.community_id)
         archived_invitation = ArchivedInvitation.create_from_member(member)
         member.active = True
         # TODO: recompute permissions for member.
@@ -686,6 +705,14 @@ class MemberService(RecordService):
         uow.register(RecordCommitOp(member, indexer=self.indexer))
         uow.register(RecordCommitOp(archived_invitation, indexer=self.archive_indexer))
         uow.register(IndexRefreshOp(indexer=self.indexer))
+
+        if "type" in community.metadata and community.metadata["type"]["id"] == "person":
+            new_first_owner = self.record_cls.get_members_for_role(
+                member.community_id, role=current_roles.owner_role.name)[0]
+            from invenio_accounts.proxies import current_datastore
+            user = current_datastore.get_user(new_first_owner.user_id)
+            uow.register(TaskOp(execute_user_profile_update_actions, user_id=new_first_owner.user_id, action="update_owned_persons"))
+
 
     @unit_of_work()
     def decline_invite(self, identity, request_id, uow=None):

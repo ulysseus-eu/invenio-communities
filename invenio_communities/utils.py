@@ -169,3 +169,7 @@ expertise_thematic_options = {
     "1627": "natural sciences",
     "2019": "social sciences"
 }
+
+
+def slugify_name(user_name):
+    return user_name.lower().replace(" ", "-").replace("_", "-")

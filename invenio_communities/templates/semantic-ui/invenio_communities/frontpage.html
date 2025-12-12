@@ -78,7 +78,7 @@
         <div class="ui divider hidden"></div>
         <div
           class="rel-mb-2"
-          data-community-type='{{ "community" | tojson }}'
+          data-community-type='{{ "community" }}'
           id="user-communities"
         ></div>
       </div>
@@ -93,13 +93,13 @@
         <div class="ui divider hidden"></div>
         <div
           class="rel-mb-2"
-          data-community-type='{{ "organization" | tojson }}'
+          data-community-type='{{ "organization" }}'
           id="user-organizations"
         ></div>
       </div>
       <div class="flex column" style="width:33%">
         <div class="flex">
-          <h3 class="ui header mb-0 align-self-center">{{_('My persons')}}</h3>
+          <h3 class="ui header mb-0 align-self-center">{{_('My experts')}}</h3>
           <a class="align-self-center rel-ml-1 " href="{{url_for('invenio_app_rdm_users.persons')}}">
             {{ _('See all')}}
           </a>
@@ -107,7 +107,7 @@
         <div class="ui divider hidden"></div>
         <div
           class="rel-mb-2"
-          data-community-type='{{ "person" | tojson }}'
+          data-community-type='{{ "person" }}'
           id="user-persons"
         ></div>
       </div>
@@ -125,7 +125,7 @@
       </div>
       <div class="ui divider hidden"></div>
       <div
-        data-community-type='{{ "community" | tojson }}'
+        data-community-type='{{ "community" }}'
           id="new-communities"
       ></div>
     </div>
@@ -139,20 +139,20 @@
       </div>
       <div class="ui divider hidden"></div>
       <div
-        data-community-type='{{ "organization" | tojson }}'
+        data-community-type='{{ "organization" }}'
         id="new-organizations"
       ></div>
     </div>
     <div class="flex column" style="width:33%">
       <div class="flex row">
-        <h3 class="ui header mb-0 align-self-center">{{ _('New persons') }}</h3>
+        <h3 class="ui header mb-0 align-self-center">{{ _('New experts') }}</h3>
         <a class="align-self-center rel-ml-1" href="{{url_for('invenio_communities.persons_search')}}">
             {{ _('See all')}}
           </a>
       </div>
       <div class="ui divider hidden"></div>
       <div
-        data-community-type='{{ "person" | tojson }}'
+        data-community-type='{{ "person" }}'
         id="new-persons"
       ></div>
     </div>

@@ -148,6 +148,11 @@ def register_menus(app):
         text=_("Communities"),
         order=1,
     )
+    current_menu.submenu("main.persons").register(
+        endpoint="invenio_communities.persons_search",
+        text=_("Experts"),
+        order=2,
+    )
     current_menu.submenu("plus.community").register(
         endpoint="invenio_communities.communities_new",
         text=_("New community"),

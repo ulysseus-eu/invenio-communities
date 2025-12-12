@@ -160,6 +160,12 @@ class MemberMixin:
         """Get members of a community."""
         return cls.model_cls.count_members(community_id, role=role)
 
+    @classmethod
+    def get_members_for_role(cls, community_id, role=None):
+        """Get members of a community."""
+        return cls.model_cls.get_members(community_id, role=role)
+
+
 
 class Member(Record, MemberMixin):
     """A member/invitation record.
