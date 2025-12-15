@@ -65,7 +65,7 @@ def on_profile_updated(user_id, uow=None, **kwargs):
         # check this user already has a public profile community
         # if yes, reindex it, if not create it
         # import here due to circular import
-        user = current_datastore.get_user(user_id)
+        user = current_datastore.get_user_by_id(user_id)
         slug = slugify_name(user.username)
         from invenio_communities.members.records.api import Member
 
@@ -149,6 +149,18 @@ def on_profile_updated(user_id, uow=None, **kwargs):
         # make sure we update it with last details
         else:
             my_owned_community = next(my_owned_communities_res.hits)
+            try:
+                existing_invitations = current_communities.service.members.search_invitations(
+                    system_identity,
+                    my_owned_community["id"],
+                    q=f"{user.username}",
+                )
+                if existing_invitations.total > 0:
+                    invitation_found = next(existing_invitations.hits)
+                    current_communities.service.members.accept_invite(system_identity, invitation_found["request"]["id"])
+            except AlreadyMemberError:
+                pass
+
             current_communities.service.update(
                 system_identity,
                 my_owned_community["id"],
