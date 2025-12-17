@@ -92,7 +92,7 @@ def on_profile_updated(user_id, uow=None, **kwargs):
                 extra_filter=dsl.Q("term", **{"metadata.type.id": "person"}))
             does_community_exists = existing_communities.total > 0
             if not does_community_exists:
-                new_community = current_communities.service.create(system_identity, create_community(community_base_data))
+                new_community = current_communities.service.create(system_identity, create_community(community_base_data), uow=uow)
             else:
                 # If community exists but already has another owner, create a new one
                 # those users have same first name and last name
@@ -106,7 +106,7 @@ def on_profile_updated(user_id, uow=None, **kwargs):
                             extra_filter=dsl.Q("term", **{"metadata.type.id": "person"}))
                         does_community_exists = existing_communities.total > 0
                         if not does_community_exists:
-                            new_community = current_communities.service.create(system_identity, create_community(community_base_data))
+                            new_community = current_communities.service.create(system_identity, create_community(community_base_data), uow=uow)
                             break
                         else:
                             new_community = next(existing_communities.hits)
@@ -132,7 +132,9 @@ def on_profile_updated(user_id, uow=None, **kwargs):
                 )
                 if existing_invitations.total == 0:
                     current_communities.service.members.invite(
-                        system_identity, new_community["id"], invitation_data
+                        system_identity, new_community["id"],
+                        invitation_data,
+                        uow=uow
                     )
                     existing_invitations = current_communities.service.members.search_invitations(
                         system_identity,
@@ -157,14 +159,26 @@ def on_profile_updated(user_id, uow=None, **kwargs):
                 )
                 if existing_invitations.total > 0:
                     invitation_found = next(existing_invitations.hits)
-                    current_communities.service.members.accept_invite(system_identity, invitation_found["request"]["id"])
+                    current_communities.service.members.accept_invite(
+                        system_identity,
+                        invitation_found["request"]["id"],
+                        uow=uow
+                    )
             except AlreadyMemberError:
                 pass
 
             current_communities.service.update(
                 system_identity,
                 my_owned_community["id"],
-                create_community(community_base_data)
+                create_community(community_base_data),
+                uow=uow
             )
         # Reindex person community for both profile updates and metadata updates
+        # refresh owned communities filter to include any possibly newly created community
+        user_owned_communities = [
+            m[0] for m in Member.get_memberships(Identity(user_id)) if m[1] == "owner"
+        ]
+        owned_communities_filter = dsl.Q(
+            "terms", **{"id": [id_ for id_ in user_owned_communities]}
+        )
         current_communities.service.reindex(system_identity, extra_filter=owned_communities_filter & person_filter)
