@@ -18,5 +18,7 @@ def create_community(data):
             },
         },
     }
+    if "user_id" in data:
+        data_to_use["metadata"]["person"]["user_id"] = data["user_id"]
 
     return json.loads(json.dumps(data_to_use))

@@ -219,12 +219,14 @@ class MemberService(RecordService):
         )
 
         # Add/invite members via the factory function.
+        request_list = []
         for m in members:
             # TODO: Add support for inviting an email
             if m["type"] == "email":
                 raise ValidationError(_("Invalid member type: email"))
 
-            factory(identity, community, role, visible, m, message, uow)
+            it_request = factory(identity, community, role, visible, m, message, uow)
+            request_list.append(it_request.to_dict())
             # Run components
             self.run_components(
                 action,
@@ -235,7 +237,7 @@ class MemberService(RecordService):
                 uow=uow,
             )
 
-        return True
+        return request_list
 
     def _add_factory(
         self,
@@ -273,6 +275,7 @@ class MemberService(RecordService):
 
     def _invite_factory(self, identity, community, role, visible, member, message, uow):
         """Invite a member to the community."""
+        request_item = None
         if member["type"] == "group":
             # Groups cannot be invited, because groups have no one who can
             # accept an invitation.
@@ -337,6 +340,7 @@ class MemberService(RecordService):
                 active=False,
                 request_id=request_item.id,
             )
+        return request_item
 
     def search(
         self,
@@ -510,11 +514,6 @@ class MemberService(RecordService):
         """
         community = self.community_cls.get_record(community_id)
 
-        existing_first_owner = None
-        if "type" in community.metadata and community.metadata["type"]["id"] == "person":
-            existing_first_owner = self.record_cls.get_members_for_role(
-                community_id, role=current_roles.owner_role.name)[0]
-
         # Permission check - validates that:
         # - identity has permission to change any member at all (incl self)
         self.require_permission(
@@ -548,12 +547,6 @@ class MemberService(RecordService):
                 raise ValidationError(
                     _("A community must have at least one owner."),
                 )
-
-        if "type" in community.metadata and community.metadata["type"]["id"] == "person":
-            new_first_owner = self.record_cls.get_members_for_role(
-                community_id, role=current_roles.owner_role.name)[0]
-            if new_first_owner != existing_first_owner:
-                uow.register(TaskOp(execute_user_profile_update_actions, user_id=new_first_owner.user_id, action="update_owned_persons"))
 
         if refresh:
             uow.register(IndexRefreshOp(indexer=self.indexer))
@@ -675,11 +668,6 @@ class MemberService(RecordService):
                 _("A community must have at least one owner."),
             )
 
-        if "type" in community.metadata and community.metadata["type"]["id"] == "person":
-            new_first_owner = self.record_cls.get_members_for_role(
-                community_id, role=current_roles.owner_role.name)[0]
-            uow.register(TaskOp(execute_user_profile_update_actions, user_id=new_first_owner.user_id, action="update_owned_persons"))
-
         return True
 
     @unit_of_work()
@@ -705,14 +693,6 @@ class MemberService(RecordService):
         uow.register(RecordCommitOp(member, indexer=self.indexer))
         uow.register(RecordCommitOp(archived_invitation, indexer=self.archive_indexer))
         uow.register(IndexRefreshOp(indexer=self.indexer))
-
-        if "type" in community.metadata and community.metadata["type"]["id"] == "person":
-            new_first_owner = self.record_cls.get_members_for_role(
-                member.community_id, role=current_roles.owner_role.name)[0]
-            from invenio_accounts.proxies import current_datastore
-            user = current_datastore.get_user(new_first_owner.user_id)
-            uow.register(TaskOp(execute_user_profile_update_actions, user_id=new_first_owner.user_id, action="update_owned_persons"))
-
 
     @unit_of_work()
     def decline_invite(self, identity, request_id, uow=None):

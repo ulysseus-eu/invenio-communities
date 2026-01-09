@@ -140,6 +140,7 @@ class PersonSchema(Schema):
     given_name = SanitizedUnicode(required=False, validate=_not_blank(max=250))
     middle_name = SanitizedUnicode(required=False, validate=_not_blank(max=250))
     family_name = SanitizedUnicode(required=True, validate=_not_blank(max=250))
+    user_id = fields.String()
 
 
 

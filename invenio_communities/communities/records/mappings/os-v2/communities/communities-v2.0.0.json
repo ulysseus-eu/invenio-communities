@@ -462,6 +462,14 @@
                   }
                 }
               },
+              "user_id": {
+                "type": "text",
+                "fields": {
+                  "keyword": {
+                    "type": "keyword"
+                  }
+                }
+              },
               "email": {
                 "type": "text"
               },

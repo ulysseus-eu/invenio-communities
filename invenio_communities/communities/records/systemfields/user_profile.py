@@ -68,35 +68,27 @@ class User(Base):
 
 class UserProfileField(SystemField):
     def _get_user_profile(self, record, owner=None):
+        r_user_profile = {}
         community_id = ModelField("id").__get__(record)
 
         import uuid
-        if not isinstance(community_id, uuid.UUID):
-            return {}
-        if not "type" in record["metadata"] or record["metadata"]["type"]["id"] != "person":
-            return {}
+        if ( isinstance(community_id, uuid.UUID)
+                and record.get("metadata", {}).get("type", {}).get("id", "community") == "person"):
+            user_id = None
+            if "user_id" in record["metadata"]["person"]:
+                user_id = record["metadata"]["person"]["user_id"]
+            else:
+                # get user_id by community_id
+                from invenio_communities.members.records.api import Member
+                owners = [m.dumps() for m in Member.get_members(record.id) if m.role == "owner"]
+                user_id = owners[0]["user_id"] if len(owners) > 0 else None
 
-        # get user_id by community_id
-        from invenio_communities.members.records.api import Member
-
-        owners = [m.dumps() for m in Member.get_members(record.id) if m.role == "owner"]
-        user_id = owners[0]["user_id"] if len(owners) > 0 else None
-        if user_id is None:
-            return {}
-
-        # get user profile by user_id
-        user = db.session.query(User).filter_by(id=user_id).first()
-        if user is None:
-            return {}
-
-        # user_profile = user.to_dict().get("profile", {})
-        # user_preferences = user.to_dict().get("preferences", {})
-        # if not user_profile.get("consent_by_providing_my_consent", True) or user_preferences.get("profile_visibility", "restricted") == "restricted":
-        #     return {
-        #         "preferences": user_preferences
-        #     }
-
-        return user.to_dict()
+            if user_id is not None:
+                # get user profile by user_id
+                user = db.session.query(User).filter_by(id=user_id).first()
+                if user is not None:
+                    r_user_profile = user.to_dict()
+        return r_user_profile
 
     def __get__(self, record, owner=None):
         return self._get_user_profile(record, owner)
