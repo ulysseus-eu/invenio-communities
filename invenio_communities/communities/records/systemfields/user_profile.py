@@ -43,13 +43,13 @@ class User(Base):
             lambda it_area_code: utils.expertise_thematic_options[it_area_code],
             json.loads(modified_profile.get("areas_of_expertise", "[]"))
         ))
+        modified_profile["coordinated_projects_and_calls"] = json.loads(modified_profile.get("coordinated_projects_and_calls", "[]"))
         modified_profile["knowledge_transfer_experience"] = []
         knowledge_transfer_experience = {
             "founder_of_a_spin_off": "Founder of a spin-off",
             "member_of_a_spin_off": "Member of a spin-off",
             "patents": "Patent owner",
             "member_of_an_industrial_chair": "Member of an Industrial Chair"
-
         }
         for it_experience in knowledge_transfer_experience:
             if modified_profile.get(it_experience, False):
