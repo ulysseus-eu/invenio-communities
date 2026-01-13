@@ -10,7 +10,7 @@
 
 """Invenio Communities Resource API."""
 
-from flask import g, current_app
+from flask import g, current_app, abort
 from flask_resources import (
     from_conf,
     request_parser,
@@ -18,6 +18,7 @@ from flask_resources import (
     response_handler,
     route,
 )
+from invenio_communities.errors import LogoNotFoundError
 from invenio_records_resources.resources.files.resource import request_stream
 from invenio_records_resources.resources.records.resource import (
     RecordResource,
@@ -435,10 +436,13 @@ class CommunityResource(RecordResource):
     def read_logo(self):
         """Read logo's content."""
         community_pid = resource_requestctx.view_args["pid_value"]
-        item = self.service.read_logo(
-            g.identity,
-            community_pid,
-        )
+        try:
+            item = self.service.read_logo(
+                g.identity,
+                community_pid,
+            )
+        except LogoNotFoundError:
+            return abort(404)
         community = current_communities.service.read(
             id_=community_pid, identity=g.identity
         ).to_dict()
