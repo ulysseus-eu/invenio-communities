@@ -25,12 +25,10 @@ from invenio_records_resources.services.uow import (
     RecordCommitOp,
     RecordDeleteOp,
     unit_of_work,
-    TaskOp,
 )
 from invenio_requests import current_events_service, current_requests_service
 from invenio_requests.customizations.event_types import CommentEventType
 from invenio_search.engine import dsl
-from invenio_userprofiles.tasks import execute_user_profile_update_actions
 from kombu import Queue
 from marshmallow import ValidationError
 from sqlalchemy.exc import IntegrityError
