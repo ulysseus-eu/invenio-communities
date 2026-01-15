@@ -224,7 +224,8 @@ class MemberService(RecordService):
                 raise ValidationError(_("Invalid member type: email"))
 
             it_request = factory(identity, community, role, visible, m, message, uow)
-            request_list.append(it_request.to_dict())
+            if it_request is not None:
+                request_list.append(it_request.to_dict())
             # Run components
             self.run_components(
                 action,

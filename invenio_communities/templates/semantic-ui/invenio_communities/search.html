@@ -9,7 +9,7 @@
 
 {% extends "invenio_communities/base.html" %}
 
-{%- set title = _("Search "+community_type.get_plural()) -%}
+{%- set title = _("Search "+community_type.get_plural(for_ui=True)) -%}
 
 {%- block javascript %}
     {{ super() }}
@@ -19,21 +19,24 @@
 {%- block page_body %}
 <div class="ui container fluid page-subheader-outer compact ml-0-mobile mr-0-mobile">
   <div class="ui container community-search page-subheader flex align-items-center justify-space-between">
-    <h1 class="ui large header m-0">{{_(community_type.get_plural_capitalized())}}</h1>
+    <h1 class="ui large header m-0">{{_(community_type.get_plural_capitalized(for_ui=True))}}</h1>
 
     {% if permissions.can_create %}
       <a class="ui button positive left labeled icon m-0" href="{{ config.COMMUNITIES_ROUTES['new'] }}">
         <i class="plus icon" aria-hidden="true"></i>
-        {{ _('New '+community_type.get_singular()) }}
+        {{ _('New '+community_type.get_singular(for_ui=True)) }}
       </a>
     {% endif %}
   </div>
 </div>
 <div id="communities-search" class="rel-mt-2"
     data-invenio-search-config='{{
-    search_app_communities_config(app_id="InvenioCommunities.Search",
-     endpoint="/api/"+community_type.get_plural(),
-     overrides={"communityType": community_type.get_singular()}) | tojson }}'
+    search_app_communities_config(
+        config_name="COMMUNITIES_"+community_type.get_plural().upper()+"_SEARCH",
+        app_id="InvenioCommunities.Search",
+        endpoint="/api/"+community_type.get_plural(),
+        overrides={"communityType": community_type.get_singular()}
+        ) | tojson }}'
     data-permissions='{{ permissions | tojson }}'
     >
 </div>

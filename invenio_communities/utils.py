@@ -116,38 +116,49 @@ def on_datastore_post_commit(sender, session):
 # Class to handle community types
 class CommunityType:
     person = "person"
+    expert = "expert"
     community = "community"
     organization = "organization"
     singulars = {
             person: person,
+            expert: expert,
             community: community,
             organization: organization,
         }
     plurals = {
             person: "persons",
+            expert: "experts",
             community: "communities",
             organization: "organizations",
         }
     def __init__(self, i_type=community):
         self.community_type = i_type
 
-    def get_singular(self):
-        return self.singulars.get(self.community_type, self.singulars[self.community])
+    def get_community_type_for_ui(self, for_ui: bool) -> str:
+        a_community_type = self.community_type
+        if for_ui and a_community_type == self.person:
+            a_community_type = self.expert
+        return a_community_type
 
-    def get_plural(self):
-        return self.plurals.get(self.community_type, self.plurals[self.community])
+    def get_singular(self, for_ui=False):
+        a_community_type = self.get_community_type_for_ui(for_ui)
+        return self.singulars.get(a_community_type, self.singulars[self.community])
 
-    def get_singular_capitalized(self):
-        return self.get_singular().capitalize()
+    def get_plural(self, for_ui=False):
+        a_community_type = self.get_community_type_for_ui(for_ui)
+        return self.plurals.get(a_community_type, self.plurals[self.community])
 
-    def get_plural_capitalized(self):
-        return self.get_plural().capitalize()
+    def get_singular_capitalized(self, for_ui=False):
+        return self.get_singular(for_ui).capitalize()
 
-    def get_singular_with_prefix_or_empty(self,prefix=''):
-        return prefix+self.get_singular() if self.community_type != self.community else ""
+    def get_plural_capitalized(self, for_ui=False):
+        return self.get_plural(for_ui).capitalize()
 
-    def get_plural_with_prefix_or_empty(self,prefix=''):
-        return prefix+self.get_plural() if self.community_type != self.community else ""
+    def get_singular_with_prefix_or_empty(self,prefix='', for_ui=False):
+        return prefix+self.get_singular(for_ui) if self.community_type != self.community else ""
+
+    def get_plural_with_prefix_or_empty(self,prefix='', for_ui=False):
+        return prefix+self.get_plural(for_ui) if self.community_type != self.community else ""
 
 
 def humanize_byte_size(size):

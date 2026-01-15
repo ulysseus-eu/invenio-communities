@@ -257,7 +257,35 @@ COMMUNITIES_SEARCH = {
     ],
     "sort": ["bestmatch", "newest", "oldest"],
 }
+COMMUNITIES_COMMUNITIES_SEARCH = COMMUNITIES_SEARCH
 """Community search configuration (i.e list of communities)"""
+
+COMMUNITIES_PERSONS_SEARCH = {
+    "facets": [
+        "university",
+        "gender",
+        "expert_profile",
+        "carrer_stage",
+        "trl_level",
+        "areas_of_expertise",
+        "main_keywords",
+        "eu_proposal_writer",
+        "eu_project_leader",
+        "eu_project_member",
+        "eu_project_evaluator",
+        "knowledge_transfer",
+        "knowledge_transfer_experience",
+        "interest_in_joint_research_groups"
+    ],
+    "sort": ["bestmatch", "newest", "oldest"],
+}
+"""Person search configuration (i.e list of persons)"""
+
+COMMUNITIES_ORGANIZATIONS_SEARCH = {
+    "facets": [],
+    "sort": ["bestmatch", "newest", "oldest"],
+}
+"""Organization search configuration (i.e list of organizations)"""
 
 COMMUNITIES_SEARCH_SORT_BY_VERIFIED = False
 """Sort communities by 'verified' first."""

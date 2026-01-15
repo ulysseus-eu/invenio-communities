@@ -72,8 +72,11 @@ class UserProfileField(SystemField):
         community_id = ModelField("id").__get__(record)
 
         import uuid
+        # If it's a person, and we don't have the "person" metadata, we can't get the user profile
         if ( isinstance(community_id, uuid.UUID)
-                and record.get("metadata", {}).get("type", {}).get("id", "community") == "person"):
+            and record.get("metadata", {}).get("type", {}).get("id", "community") == "person"
+            and "person" in record.get("metadata", {})
+        ):
             user_id = None
             if "user_id" in record["metadata"]["person"]:
                 user_id = record["metadata"]["person"]["user_id"]
