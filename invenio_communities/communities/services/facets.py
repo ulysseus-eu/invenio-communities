@@ -20,6 +20,7 @@ type = TermsFacet(
         "topic": _("Topic"),
         "project": _("Project"),
         "person": _("Person"),
+        "r&i-group": _("R&I group"),
     },
 )
 

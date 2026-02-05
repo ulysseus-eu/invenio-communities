@@ -12,7 +12,7 @@
 
 from copy import deepcopy
 
-from flask import abort, current_app, g, render_template
+from flask import abort, current_app, g, render_template, url_for, request
 from flask.templating import _render
 from flask_login import login_required
 from invenio_i18n import lazy_gettext as _
@@ -621,7 +621,18 @@ def persons_profile(pid_value, community, community_ui):
     permissions = community.has_permissions_to(HEADER_PERMISSIONS)
 
     if not permissions["can_read_profile"]:
-        raise PermissionDeniedError()
+        url = url_for(
+            "invenio_app_rdm_communities.persons_detail",
+            pid_value=community.data["slug"],
+            **request.args
+        )
+        return render_community_theme_template(
+            "invenio_communities/details/profile/not_authorized.html",
+            theme=community_ui.get("theme", {}),
+            community=community,
+            community_ui=community_ui,
+            permissions=permissions,
+            custom_fields_ui=load_custom_fields(dump_only_required=False)["ui"])
 
     return render_community_theme_template(
         "invenio_communities/details/profile/index.html",

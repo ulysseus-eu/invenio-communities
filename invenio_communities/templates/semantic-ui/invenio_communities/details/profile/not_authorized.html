@@ -1,0 +1,15 @@
+{% extends "invenio_communities/details/base.html" %}
+
+{% set active_community_header_menu_item= 'profile' %}
+
+{%- block page_body %}
+{{ super() }}
+
+<div class="ui text rel-m-2 rel-pt-1">
+    <div id="community-profile-pages">
+        <h1 style="text-align: center">You are not authorized to view this page.</h1>
+        <p style="text-align: center">The owner of this profile may have made it private or restricted to logged users only</p>
+    </div>
+</div>
+
+{%- endblock page_body -%}

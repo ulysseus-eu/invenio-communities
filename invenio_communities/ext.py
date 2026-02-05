@@ -144,7 +144,7 @@ def register_menus(app):
     show_specific_types = current_app.config.get("COMMUNITIES_SHOW_SPECIFIC_TYPES", False)
     """Register community menu items."""
     current_menu.submenu("main.communities").register(
-        endpoint="invenio_communities.communities_frontpage",
+        endpoint="invenio_communities.communities_search",
         text=_("Communities"),
         order=1,
     )
@@ -217,7 +217,7 @@ def register_menus(app):
             text=_("Members"),
             order=3,
             expected_args=["pid_value"],
-            **{"icon": "users", "permissions": "can_read"}
+            **{"icon": "users", "permissions": "can_members_search_public"}
         )
         persons.submenu("settings").register(
             endpoint="invenio_communities.persons_settings",
@@ -231,7 +231,7 @@ def register_menus(app):
             text=_("Profile"),
             order=5,
             expected_args=["pid_value"],
-            **{"icon": "info", "permissions": "can_read_profile"}
+            **{"icon": "info", "permissions": True}
         )
 
         """Register organizations menu items."""
@@ -249,7 +249,7 @@ def register_menus(app):
             text=_("Members"),
             order=3,
             expected_args=["pid_value"],
-            **{"icon": "users", "permissions": "can_read"}
+            **{"icon": "users", "permissions": "can_members_search_public"}
         )
         organizations.submenu("settings").register(
             endpoint="invenio_communities.organizations_settings",
