@@ -143,15 +143,20 @@ def finalize_app(app):
 def register_menus(app):
     show_specific_types = current_app.config.get("COMMUNITIES_SHOW_SPECIFIC_TYPES", False)
     """Register community menu items."""
-    current_menu.submenu("main.communities").register(
-        endpoint="invenio_communities.communities_search",
-        text=_("Communities"),
-        order=1,
-    )
     current_menu.submenu("main.persons").register(
         endpoint="invenio_communities.persons_search",
         text=_("Experts"),
+        order=1,
+    )
+    current_menu.submenu("main.r_and_i_groups").register(
+        endpoint="invenio_communities.r_and_i_groups_search",
+        text=_("R&I Groups"),
         order=2,
+    )
+    current_menu.submenu("main.communities").register(
+        endpoint="invenio_communities.communities_search",
+        text=_("Communities"),
+        order=3,
     )
     current_menu.submenu("plus.community").register(
         endpoint="invenio_communities.communities_new",

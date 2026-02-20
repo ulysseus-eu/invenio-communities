@@ -29,13 +29,18 @@
     {% endif %}
   </div>
 </div>
+{% if initialQueryState is defined %}
+    {% set overrides = {"communityType": community_type.get_singular(), "initialQueryState": initialQueryState } %}
+{% else %}
+    {% set overrides = {"communityType": community_type.get_singular() } %}
+{% endif %}
 <div id="communities-search" class="rel-mt-2"
     data-invenio-search-config='{{
     search_app_communities_config(
         config_name="COMMUNITIES_"+community_type.get_plural().upper()+"_SEARCH",
         app_id="InvenioCommunities.Search",
         endpoint="/api/"+community_type.get_plural(),
-        overrides={"communityType": community_type.get_singular()}
+        overrides=overrides
         ) | tojson }}'
     data-permissions='{{ permissions | tojson }}'
     >

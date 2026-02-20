@@ -236,6 +236,17 @@ def communities_search():
     )
 
 
+def r_and_i_groups_search():
+    """Communities search page."""
+    can_create = current_communities.service.check_permission(g.identity, "create")
+    return render_template(
+        "invenio_communities/search.html",
+        permissions=dict(can_create=can_create),
+        community_type=CommunityType(),
+        initialQueryState={"page": 1,"size": 10,"sortBy": "newest","filters": [["type", "r&i-group"]]}
+    )
+
+
 def persons_search():
     """Persons search page."""
     can_create = current_communities.service.check_permission(g.identity, "create")

@@ -22,6 +22,7 @@ from invenio_communities.communities.services import facets
 COMMUNITIES_ROUTES = {
     "frontpage": "/communities",
     "search": "/communities-search",
+    "r-and-i-groups-search": "/r-and-i-groups-search",
     "deprecated_search": "/communities/search",
     "new": "/communities-new",
     "deprecated_new": "/communities/new",

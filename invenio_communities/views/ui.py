@@ -55,6 +55,7 @@ from .communities import (
     persons_settings,
     persons_requests,
     persons_members,
+    r_and_i_groups_search,
 )
 from .decorators import warn_deprecation
 
@@ -178,6 +179,12 @@ def create_ui_blueprint(app):
         view_func=warn_deprecation(routes["deprecated_search"], routes["search"])(
             communities_search
         ),
+        strict_slashes=False,
+    )
+
+    blueprint.add_url_rule(
+        routes["r-and-i-groups-search"],
+        view_func=r_and_i_groups_search,
         strict_slashes=False,
     )
 
